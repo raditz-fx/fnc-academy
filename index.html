@@ -251,8 +251,10 @@
   .feed-item:hover{box-shadow:0 7px 20px rgba(0,0,0,.07);border-color:var(--orange-light);transform:translateY(-2px);}
   .feed-item:nth-child(2){animation-delay:.05s} .feed-item:nth-child(3){animation-delay:.1s}
   .feed-item:nth-child(4){animation-delay:.15s} .feed-item:nth-child(5){animation-delay:.2s}
+  /* Gambar sampul tampil UTUH — tidak dipotong.
+     Gambar yang sangat tinggi otomatis dikecilkan agar muat, bukan dipangkas. */
   .feed-cover{width:100%;display:block;background:var(--cream);cursor:zoom-in;
-    max-height:340px;object-fit:cover;transition:opacity .2s ease;}
+    height:auto;max-height:520px;object-fit:contain;transition:opacity .2s ease;}
   .feed-cover:hover{opacity:.93;}
   .feed-pad{padding:15px 17px 17px;}
   .feed-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:7px;}
