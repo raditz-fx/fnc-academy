@@ -786,30 +786,100 @@
 (function(){
   "use strict";
   /* ============================================================
-     KODE AKSES MEMBER PRIVATE
-     Kode aktif saat ini:  CBZ3EMLQL6ZE
-     Ditulis berkelompok:  CBZ3-EMLQ-L6ZE  (tanda strip & spasi diabaikan
-     saat member mengetik, jadi dua-duanya diterima)
+     KODE AKSES MEMBER PRIVATE (gerbang aplikasi jurnal)
+     Kode aktif saat ini:  CBZ3-EMLQ-L6ZE
+     (tanda strip & spasi diabaikan saat member mengetik)
 
      Cara ganti kode:
-     1. Tentukan kode baru, huruf besar semua, hindari huruf I/O dan angka 0/1
+     1. Tentukan kode baru, huruf besar semua. Hindari huruf I/O dan angka 0/1
         supaya member tidak salah baca.
-     2. Encode ke Base64 (cari "base64 encode online"), tempel hasilnya
-        menggantikan teks di baris ACCESS_CODE_B64 di bawah.
-     3. Update juga catatan kode di komentar ini biar tidak lupa.
+     2. Hitung SHA-256 dari kode itu (huruf besar, TANPA tanda strip).
+        Cara cepat: buka Console browser (F12), tempel perintah ini:
+          crypto.subtle.digest('SHA-256',new TextEncoder().encode('KODEBARU'))
+            .then(b=>console.log([...new Uint8Array(b)]
+            .map(x=>x.toString(16).padStart(2,'0')).join('')))
+     3. Tempel hasil hex-nya ke ACCESS_CODE_HASH di bawah, dan perbarui
+        catatan kode di komentar ini biar tidak lupa.
 
-     Catatan jujur: ini gerbang ringan, bukan keamanan sungguhan. Kode bisa
-     dibaca siapa pun yang membuka source code halaman. Fungsinya menyaring
-     orang iseng dan memberi kesan eksklusif, bukan mengunci data.
+     Catatan jujur: gerbang ini menyaring, bukan mengunci. Kode aslinya memang
+     sudah tidak bisa dibaca dari source, tapi orang yang paham DevTools tetap
+     bisa melewatinya. Yang benar-benar terkunci adalah ISI berita eksklusif &
+     analisa — itu dienkripsi AES-256-GCM, bukan sekadar dijaga gerbang.
      ============================================================ */
-  const ACCESS_CODE_B64='Q0JaM0VNTFFMNlpF';
+  /* Hash SHA-256 dari kode jurnal — kode aslinya TIDAK tersimpan di berkas ini.
+     Ganti kode: hitung SHA-256 dari kode baru (huruf besar, tanpa tanda hubung),
+     tempel hex-nya di sini. Kode aktif sekarang: CBZ3-EMLQ-L6ZE */
+  const ACCESS_CODE_HASH='aa23574e2794b4f8f776e98ac6e28224793e013ed1dc086a1f410b26bd67e25b';
 
   /* ------------------------------------------------------------
-     KODE ANALISA (terpisah dari kode jurnal di atas).
-     Kode aktif: MRKT-9XQP-2WVH
-     Ganti dengan cara yang sama: encode ke Base64, tempel di sini.
+     KODE EKSKLUSIF (berita eksklusif + analisa).
+     TIDAK ADA di berkas ini — sengaja. Isi berita-eksklusif.json dan
+     analisa.json dienkripsi AES-256-GCM memakai kode itu sebagai kunci.
+     Kode dinyatakan benar kalau berhasil membuka berkasnya; salah sedikit
+     saja, isinya tetap tidak terbaca. Ganti kode = cukup unduh ulang
+     berkas dari admin.html memakai kode baru, berkas ini tidak perlu diubah.
      ------------------------------------------------------------ */
-  const ANALISA_CODE_B64='TVJLVDlYUVAyV1ZI';
+
+/* ============================================================
+   KRIPTO FNC — AES-256-GCM + PBKDF2-SHA256
+   Isi berkas benar-benar dienkripsi. Tanpa kode yang benar,
+   isinya tidak bisa dibuka dengan cara apapun (termasuk DevTools).
+   ============================================================ */
+/* Normalisasi kode: huruf besar, buang strip/spasi/simbol.
+   WAJIB identik di admin & member — kalau beda, kunci tidak akan cocok. */
+function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
+const FNC_ITER=200000;
+const _keyCache=new Map();
+function _b64e(buf){const b=new Uint8Array(buf);let s='';
+  for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));
+  return btoa(s);}
+function _b64d(str){const s=atob(str),b=new Uint8Array(s.length);
+  for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
+function fncKriptoSiap(){
+  return !!(typeof crypto!=='undefined'&&crypto.subtle&&crypto.getRandomValues);
+}
+async function _kunci(code,salt,iter){
+  const tag=code+'|'+_b64e(salt)+'|'+iter;
+  if(_keyCache.has(tag))return _keyCache.get(tag);
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveKey']);
+  const k=await crypto.subtle.deriveKey(
+    {name:'PBKDF2',salt:salt,iterations:iter,hash:'SHA-256'},
+    base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  _keyCache.set(tag,k);
+  return k;
+}
+async function fncEnkripsi(code,obj){
+  if(!fncKriptoSiap())throw new Error('NOCRYPTO');
+  const salt=crypto.getRandomValues(new Uint8Array(16));
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await _kunci(code,salt,FNC_ITER);
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,
+    new TextEncoder().encode(JSON.stringify(obj)));
+  return {v:2,alg:'AES-256-GCM',kdf:'PBKDF2-SHA256',iter:FNC_ITER,
+    salt:_b64e(salt),iv:_b64e(iv),ct:_b64e(ct)};
+}
+async function fncDekripsi(code,d){
+  if(!fncKriptoSiap())throw new Error('NOCRYPTO');
+  const key=await _kunci(code,_b64d(d.salt),d.iter||FNC_ITER);
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:_b64d(d.iv)},key,_b64d(d.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+/* SHA-256 -> hex, dipakai untuk gerbang aplikasi */
+async function fncHash(s){
+  const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+/* ---------- jadwal tayang ---------- */
+function fncWaktuTerbit(it){
+  if(it&&it.pub){const t=new Date(it.pub).getTime();if(!isNaN(t))return t;}
+  if(it&&it.date){const t=new Date(it.date+'T00:00:00').getTime();if(!isNaN(t))return t;}
+  return 0;
+}
+function fncSudahTayang(it){
+  if(!it||!it.pub)return true;
+  const t=new Date(it.pub).getTime();
+  return isNaN(t)?true:t<=Date.now();
+}
 
   const K_ACC='fncjt_accounts', K_TR='fncjt_trades', K_SET='fncjt_settings',
         K_SEEN='fncjt_seen', K_GATE='fncjt_unlocked';
@@ -1228,7 +1298,7 @@
      Sekali upload, SEMUA member langsung dapat isi terbaru.
      ==================================================== */
   const NEWS_URL='berita.json', NEWS_EX_URL='berita-eksklusif.json', ANALISA_URL='analisa.json';
-  const K_ANGATE='fncjt_an_unlocked';
+  const K_ANGATE='fncjt_an_unlocked';   /* menyimpan KODE-nya, bukan sekadar true */
   let newsCache=null, newsExCache=null, analisaCache=null, newsKind='umum';
 
   /* Format ala WhatsApp: *tebal*  _miring_  ~coret~  ```mono``` */
@@ -1271,12 +1341,28 @@
     if(!r.ok)throw new Error('HTTP '+r.status);
     return await r.json();
   }
-  /* Isi yang disamarkan base64. Ini BUKAN enkripsi, hanya agar tidak terbaca sekilas. */
-  function bukaIsi(d){
-    if(d.enc){ try{return JSON.parse(decodeURIComponent(escape(atob(d.enc))));}catch(e){return [];} }
-    return d.items||[];
+  /* Membuka isi berkas.
+     v2  = AES-256-GCM sungguhan, wajib kode benar (kalau salah -> melempar KODESALAH)
+     v1  = base64 lama (masih didukung supaya berkas lama tetap terbaca)
+     polos = berita umum, memang tidak dikunci */
+  async function bukaIsi(d,kode){
+    if(d&&d.v===2&&d.ct){
+      if(!kode)throw new Error('KODESALAH');
+      try{ return await fncDekripsi(kode,d); }
+      catch(e){ throw new Error('KODESALAH'); }
+    }
+    if(d&&d.enc){ try{return JSON.parse(decodeURIComponent(escape(atob(d.enc))));}catch(e){return [];} }
+    return (d&&d.items)||[];
   }
-  const urutBaru=a=>a.slice().sort((x,y)=>(y.date||'').localeCompare(x.date||''));
+  /* Urut terbaru dulu, DAN sembunyikan yang jadwal tayangnya belum tiba. */
+  const urutBaru=a=>(a||[]).filter(fncSudahTayang)
+    .sort((x,y)=>fncWaktuTerbit(y)-fncWaktuTerbit(x));
+  /* Kapan item terjadwal berikutnya muncul (untuk penyegaran otomatis). */
+  function tayangBerikut(a){
+    const now=Date.now();
+    const next=(a||[]).map(fncWaktuTerbit).filter(t=>t>now).sort((x,y)=>x-y)[0];
+    return next||null;
+  }
 
   function renderFeed(elId,items,kind){
     const el=$(elId);
@@ -1305,17 +1391,44 @@
     }).join('');
   }
 
-  /* ---------- gerbang bersama untuk berita eksklusif & analisa ---------- */
-  function anExpected(){try{return normCode(atob(ANALISA_CODE_B64));}catch(e){return '';}}
-  const sudahBuka=async()=>!!(await store.get(K_ANGATE));
-  async function bukaGerbang(){
-    await store.set(K_ANGATE,true);
+  /* ---------- gerbang bersama untuk berita eksklusif & analisa ----------
+     Tidak ada kode tersimpan di berkas ini untuk dicocokkan. Kode dinyatakan
+     benar HANYA kalau berhasil mendekripsi berkas asli dari server. */
+  let kodeEks=null;   /* hanya di memori + storage member, tidak pernah dikirim ke mana pun */
+  async function ambilKode(){
+    if(kodeEks)return kodeEks;
+    const k=await store.get(K_ANGATE);
+    kodeEks=(typeof k==='string'&&k)?k:null;
+    return kodeEks;
+  }
+  const sudahBuka=async()=>!!(await ambilKode());
+  /* Uji kode ke berkas sungguhan. true kalau ada berkas yang berhasil dibuka. */
+  async function ujiKode(kode){
+    for(const url of [ANALISA_URL,NEWS_EX_URL]){
+      try{
+        const d=await fetchJSON(url);
+        if(d&&d.v===2&&d.ct){ await fncDekripsi(kode,d); return true; }
+        if(d&&(d.enc||d.items)) return true;   /* berkas lama belum dienkripsi */
+      }catch(e){ /* berkas tidak ada / kode salah -> coba berkas berikutnya */ }
+    }
+    return false;
+  }
+  async function bukaGerbang(kode){
+    kodeEks=kode;
+    await store.set(K_ANGATE,kode);
+    newsExCache=null; analisaCache=null;
     if($('v-analisa').classList.contains('active'))await checkAnalisaGate();
-    if($('v-news').classList.contains('active'))await showNews();
+    if($('v-news').classList.contains('active'))await showNews(true);
   }
   async function kunciGerbang(){
-    await store.set(K_ANGATE,false);
+    kodeEks=null;
+    await store.set(K_ANGATE,'');
     newsExCache=null; analisaCache=null;
+    /* Bersihkan isi terdekripsi dari DOM, bukan sekadar disembunyikan —
+       kalau hanya di-hide, teksnya masih bisa dibaca lewat DevTools. */
+    if($('analisa-list'))$('analisa-list').innerHTML='';
+    if($('an-stamp'))$('an-stamp').textContent='';
+    if(newsKind==='eks'&&$('news-list')){$('news-list').innerHTML='';$('news-stamp').textContent='';}
     await checkAnalisaGate();
     if($('v-news').classList.contains('active'))await showNews();
   }
@@ -1324,13 +1437,15 @@
   async function loadNewsUmum(force){
     if(newsCache&&!force)return newsCache;
     const d=await fetchJSON(NEWS_URL);
-    newsCache={items:urutBaru(d.items||[]),updated:d.updated};
+    const semua=await bukaIsi(d,null);
+    newsCache={items:urutBaru(semua),updated:d.updated,next:tayangBerikut(semua)};
     return newsCache;
   }
   async function loadNewsEks(force){
     if(newsExCache&&!force)return newsExCache;
     const d=await fetchJSON(NEWS_EX_URL);
-    newsExCache={items:urutBaru(bukaIsi(d)),updated:d.updated};
+    const semua=await bukaIsi(d,await ambilKode());
+    newsExCache={items:urutBaru(semua),updated:d.updated,next:tayangBerikut(semua)};
     return newsExCache;
   }
   async function showNews(force){
@@ -1347,6 +1462,7 @@
       renderFeed('news-list',c.items,'news');
       $('news-stamp').textContent=c.updated?'Diperbarui '+tanggalID(c.updated):'';
     }catch(e){
+      if(e&&e.message==='KODESALAH'){ await kunciGerbang(); return; }
       const nm = eks?'berita-eksklusif.json':'berita.json';
       $('news-list').innerHTML='<div class="feed-empty">Belum ada berita, atau berkas <b>'+nm+'</b> '+
         'belum di-upload ke server.<br>Coba muat ulang beberapa saat lagi.</div>';
@@ -1360,10 +1476,12 @@
     $('analisa-list').innerHTML=skeletonFeed(1);
     try{
       const d=await fetchJSON(ANALISA_URL);
-      analisaCache={items:urutBaru(bukaIsi(d)),updated:d.updated};
+      const semua=await bukaIsi(d,await ambilKode());
+      analisaCache={items:urutBaru(semua),updated:d.updated,next:tayangBerikut(semua)};
       renderFeed('analisa-list',analisaCache.items,'an');
       $('an-stamp').textContent=analisaCache.updated?'Diperbarui '+tanggalID(analisaCache.updated):'';
     }catch(e){
+      if(e&&e.message==='KODESALAH'){ await kunciGerbang(); return; }
       $('analisa-list').innerHTML='<div class="feed-empty">Belum ada analisa, atau berkas <b>analisa.json</b> '+
         'belum di-upload ke server.</div>';
       $('an-stamp').textContent='';
@@ -1377,7 +1495,25 @@
     }
   }
 
+  /* Cek tiap 30 detik: kalau ada kiriman terjadwal yang waktunya sudah tiba,
+     tampilkan sendiri tanpa member perlu memuat ulang halaman. */
+  function mulaiPengawasJadwal(){
+    setInterval(async ()=>{
+      const now=Date.now();
+      const cekBerita=$('v-news')&&$('v-news').classList.contains('active');
+      const cekAnalisa=$('v-analisa')&&$('v-analisa').classList.contains('active');
+      if(cekBerita){
+        const c=(newsKind==='eks')?newsExCache:newsCache;
+        if(c&&c.next&&c.next<=now){ if(newsKind==='eks')newsExCache=null; else newsCache=null; await showNews(true); }
+      }
+      if(cekAnalisa&&analisaCache&&analisaCache.next&&analisaCache.next<=now){
+        analisaCache=null; await loadAnalisa(true);
+      }
+    },30000);
+  }
+
   function initFeeds(){
+    mulaiPengawasJadwal();
     $('news-reload').onclick=()=>showNews(true);
     $('an-reload').onclick=()=>loadAnalisa(true);
     $('an-lock').onclick=kunciGerbang;
@@ -1392,9 +1528,15 @@
     /* dua kotak kode, satu logika */
     [['nx-code','nx-submit','nx-err'],['an-code','an-submit','an-err']].forEach(([ci,si,ei])=>{
       const cek=async()=>{
-        const v=normCode($(ci).value), x=anExpected();
-        if(v&&x&&v===x){$(ei).hidden=true;$(ci).value='';await bukaGerbang();}
-        else{$(ei).hidden=false;$(ci).value='';$(ci).focus();}
+        const v=normCode($(ci).value);
+        if(!v){$(ei).hidden=false;$(ci).focus();return;}
+        const tb=$(si), teksLama=tb.textContent;
+        tb.disabled=true; tb.textContent='Memeriksa...'; $(ei).hidden=true;
+        let ok=false;
+        try{ ok=await ujiKode(v); }catch(e){ ok=false; }
+        tb.disabled=false; tb.textContent=teksLama;
+        if(ok){ $(ei).hidden=true; $(ci).value=''; await bukaGerbang(v); }
+        else{ $(ei).hidden=false; $(ci).value=''; $(ci).focus(); }
       };
       $(si).onclick=cek;
       $(ci).addEventListener('keydown',ev=>{if(ev.key==='Enter')cek();});
@@ -1703,8 +1845,9 @@
 
   /* ---------- GATE ---------- */
   function normCode(s){return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
-  function expectedCode(){
-    try{return normCode(atob(ACCESS_CODE_B64));}catch(e){return '';}
+  async function kodeCocok(v){
+    if(!v)return false;
+    try{ return (await fncHash(v))===ACCESS_CODE_HASH; }catch(e){ return false; }
   }
   async function unlock(){
     $('gate-overlay').hidden=true;
@@ -1716,8 +1859,7 @@
   }
   async function trySubmitCode(){
     const val=normCode($('gate-code').value);
-    const exp=expectedCode();
-    if(val && exp && val===exp){
+    if(await kodeCocok(val)){
       $('gate-err').hidden=true;
       $('gate-code').value='';
       await unlock();
