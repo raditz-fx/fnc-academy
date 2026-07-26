@@ -383,6 +383,33 @@
   .lk-veil span{font-size:11.5px;color:#e7ebf0;text-shadow:0 1px 5px rgba(0,0,0,.5);}
   .lk-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;
     padding:10px 14px 12px;flex-wrap:wrap;}
+  /* pengumuman versi highlight (dengan gambar) */
+  .ann-hl{position:relative;border-radius:15px;overflow:hidden;margin-bottom:14px;
+    background:var(--slate);box-shadow:0 6px 22px rgba(31,41,55,.16);
+    animation:popSoft .5s cubic-bezier(.22,.8,.3,1) both;}
+  .ann-hl-img{width:100%;aspect-ratio:16/9;display:block;object-fit:cover;}
+  .ann-hl-body{position:absolute;left:0;right:0;bottom:0;padding:44px 18px 16px;
+    background:linear-gradient(180deg,rgba(17,24,39,0),rgba(17,24,39,.78) 42%,rgba(17,24,39,.95));}
+  .ann-hl-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:20px;
+    font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:8px;}
+  .ann-hl-pill.live{background:#DC2626;color:#fff;}
+  .ann-hl-pill.penting{background:#F59E0B;color:#3b2500;}
+  .ann-hl-pill.info{background:#0EA5E9;color:#fff;}
+  .ann-hl h4{margin:0 0 5px;font-size:17px;color:#fff;line-height:1.35;font-weight:700;
+    text-shadow:0 2px 10px rgba(0,0,0,.5);}
+  .ann-hl p{margin:0;font-size:12.5px;color:#dfe5ec;line-height:1.62;
+    text-shadow:0 1px 8px rgba(0,0,0,.55);}
+  .ann-hl .ann-time{display:block;font-size:11px;color:#aeb8c4;margin-top:7px;}
+  .ann-hl .ann-btn{background:var(--orange);color:#fff;margin-top:11px;padding:8px 16px;
+    font-size:12.5px;box-shadow:0 3px 12px rgba(242,112,29,.4);}
+  .ann-hl .ann-btn:hover{background:var(--orange-deep);}
+  .ann-hl .dot-live{width:8px;height:8px;border-radius:50%;background:#fff;
+    animation:pulseDot 1.3s ease-in-out infinite;}
+  @media(max-width:520px){
+    .ann-hl-img{aspect-ratio:4/3;}
+    .ann-hl h4{font-size:15.5px;}
+    .ann-hl-body{padding:38px 14px 14px;}
+  }
   /* pengumuman */
   .ann{border-radius:13px;padding:14px 16px;margin-bottom:13px;display:flex;gap:12px;
     align-items:flex-start;border:1px solid transparent;}
@@ -1761,7 +1788,7 @@ function fncSudahTayang(it){
     if(newsCache&&!force)return newsCache;
     const d=await fetchJSON(NEWS_URL);
     const semua=await bukaIsi(d,null);
-    newsCache={items:urutBaru(semua),updated:d.updated,next:tayangBerikut(semua)};
+    newsCache={items:urutBaru(semua),semua:semua,updated:d.updated,next:tayangBerikut(semua)};
     return newsCache;
   }
   async function loadNewsEks(force){
@@ -1851,7 +1878,13 @@ function fncSudahTayang(it){
       if(cekAnalisa&&analisaCache&&analisaCache.next&&analisaCache.next<=now){
         analisaCache=null; await loadAnalisa(true);
       }
-      if($('v-beranda')&&$('v-beranda').classList.contains('active')){
+      /* Beranda hanya disegarkan kalau memang ADA yang jatuh tempo —
+         entah kiriman terjadwal atau pengumuman yang habis masa tayangnya.
+         Tanpa syarat ini, halaman ter-render ulang tiap 30 detik dan
+         terlihat seperti me-refresh sendiri. */
+      if($('v-beranda')&&$('v-beranda').classList.contains('active')&&
+         berandaJatuhTempo&&berandaJatuhTempo<=now){
+        berandaJatuhTempo=null;
         try{ await renderBeranda(); }catch(e){}
       }
       if($('v-rekap')&&$('v-rekap').classList.contains('active')){
@@ -2453,6 +2486,23 @@ function fncSudahTayang(it){
   function kartuAnn(a){
     const j=String(a.jenis||'info').toLowerCase();
     const ic = j==='live' ? '&#128308;' : (j==='penting' ? '&#9888;&#65039;' : '&#128226;');
+    const lbl = j==='live' ? 'Live Sekarang' : (j==='penting' ? 'Penting' : 'Info');
+    const tombol = a.url
+      ? '<div class="ann-btn" onclick="event.stopPropagation();window.__buka(\''+
+        esc(a.url).replace(/'/g,"\\'")+'\')">'+esc(a.cta||'Buka Link')+'</div>' : '';
+    /* Ada gambar -> tampil sebagai kartu besar menonjol di paling atas Beranda. */
+    if(a.image){
+      return '<div class="ann-hl">'+
+        '<img class="ann-hl-img" src="'+esc(a.image)+'" alt="" loading="lazy">'+
+        '<div class="ann-hl-body">'+
+          '<span class="ann-hl-pill '+esc(j)+'">'+
+            (j==='live'?'<span class="dot-live"></span>':'')+esc(lbl)+'</span>'+
+          (a.title?'<h4>'+esc(a.title)+'</h4>':'')+
+          (a.body?'<p>'+waFormat(a.body)+'</p>':'')+
+          tombol+
+          (a.pub?'<span class="ann-time">'+stempelWaktu(a)+'</span>':'')+
+        '</div></div>';
+    }
     return '<div class="ann '+esc(j)+'">'+
       '<div class="ann-ic">'+ic+'</div><div style="flex:1;min-width:0;">'+
       (a.title?'<b>'+esc(a.title)+'</b>':'')+
@@ -2475,6 +2525,7 @@ function fncSudahTayang(it){
     }catch(e){ return []; }
   }
 
+  let berandaJatuhTempo=null;   /* kapan Beranda perlu digambar ulang berikutnya */
   async function renderBeranda(){
     const sapa=profil?('Halo, '+esc(profil.nama)):'Selamat datang';
     $('hero-title').textContent=profil?('Halo, '+profil.nama):'Selamat datang';
@@ -2487,21 +2538,26 @@ function fncSudahTayang(it){
     const body=$('beranda-body');
     body.innerHTML='<div class="feed-empty">Memuat update...</div>';
 
-    const kumpul=[];
-    try{ const c=await loadNewsUmum(); (c.items||[]).slice(0,4).forEach(x=>kumpul.push([x,'Berita','news'])); }catch(e){}
-    try{ const d=await fetchJSON(REKAP_URL); const s=await bukaIsi(d,null);
+    const kumpul=[]; const jadwal=[];
+    const catat=arr=>{ const t=tayangBerikut(arr); if(t)jadwal.push(t); };
+    try{ const c=await loadNewsUmum(); catat(c.semua||c.items);
+      (c.items||[]).slice(0,4).forEach(x=>kumpul.push([x,'Berita','news'])); }catch(e){}
+    try{ const d=await fetchJSON(REKAP_URL); const s=await bukaIsi(d,null); catat(s);
       urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap'])); }catch(e){}
-    try{ const d=await fetchJSON(MATERI_URL); const s=await bukaIsi(d,null);
+    try{ const d=await fetchJSON(MATERI_URL); const s=await bukaIsi(d,null); catat(s);
       urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi'])); }catch(e){}
     if(tier==='eks'){
-      try{ const c=await loadNewsEks(); (c.items||[]).slice(0,3).forEach(x=>kumpul.push([x,'Eksklusif','news'])); }catch(e){}
+      try{ const c=await loadNewsEks(); if(c.next)jadwal.push(c.next);
+        (c.items||[]).slice(0,3).forEach(x=>kumpul.push([x,'Eksklusif','news'])); }catch(e){}
       try{
         const d=await fetchJSON(ANALISA_URL);
-        const semua=await bukaIsi(d,await ambilKode());
+        const semua=await bukaIsi(d,await ambilKode()); catat(semua);
         urutBaru(semua).slice(0,3).forEach(x=>kumpul.push([x,'Analisa','analisa']));
       }catch(e){}
-      try{ const c=await loadRekapEksBeranda(); c.slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap'])); }catch(e){}
-      try{ const c=await loadMateriEksBeranda(); c.slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi'])); }catch(e){}
+      try{ const d=await fetchJSON(REKAP_EX_URL); const s=await bukaIsi(d,await ambilKode()); catat(s);
+        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap'])); }catch(e){}
+      try{ const d=await fetchJSON(MATERI_EX_URL); const s=await bukaIsi(d,await ambilKode()); catat(s);
+        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi'])); }catch(e){}
     }else{
       /* Member Private tetap melihat kartunya — tapi hanya dari bagian teaser.
          Isi, link, dan gambar asli tidak pernah diambil. */
@@ -2510,6 +2566,7 @@ function fncSudahTayang(it){
       for(const [url,label,view] of pratinjau){
         try{
           const d=await fetchJSON(url);
+          catat(d.teaser||[]);
           (d.teaser||[]).filter(fncSudahTayang)
             .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a))
             .slice(0,2).forEach(x=>kumpul.push([x,label,view,true]));
@@ -2551,6 +2608,14 @@ function fncSudahTayang(it){
         '</div></div>';
     }
     body.innerHTML = out || '<div class="feed-empty">Belum ada update. Cek lagi nanti ya.</div>';
+
+    /* Tentukan waktu terdekat yang membuat tampilan ini berubah:
+       kiriman terjadwal yang akan tayang, atau pengumuman yang akan hilang. */
+    const kini=Date.now();
+    const calon=jadwal.filter(t=>t&&t>kini);
+    ann.forEach(a=>{ if(a.exp){ const t=new Date(a.exp).getTime();
+      if(!isNaN(t)&&t>kini)calon.push(t); } });
+    berandaJatuhTempo = calon.length ? Math.min.apply(null,calon) : null;
   }
   async function loadRekapEksBeranda(){
     const d=await fetchJSON(REKAP_EX_URL);
