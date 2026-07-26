@@ -318,13 +318,25 @@
   .home-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px;}
   .home-head h3{margin:0;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate);}
   .home-head a{font-size:12px;color:var(--orange-deep);cursor:pointer;font-weight:600;}
-  .home-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:13px 14px;
-    margin-bottom:8px;cursor:pointer;transition:border-color .15s,transform .12s;}
+  .home-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 12px;
+    margin-bottom:8px;cursor:pointer;transition:border-color .15s,transform .12s;
+    display:flex;gap:12px;align-items:flex-start;}
   .home-card:hover{border-color:var(--orange);transform:translateY(-1px);}
-  .home-card .hc-top{display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap;}
-  .home-card h4{margin:0 0 3px;font-size:14px;color:var(--slate);line-height:1.4;}
-  .home-card p{margin:0;font-size:12.5px;color:var(--slate-2);line-height:1.6;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .home-card .hc-top{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;}
+  .home-card h4{margin:0;font-size:14px;color:var(--slate);line-height:1.42;font-weight:700;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .hc-thumb{flex:0 0 96px;width:96px;aspect-ratio:4/3;border-radius:8px;overflow:hidden;
+    background:var(--cream);position:relative;}
+  .hc-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .hc-thumb .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#E8E3D8,#F3EFE6);font-size:19px;opacity:.5;}
+  .hc-thumb.blur img,.hc-thumb.blur .ph{filter:blur(7px);transform:scale(1.12);}
+  .hc-thumb .lk-mini{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(31,41,55,.28);font-size:17px;}
+  .hc-body{flex:1;min-width:0;}
+  .hc-lockrow{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--orange-deep);
+    font-weight:600;margin-top:5px;}
+  @media(max-width:420px){ .hc-thumb{flex:0 0 78px;width:78px;} }
   .hc-src{font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
     padding:2px 7px;border-radius:20px;background:var(--cream);color:var(--orange-deep);}
   .hc-src.eks{background:#FEF3C7;color:#92400E;}
@@ -357,16 +369,35 @@
   .prof-meta span{display:block;font-size:11.5px;color:var(--gray);letter-spacing:.06em;margin-top:2px;}
 
   /* ===== v3: terkunci-buram, media, materi, animasi ===== */
-  .lk{position:relative;overflow:hidden;border-radius:12px;}
-  .lk-in{filter:blur(6px);opacity:.5;user-select:none;pointer-events:none;padding:2px 0 6px;}
-  .sk{background:linear-gradient(90deg,#e6e2d8,#f1eee7,#e6e2d8);border-radius:6px;height:11px;margin:7px 0;}
-  .sk.w9{width:92%;}.sk.w7{width:74%;}.sk.w5{width:56%;}.sk.big{height:104px;margin:9px 0;border-radius:9px;}
-  .lk-over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-    justify-content:center;gap:6px;text-align:center;padding:16px;
-    background:linear-gradient(180deg,rgba(253,251,247,.55),rgba(253,251,247,.93));}
-  .lk-over .ic{font-size:24px;}
-  .lk-over b{font-size:13.5px;color:var(--slate);}
-  .lk-over p{margin:0;font-size:12px;color:var(--slate-2);line-height:1.6;max-width:280px;}
+  .lk-img{width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--cream);
+    position:relative;display:block;}
+  .lk-img img{width:100%;height:100%;object-fit:cover;display:block;
+    filter:blur(15px) saturate(1.15);transform:scale(1.22);}
+  .lk-img .noimg{width:100%;height:100%;
+    background:linear-gradient(135deg,#DED8CB,#EFEAE0,#E4DED1);}
+  .lk-veil{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:7px;text-align:center;padding:16px;
+    background:linear-gradient(180deg,rgba(31,41,55,.30),rgba(31,41,55,.52));}
+  .lk-veil .ic{font-size:26px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));}
+  .lk-veil b{font-size:13px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5);}
+  .lk-veil span{font-size:11.5px;color:#e7ebf0;text-shadow:0 1px 5px rgba(0,0,0,.5);}
+  .lk-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    padding:10px 14px 12px;flex-wrap:wrap;}
+  /* pengumuman */
+  .ann{border-radius:13px;padding:14px 16px;margin-bottom:13px;display:flex;gap:12px;
+    align-items:flex-start;border:1px solid transparent;}
+  .ann .ann-ic{font-size:20px;flex:0 0 auto;line-height:1.3;}
+  .ann b{display:block;font-size:14px;margin-bottom:3px;line-height:1.4;}
+  .ann p{margin:0;font-size:12.5px;line-height:1.62;}
+  .ann .ann-time{display:block;font-size:11px;opacity:.8;margin-top:6px;}
+  .ann.live{background:linear-gradient(135deg,#FEE2E2,#FEF2F2);border-color:#FCA5A5;color:#7F1D1D;}
+  .ann.penting{background:linear-gradient(135deg,#FEF3C7,#FFFBEB);border-color:#FCD34D;color:#78350F;}
+  .ann.info{background:linear-gradient(135deg,#E0F2FE,#F0F9FF);border-color:#7DD3FC;color:#075985;}
+  .ann-btn{display:inline-block;margin-top:9px;font-size:12px;font-weight:700;cursor:pointer;
+    padding:6px 13px;border-radius:20px;background:rgba(255,255,255,.72);}
+  .ann-btn:hover{background:#fff;}
+  .ann.live .ann-ic{animation:pulseDot 1.5s ease-in-out infinite;}
+  @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.55;transform:scale(.9);}}
   .feed-time{font-size:11px;color:var(--gray);}
   .vid-wrap{position:relative;display:block;border-radius:10px;overflow:hidden;
     background:var(--slate);cursor:pointer;}
@@ -1057,20 +1088,19 @@ async function _kunci(code,salt,iter){
   _keyCache.set(tag,k);
   return k;
 }
-/* Ringkasan aman untuk pratinjau. TIDAK boleh memuat isi, link, atau gambar. */
+/* Ringkasan aman untuk pratinjau — SENGAJA TIDAK memuat judul.
+   Judul saja sudah cukup membocorkan isi berita/analisa, jadi yang boleh
+   keluar hanya: waktu, label kategori, dan gambar mini beresolusi sangat
+   rendah (dibuat oleh admin, ~32px) yang mustahil dibaca detailnya. */
 function fncTeaser(arr){
   return (arr||[]).map(function(x){
     return {
       id:   x.id||'',
-      title:x.title||'',
       date: x.date||'',
       pub:  x.pub||null,
       tag:  x.tag||'',
-      pair: x.pair||'',
-      bias: x.bias||'',
       jenis:x.jenis||'',
-      dur:  x.dur||'',
-      img:  !!(x.image||x.thumb||(x.images&&x.images.length)),
+      blur: x.blur||null,
       vid:  !!(x.url||x.video)
     };
   });
@@ -1528,6 +1558,7 @@ function fncSudahTayang(it){
      Admin membuat berkas itu lewat admin.html lalu meng-upload-nya ke repo.
      Sekali upload, SEMUA member langsung dapat isi terbaru.
      ==================================================== */
+  const ANN_URL='pengumuman.json';
   const NEWS_URL='berita.json', NEWS_EX_URL='berita-eksklusif.json', ANALISA_URL='analisa.json',
         REKAP_URL='rekap.json', REKAP_EX_URL='rekap-eksklusif.json',
         MATERI_URL='materi.json', MATERI_EX_URL='materi-eksklusif.json';
@@ -1593,19 +1624,23 @@ function fncSudahTayang(it){
      Isi sungguhan tidak pernah dikirim ke member tanpa kode. Yang diburamkan
      hanyalah bar kosong. Judul & tanggal berasal dari bagian teaser yang
      memang sengaja dibuat publik oleh admin. */
-  function kartuTerkunci(t,adaMedia){
-    const tag=t.pair||t.tag||t.bias||t.jenis||'';
-    return '<div class="feed-item"><div class="lk">'+
-      '<div class="lk-in"><div class="feed-pad">'+
-        (adaMedia||t.img||t.vid?'<div class="sk big"></div>':'')+
-        '<div class="sk w9"></div><div class="sk w9"></div><div class="sk w7"></div><div class="sk w5"></div>'+
-      '</div></div>'+
-      '<div class="lk-over"><div class="ic">&#128274;</div>'+
-        '<b>'+(t.title?esc(t.title):'Konten Eksklusif')+'</b>'+
-        '<p>'+(tag?esc(tag)+' &middot; ':'')+esc(stempelWaktu(t).replace(/&middot;/g,'·'))+'</p>'+
-        '<p style="margin-top:2px;">Isi terkunci. Butuh kode eksklusif dari admin.</p>'+
+  /* Kartu terkunci: HANYA gambar mini yang diburamkan.
+     Judul sengaja tidak ditampilkan — judul saja sudah membocorkan isi. */
+  function kartuTerkunci(t){
+    const tag=t.tag||t.jenis||'';
+    return '<div class="feed-item">'+
+      '<div class="lk-img">'+
+        (t.blur?'<img src="'+esc(t.blur)+'" alt="" aria-hidden="true">':'<div class="noimg"></div>')+
+        '<div class="lk-veil"><div class="ic">&#128274;</div>'+
+          '<b>Konten Eksklusif</b>'+
+          '<span>'+(t.vid?'Video &middot; ':'')+'Butuh kode dari admin</span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="lk-meta">'+
+        '<span style="font-size:11.5px;color:var(--gray);">'+
+          (tag?esc(tag)+' &middot; ':'')+stempelWaktu(t)+'</span>'+
         '<button class="btn sm" onclick="window.__bukaUpgrade()">Buka Akses</button>'+
-      '</div></div></div>';
+      '</div></div>';
   }
   function daftarTerkunci(teaser,kosongTxt){
     const t=(teaser||[]).filter(fncSudahTayang).sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a));
@@ -1815,6 +1850,9 @@ function fncSudahTayang(it){
       }
       if(cekAnalisa&&analisaCache&&analisaCache.next&&analisaCache.next<=now){
         analisaCache=null; await loadAnalisa(true);
+      }
+      if($('v-beranda')&&$('v-beranda').classList.contains('active')){
+        try{ await renderBeranda(); }catch(e){}
       }
       if($('v-rekap')&&$('v-rekap').classList.contains('active')){
         const c=(rkKind==='eks')?rekapExCache:rekapCache;
@@ -2300,6 +2338,19 @@ function fncSudahTayang(it){
   };
   $('profil-cancel').onclick=()=>{ $('profil-overlay').hidden=true; profilTujuan=null; go('beranda'); };
 
+  /* Segarkan view yang sedang terbuka. Dipakai setelah tier berubah —
+     kalau ada view yang terlewat di sini, isinya akan tetap buram walau
+     kode sudah benar (ini penyebab bug yang dilaporkan). */
+  async function segarkanAktif(){
+    const aktif = (id)=>$(id) && $(id).classList.contains('active');
+    if(aktif('v-news'))    await showNews(true);
+    if(aktif('v-analisa')) await checkAnalisaGate();
+    if(aktif('v-rekap'))   await showRekap(true);
+    if(aktif('v-materi'))  await showMateri(true);
+    if(aktif('v-beranda')) await renderBeranda();
+    if(!aktif('v-analisa')) await checkAnalisaGate();
+  }
+
   /* ---------- modal upgrade eksklusif ---------- */
   function bukaUpgrade(){
     $('upg-err').hidden=true; $('upg-code').value='';
@@ -2319,15 +2370,34 @@ function fncSudahTayang(it){
       kodeEks=v; await store.set(K_ANGATE,v);
       newsExCache=null; analisaCache=null; rekapExCache=null; materiExCache=null;
       $('upgrade-overlay').hidden=true;
-      await checkAnalisaGate();
-      if($('v-rekap').classList.contains('active'))await showRekap(true);
-      if($('v-materi').classList.contains('active'))await showMateri(true);
-      if($('v-beranda').classList.contains('active'))await renderBeranda();
+      await segarkanAktif();
     }else{
       $('upg-err').hidden=false; $('upg-code').value=''; $('upg-code').focus();
     }
   };
   $('upg-cancel').onclick=()=>{ $('upgrade-overlay').hidden=true; };
+
+  /* ---------- keluar / ganti kode akses ----------
+     Hanya menghapus kode & tingkatan akses. Profil, akun, dan jurnal TIDAK dihapus. */
+  async function keluarAkses(){
+    if(!confirm('Keluar dan masukkan kode akses lagi?\n\n'+
+      'Profil, akun, dan catatan jurnal kamu TIDAK akan terhapus.'))return;
+    kodeEks=null; setTier('private');
+    await store.set(K_GATE,false);
+    await store.set(K_TIER,'private');
+    await store.set(K_ANGATE,'');
+    newsCache=null; newsExCache=null; analisaCache=null;
+    rekapCache=null; rekapExCache=null; materiCache=null; materiExCache=null;
+    ['news-list','analisa-list','rk-list','mt-list','beranda-body'].forEach(id=>{
+      if($(id))$(id).innerHTML='';
+    });
+    ['news-stamp','an-stamp','rk-stamp','mt-stamp'].forEach(id=>{ if($(id))$(id).textContent=''; });
+    $('shell').classList.add('locked');
+    $('gate-overlay').hidden=false;
+    $('gate-err').hidden=true; $('gate-code').value='';
+    setTimeout(()=>$('gate-code').focus(),140);
+  }
+  window.__keluarAkses=keluarAkses;
   $('upg-code').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();$('upg-save').click();} });
 
   /* welcome */
@@ -2351,15 +2421,60 @@ function fncSudahTayang(it){
     const t=String(s||'').replace(/[*_~`]/g,'').replace(/\s+/g,' ').trim();
     return t.length>n ? t.slice(0,n)+'...' : t;
   }
-  function kartuUpdate(it,sumber,view){
+  const IKON={Berita:'&#128240;',Eksklusif:'&#128274;',Analisa:'&#128200;',
+              Rekap:'&#127909;',Materi:'&#128218;'};
+  function kartuUpdate(it,sumber,view,terkunci){
     const cls = (sumber==='Analisa'||sumber==='Materi') ? 'an' : (sumber==='Eksklusif' ? 'eks' : '');
-    return '<div class="home-card" onclick="window.__go(\''+view+'\')">'+
-      '<div class="hc-top"><span class="hc-src '+cls+'">'+esc(sumber)+'</span>'+
-      (it.pair?'<span class="hc-src">'+esc(it.pair)+'</span>':'')+
-      '<span class="hc-date">'+stempelWaktu(it)+'</span></div>'+
-      (it.title?'<h4>'+esc(it.title)+'</h4>':'')+
-      (it.body?'<p>'+esc(potongTeks(it.body,120))+'</p>':'')+'</div>';
+    const gbr = it.thumb||it.image||((it.images&&it.images[0])||'');
+    const isiThumb = gbr
+      ? '<img src="'+esc(gbr)+'" alt="" loading="lazy">'
+      : '<div class="ph">'+(IKON[sumber]||'&#128196;')+'</div>';
+    const gbrKunci = terkunci ? (it.blur||'') : '';
+    const isiKunci = gbrKunci
+      ? '<img src="'+esc(gbrKunci)+'" alt="" aria-hidden="true">'
+      : '<div class="ph">&#128274;</div>';
+    const thumb = terkunci
+      ? '<div class="hc-thumb blur">'+isiKunci+'<div class="lk-mini">&#128274;</div></div>'
+      : '<div class="hc-thumb">'+isiThumb+'</div>';
+    const aksi = terkunci ? 'window.__bukaUpgrade()' : "window.__go('"+view+"')";
+    return '<div class="home-card" onclick="'+aksi+'">'+thumb+
+      '<div class="hc-body">'+
+        (terkunci ? '<h4 style="color:var(--gray);">Konten Eksklusif</h4>'
+                  : (it.title?'<h4>'+esc(it.title)+'</h4>':'<h4>&mdash;</h4>'))+
+        '<div class="hc-top"><span class="hc-src '+cls+'">'+esc(sumber)+'</span>'+
+        (!terkunci&&it.pair?'<span class="hc-src">'+esc(it.pair)+'</span>':'')+
+        '<span class="hc-date">'+stempelWaktu(it)+'</span></div>'+
+        (terkunci?'<div class="hc-lockrow">&#128274; Ketuk untuk buka akses</div>':'')+
+      '</div></div>';
   }
+  /* ---------- PENGUMUMAN ----------
+     Diambil dari pengumuman.json. Kalau berkasnya tidak ada, kosong, atau
+     semua item sudah lewat masa tayang -> bagian ini tidak muncul sama sekali. */
+  function kartuAnn(a){
+    const j=String(a.jenis||'info').toLowerCase();
+    const ic = j==='live' ? '&#128308;' : (j==='penting' ? '&#9888;&#65039;' : '&#128226;');
+    return '<div class="ann '+esc(j)+'">'+
+      '<div class="ann-ic">'+ic+'</div><div style="flex:1;min-width:0;">'+
+      (a.title?'<b>'+esc(a.title)+'</b>':'')+
+      (a.body?'<p>'+waFormat(a.body)+'</p>':'')+
+      (a.url?'<div class="ann-btn" onclick="event.stopPropagation();window.__buka(\''+
+        esc(a.url).replace(/'/g,"\\'")+'\')">'+esc(a.cta||'Buka Link')+'</div>':'')+
+      (a.pub?'<span class="ann-time">'+stempelWaktu(a)+'</span>':'')+
+      '</div></div>';
+  }
+  async function ambilPengumuman(){
+    try{
+      const d=await fetchJSON(ANN_URL);
+      const kini=Date.now();
+      return (d.items||[])
+        .filter(fncSudahTayang)
+        .filter(a=>{ if(!a.exp)return true;
+          const t=new Date(a.exp).getTime(); return isNaN(t)?true:t>kini; })
+        .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a))
+        .slice(0,3);
+    }catch(e){ return []; }
+  }
+
   async function renderBeranda(){
     const sapa=profil?('Halo, '+esc(profil.nama)):'Selamat datang';
     $('hero-title').textContent=profil?('Halo, '+profil.nama):'Selamat datang';
@@ -2385,18 +2500,36 @@ function fncSudahTayang(it){
         const semua=await bukaIsi(d,await ambilKode());
         urutBaru(semua).slice(0,3).forEach(x=>kumpul.push([x,'Analisa','analisa']));
       }catch(e){}
+      try{ const c=await loadRekapEksBeranda(); c.slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap'])); }catch(e){}
+      try{ const c=await loadMateriEksBeranda(); c.slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi'])); }catch(e){}
+    }else{
+      /* Member Private tetap melihat kartunya — tapi hanya dari bagian teaser.
+         Isi, link, dan gambar asli tidak pernah diambil. */
+      const pratinjau=[[NEWS_EX_URL,'Eksklusif','news'],[ANALISA_URL,'Analisa','analisa'],
+                       [REKAP_EX_URL,'Rekap','rekap'],[MATERI_EX_URL,'Materi','materi']];
+      for(const [url,label,view] of pratinjau){
+        try{
+          const d=await fetchJSON(url);
+          (d.teaser||[]).filter(fncSudahTayang)
+            .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a))
+            .slice(0,2).forEach(x=>kumpul.push([x,label,view,true]));
+        }catch(e){}
+      }
     }
     kumpul.sort((a,b)=>fncWaktuTerbit(b[0])-fncWaktuTerbit(a[0]));
 
     let out='';
+    const ann=await ambilPengumuman();
+    if(ann.length){ out+=ann.map(kartuAnn).join(''); }
     if(kumpul.length){
       out+='<div class="home-sec"><div class="home-head"><h3>Update Terbaru</h3>'+
         '<a onclick="window.__go(\'news\')">Lihat semua</a></div>'+
-        kumpul.slice(0,5).map(([it,s,v])=>kartuUpdate(it,s,v)).join('')+'</div>';
+        kumpul.slice(0,7).map(a=>kartuUpdate(a[0],a[1],a[2],a[3])).join('')+'</div>';
     }
     if(tier!=='eks'){
-      out+='<div class="home-sec"><div class="upsell"><h4>&#128274; Analisa &amp; Berita Eksklusif</h4>'+
-        '<p>Pembahasan chart dan update mendalam dari tim FNC. Punya kode eksklusif dari admin?</p>'+
+      out+='<div class="home-sec"><div class="upsell"><h4>&#128274; Buka Akses Eksklusif</h4>'+
+        '<p>Analisa, berita mendalam, rekap live, dan materi lanjutan. '+
+        'Sudah dapat kode eksklusif dari admin?</p>'+
         '<button class="btn" onclick="window.__bukaUpgrade()">Masukkan Kode</button></div></div>';
     }
     if(profil && trades.length){
@@ -2418,6 +2551,14 @@ function fncSudahTayang(it){
         '</div></div>';
     }
     body.innerHTML = out || '<div class="feed-empty">Belum ada update. Cek lagi nanti ya.</div>';
+  }
+  async function loadRekapEksBeranda(){
+    const d=await fetchJSON(REKAP_EX_URL);
+    return urutBaru(await bukaIsi(d,await ambilKode()));
+  }
+  async function loadMateriEksBeranda(){
+    const d=await fetchJSON(MATERI_EX_URL);
+    return urutBaru(await bukaIsi(d,await ambilKode()));
   }
   window.__go=v=>go(v);
 
@@ -2442,10 +2583,21 @@ function fncSudahTayang(it){
           '<div class="prof-meta"><b>'+esc(profil.nama)+'</b><span>ID '+esc(profil.id)+'</span></div></div>'+
           '<p style="font-size:11.5px;color:var(--gray);line-height:1.6;margin:11px 0 0;">'+
           'Profil &amp; jurnal tersimpan di perangkat ini, bukan di server. '+
-          'Rutin klik <b>Backup</b> di tab Jurnal supaya aman.</p>'
+          'Rutin klik <b>Backup</b> di tab Jurnal supaya aman.</p>'+
+          '<div style="border-top:1px solid var(--line);margin-top:14px;padding-top:13px;">'+
+          '<div style="font-size:11.5px;color:var(--gray);margin-bottom:9px;">Akses saat ini: <b>'+
+          (tier==='eks'?'Eksklusif':'Private')+'</b></div>'+
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+          (tier==='eks'?'':'<button class="btn sm" onclick="window.__bukaUpgrade()">Punya Kode Eksklusif?</button>')+
+          '<button class="btn ghost sm" onclick="window.__keluarAkses()">Keluar / Ganti Kode</button>'+
+          '</div></div>'
         : '<p style="font-size:13px;color:var(--slate-2);line-height:1.65;margin:0 0 12px;">'+
           'Belum ada profil. Buat dulu supaya bisa mulai mencatat jurnal.</p>'+
-          '<button class="btn" onclick="window.__bukaProfil()">Buat Profil</button>';
+          '<button class="btn" onclick="window.__bukaProfil()">Buat Profil</button>'+
+          '<div style="border-top:1px solid var(--line);margin-top:14px;padding-top:13px;'+
+          'display:flex;gap:8px;flex-wrap:wrap;">'+
+          (tier==='eks'?'':'<button class="btn sm" onclick="window.__bukaUpgrade()">Punya Kode Eksklusif?</button>')+
+          '<button class="btn ghost sm" onclick="window.__keluarAkses()">Keluar / Ganti Kode</button></div>';
     }
   }
   /* ---------- TIER ---------- */
@@ -2458,6 +2610,7 @@ function fncSudahTayang(it){
       el.className='tier-chip '+(t==='eks'?'eks':'priv');
     });
     const dot=$('an-lockdot'); if(dot)dot.hidden=(t==='eks');
+    try{ terapkanProfil(); }catch(e){}
   }
   /* Uji kode ke berkas terenkripsi. true HANYA kalau dekripsi v2 berhasil. */
   async function kodeEksValid(kode){
@@ -2502,6 +2655,7 @@ function fncSudahTayang(it){
       setTier(t);
       await store.set(K_TIER,t);
       if(t==='eks'){ kodeEks=val; await store.set(K_ANGATE,val); }
+      else { kodeEks=null; await store.set(K_ANGATE,''); }   /* buang sisa kode lama */
       $('gate-err').hidden=true; $('gate-code').value='';
       await unlock();
     }else{
