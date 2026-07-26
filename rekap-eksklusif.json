@@ -1,0 +1,25 @@
+{
+ "v": 3,
+ "alg": "AES-256-GCM",
+ "kdf": "PBKDF2-SHA256",
+ "iter": 200000,
+ "salt": "lyH2tqzNgsW3dWaG7u4N4g==",
+ "iv": "9Ij3Uhz9Qyjcq6jB",
+ "ct": "HG9x3IY25PfTeS9DHJMcsLR85Dqfm4P7sdtwlEDilonBOngG/Me4UGNaltmfP7VK2LTBhOrLutfypcYP8LuT0iyvsCUPMAVZigzdlSZBmtdpxNe1Y1awVKxjjUz2QAp91HTv26ADYg3/F2WFiMAyoRWqebN2Mu+w50VLFGXJvBsMnDRmODLmX+px5eLl15Mnwpvw83apU/8UMdHyPZR8cRWFepL2eJaG3R8LdJp8wWZS3gWfVKj36WFMMtbuocPeVUaIcB0Kfkj8xd/WT0/rUeGia7kuTGX+Ebtm9z3C+6z0lZM77gX9sMZ+m94fQw==",
+ "teaser": [
+  {
+   "id": "re1",
+   "title": "Rekap Eksklusif — Sesi Tanya Jawab Lanjutan",
+   "date": "2026-07-26",
+   "pub": null,
+   "tag": "",
+   "pair": "",
+   "bias": "",
+   "jenis": "",
+   "dur": "1:22:04",
+   "img": false,
+   "vid": true
+  }
+ ],
+ "updated": "2026-07-26T13:44:53.034Z"
+}

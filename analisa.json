@@ -1,10 +1,25 @@
 {
- "v": 2,
+ "v": 3,
  "alg": "AES-256-GCM",
  "kdf": "PBKDF2-SHA256",
  "iter": 200000,
- "salt": "nxtblFt9NnJbDm6utkZV2w==",
- "iv": "9ncjVZn1z1LTOckc",
- "ct": "XxbfR33LBXkWBsKv9HrBGerIpUzl8lpaXN3W3LuX7tlslZjwhLTfnajDLT7j43JZYeKt2ps82+caOvgrSPrQIMrP3qGsOIB2Vhugx8LKpe0BszM08kQnf5rYlANI5UcJduMU5GbK8vA5R6XEId558twgwBo9eDUP0ebdaaZLXhsnd3FEGg1Nk3PCD/fXr3gHE0KihK4ch4uDa95/FVH9TqFK0rc6ihLTrVxrly4k0EUqtv8WWBI4gqpYfj2ka6+jR9D6U2Kb7cXhgYmdCbhmxR/1ObTgdabFaoB1EY42LjOMgT2+sNtWtT1QObInL/O3PPEDlkaod3V3gQ==",
- "updated": "2026-07-25T18:08:00.053Z"
+ "salt": "19BSTAsphyqEZJsEMdHyOw==",
+ "iv": "iaoP2+IVhwCJ5O48",
+ "ct": "WaW/W5YPvYB6vVnQDr5uxIBFLVqnJbpib7rfL6kBo2UmaznoY6SMp9AY+JCmARb6f059kNAv1QopTMrJUDAWWtljOqpO75QdJyl36Dc05f5/0NUzN8yDrUg4/ytmofwU7l7Qh1eRMybIbj0Rdew5LA+D3rQ1Cf6UW+QUsV1dC6ILeyrpZLE5Q/RHnreGnElFy7C5SO0j+UH8bYYtYZdzrrG9Yb57pxVT5UGU0JOZr5G5j4loBVenOvXKsgziZlXjGVlShIswSOT1W6wEqkhbfEpgQ/AQP/yuEXEIC+ysHijIp9U8EOed7hSq6xX9dh0j43wbvHUCTtPWPA==",
+ "teaser": [
+  {
+   "id": "a1",
+   "title": "Contoh Analisa — XAUUSD",
+   "date": "2026-07-24",
+   "pub": null,
+   "tag": "",
+   "pair": "XAUUSD",
+   "bias": "Wait & See",
+   "jenis": "",
+   "dur": "",
+   "img": false,
+   "vid": false
+  }
+ ],
+ "updated": "2026-07-26T13:44:53.336Z"
 }

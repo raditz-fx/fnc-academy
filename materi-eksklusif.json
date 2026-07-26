@@ -1,0 +1,25 @@
+{
+ "v": 3,
+ "alg": "AES-256-GCM",
+ "kdf": "PBKDF2-SHA256",
+ "iter": 200000,
+ "salt": "1qrXcMc/Sio7VmDVY+d1Gg==",
+ "iv": "2oa6OFWdpwsqFn+s",
+ "ct": "Q/zsKdmfes+vNfXAbYqvgIKyEDsvwMvkm9pNw+pr88SlQ9JMv+7GqncBLYPDr7b5zAf9RXytDTh3C0PLAHx1+qs2oWgCCTTqIy92y3bK+9MKxyTgNjs0L0M2RZJVoHT2lYiBT00ZqFwypkQRRCKhWQO1uh2AcBREEU2pdCn6ffpNvnyb2KACkl1+7AOL2KxnzIlhJmBTU5SN1Fhux4jRTpiV917j11Vt6ZTzoSmwgMycRKLYpyfad9EmMOi839+lXluR1IT6xve5R8Ff5uBCHGof9GPuaC9XdVEZKVW5vf03+Gn2QIS80M2cXA==",
+ "teaser": [
+  {
+   "id": "me1",
+   "title": "Modul Lanjutan — Manajemen Risiko Tingkat 2",
+   "date": "2026-07-26",
+   "pub": null,
+   "tag": "",
+   "pair": "",
+   "bias": "",
+   "jenis": "Video",
+   "dur": "",
+   "img": false,
+   "vid": true
+  }
+ ],
+ "updated": "2026-07-26T13:44:53.134Z"
+}
