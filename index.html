@@ -387,7 +387,8 @@
   .ann-hl{position:relative;border-radius:15px;overflow:hidden;margin-bottom:14px;
     background:var(--slate);box-shadow:0 6px 22px rgba(31,41,55,.16);
     animation:popSoft .5s cubic-bezier(.22,.8,.3,1) both;}
-  .ann-hl-img{width:100%;aspect-ratio:16/9;display:block;object-fit:cover;}
+  .ann-hl-img{width:100%;display:block;background:var(--cream);
+    height:auto;max-height:520px;object-fit:contain;min-height:150px;}
   .ann-hl-body{position:absolute;left:0;right:0;bottom:0;padding:44px 18px 16px;
     background:linear-gradient(180deg,rgba(17,24,39,0),rgba(17,24,39,.78) 42%,rgba(17,24,39,.95));}
   .ann-hl-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:20px;
@@ -406,7 +407,6 @@
   .ann-hl .dot-live{width:8px;height:8px;border-radius:50%;background:#fff;
     animation:pulseDot 1.3s ease-in-out infinite;}
   @media(max-width:520px){
-    .ann-hl-img{aspect-ratio:4/3;}
     .ann-hl h4{font-size:15.5px;}
     .ann-hl-body{padding:38px 14px 14px;}
   }
@@ -428,7 +428,10 @@
   .feed-time{font-size:11px;color:var(--gray);}
   .vid-wrap{position:relative;display:block;border-radius:10px;overflow:hidden;
     background:var(--slate);cursor:pointer;}
-  .vid-wrap img{width:100%;display:block;opacity:.88;transition:opacity .18s,transform .3s;}
+  /* Ukuran mengikuti gambar aslinya — sama seperti .feed-cover, tidak dipotong. */
+  .vid-wrap img{width:100%;display:block;background:var(--cream);
+    height:auto;max-height:520px;object-fit:contain;
+    opacity:.88;transition:opacity .18s,transform .3s;}
   .vid-wrap:hover img{opacity:1;transform:scale(1.02);}
   .vid-ph{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(135deg,#1F2937,#374151);color:#6b7686;font-size:12px;letter-spacing:.1em;}
@@ -1970,7 +1973,7 @@ function fncSudahTayang(it){
           '<span class="feed-date">'+stempelWaktu(it)+'</span></div>'+
         (it.title?'<h4>'+esc(it.title)+'</h4>':'')+
         (isVid&&it.url?blokVideo(it):
-          (it.thumb?'<img class="feed-cover" style="border-radius:10px;" src="'+esc(it.thumb)+'" alt="" loading="lazy">':''))+
+          (it.thumb?'<img class="feed-cover" src="'+esc(it.thumb)+'" alt="" loading="lazy">':''))+
         (it.body?'<div class="feed-body" style="margin-top:10px;">'+waFormat(it.body)+'</div>':'')+
         (it.url?'<div class="ext-btn" onclick="window.__buka(\''+esc(it.url).replace(/'/g,"\\'")+'\')">'+
           '&#128229; Buka materi</div>':'')+
