@@ -266,6 +266,14 @@
   .feed-item h4{margin:0 0 8px;font-size:16.5px;line-height:1.35;color:var(--slate);}
   .feed-body{font-size:13.5px;line-height:1.75;color:#374151;word-break:break-word;}
   .feed-body b{color:var(--slate);} .feed-body a{color:var(--orange-deep);}
+  .feed-body .wa-ul,.feed-body .wa-ol{margin:8px 0;padding-left:22px;}
+  .feed-body .wa-ul li,.feed-body .wa-ol li{margin:4px 0;line-height:1.7;}
+  .feed-body .wa-ul{list-style:disc;}
+  .feed-body .wa-ol{list-style:decimal;}
+  .feed-body .wa-q{margin:9px 0;padding:8px 13px;border-left:3px solid var(--orange);
+    background:var(--cream);border-radius:0 8px 8px 0;color:var(--slate-2);font-style:italic;}
+  .ann p .wa-ul,.ann p .wa-ol,.ann-hl p .wa-ul,.ann-hl p .wa-ol{margin:6px 0;padding-left:20px;}
+  .ann p .wa-ul li,.ann-hl p .wa-ul li,.ann p .wa-ol li,.ann-hl p .wa-ol li{margin:3px 0;}
   .feed-body code{background:var(--cream);padding:1.5px 5px;border-radius:4px;
     font-family:var(--mono);font-size:12.5px;}
   .feed-gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:11px;}
@@ -1641,14 +1649,58 @@ function fncSudahTayang(it){
   let newsCache=null, newsExCache=null, analisaCache=null, newsKind='umum';
 
   /* Format ala WhatsApp: *tebal*  _miring_  ~coret~  ```mono``` */
+  /* ---------- format teks ala WhatsApp ----------
+     Perbaikan: penanda (*_~) kini boleh didahului tanda baca apa pun,
+     bukan hanya spasi. Jadi "2._miring_" dan "-_miring_" ikut berlaku.
+     Garis bawah di tengah kata (nama_berkas) tetap TIDAK diubah. */
   function waFormat(s){
     let t=esc(s||'');
-    t=t.replace(/```([\s\S]+?)```/g,(m,c)=>'<code>'+c+'</code>');
-    t=t.replace(/(^|[\s(>])\*([^*\n]+)\*(?=[\s).,!?:;<]|$)/g,'$1<b>$2</b>');
-    t=t.replace(/(^|[\s(>])_([^_\n]+)_(?=[\s).,!?:;<]|$)/g,'$1<i>$2</i>');
-    t=t.replace(/(^|[\s(>])~([^~\n]+)~(?=[\s).,!?:;<]|$)/g,'$1<s>$2</s>');
+
+    /* blok kode dulu, supaya isinya tidak ikut diproses */
+    const kode=[];
+    t=t.replace(/```([\s\S]+?)```/g,(m,c)=>{ kode.push(c); return '\u0000K'+(kode.length-1)+'\u0000'; });
+
+    const B='[^A-Za-z0-9]';   /* pembatas: apa pun selain huruf & angka */
+    t=t.replace(new RegExp('(^|'+B+')\\*([^*\\n]+)\\*(?='+B+'|$)','g'),'$1<b>$2</b>');
+    t=t.replace(new RegExp('(^|'+B+')_([^_\\n]+)_(?='+B+'|$)','g'),'$1<i>$2</i>');
+    t=t.replace(new RegExp('(^|'+B+')~([^~\\n]+)~(?='+B+'|$)','g'),'$1<s>$2</s>');
+
     t=t.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-    return t.replace(/\n/g,'<br>');
+
+    /* daftar & kutipan, dikenali per baris */
+    const baris=t.split('\n');
+    let keluar='', mode=null;   /* mode: 'ul' | 'ol' | 'q' | null */
+    function tutup(){
+      if(mode==='ul')keluar+='</ul>';
+      else if(mode==='ol')keluar+='</ol>';
+      else if(mode==='q')keluar+='</blockquote>';
+      mode=null;
+    }
+    for(let i=0;i<baris.length;i++){
+      const b=baris[i];
+      const mUl=b.match(/^\s*[-•]\s+(.*)$/);
+      const mOl=b.match(/^\s*\d+[.)]\s+(.*)$/);
+      const mQ =b.match(/^\s*&gt;\s?(.*)$/);
+      if(mUl){
+        if(mode!=='ul'){ tutup(); keluar+='<ul class="wa-ul">'; mode='ul'; }
+        keluar+='<li>'+mUl[1]+'</li>';
+      }else if(mOl){
+        if(mode!=='ol'){ tutup(); keluar+='<ol class="wa-ol">'; mode='ol'; }
+        keluar+='<li>'+mOl[1]+'</li>';
+      }else if(mQ){
+        if(mode!=='q'){ tutup(); keluar+='<blockquote class="wa-q">'; mode='q'; }
+        keluar+=mQ[1]+'<br>';
+      }else{
+        tutup();
+        keluar+=b+(i<baris.length-1?'<br>':'');
+      }
+    }
+    tutup();
+    t=keluar.replace(/<br>(?=<\/(ul|ol|blockquote)>)/g,'');
+
+    /* kembalikan blok kode */
+    t=t.replace(/\u0000K(\d+)\u0000/g,(m,i)=>'<code>'+kode[+i]+'</code>');
+    return t;
   }
   function tanggalID(iso){
     if(!iso)return '';
