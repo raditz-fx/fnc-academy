@@ -325,11 +325,12 @@
   .home-card .hc-top{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap;}
   .home-card h4{margin:0;font-size:14px;color:var(--slate);line-height:1.42;font-weight:700;
     display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-  /* Gambar kiriman biasanya poster utuh — pakai contain supaya tidak ada
-     bagian yang terpotong, dengan rasio 16:9 yang paling umum. */
+  /* Thumbnail kecil: pakai cover supaya bingkainya terisi penuh tanpa celah.
+     Yang terpotong hanya tepi atas & bawah; gambar utuh tetap bisa dilihat
+     saat kirimannya dibuka. */
   .hc-thumb{flex:0 0 124px;width:124px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;
     background:#F1EEE7;position:relative;}
-  .hc-thumb img{width:100%;height:100%;object-fit:contain;display:block;}
+  .hc-thumb img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
   .hc-thumb .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(135deg,#E8E3D8,#F3EFE6);font-size:19px;opacity:.5;}
   .hc-thumb.blur img,.hc-thumb.blur .ph{filter:blur(7px);transform:scale(1.12);}
