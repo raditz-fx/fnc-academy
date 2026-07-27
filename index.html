@@ -386,6 +386,39 @@
   .lk-veil span{font-size:11.5px;color:#e7ebf0;text-shadow:0 1px 5px rgba(0,0,0,.5);}
   .lk-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;
     padding:10px 14px 12px;flex-wrap:wrap;}
+  /* ===== AI Agent (WhatsApp) ===== */
+  .ai-card{background:linear-gradient(135deg,#0B5F4A,#12886A);border-radius:14px;
+    padding:16px 17px;margin-bottom:16px;display:flex;gap:13px;align-items:flex-start;
+    cursor:pointer;transition:transform .14s,box-shadow .18s;}
+  .ai-card:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(11,95,74,.28);}
+  .ai-ic{flex:0 0 40px;width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.16);
+    display:flex;align-items:center;justify-content:center;font-size:20px;}
+  .ai-card b{display:block;font-size:14.5px;color:#fff;margin-bottom:3px;}
+  .ai-card p{margin:0;font-size:12.5px;color:#c8e6da;line-height:1.6;}
+  .ai-card .go{margin-top:10px;display:inline-block;font-size:12px;font-weight:700;
+    padding:7px 14px;border-radius:20px;background:#fff;color:#0B5F4A;}
+  .ai-fab{position:fixed;right:16px;bottom:16px;z-index:60;
+    display:flex;align-items:center;gap:9px;padding:11px 16px 11px 13px;border-radius:30px;
+    background:linear-gradient(135deg,#0B5F4A,#12886A);color:#fff;border:none;cursor:pointer;
+    box-shadow:0 5px 18px rgba(0,0,0,.24);font-size:13px;font-weight:700;
+    font-family:inherit;transition:transform .14s,box-shadow .18s;}
+  .ai-fab:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+  .ai-fab .wa{font-size:17px;line-height:1;}
+  .ai-fab .lbl{white-space:nowrap;}
+  @media(max-width:520px){
+    .ai-fab{right:12px;bottom:12px;padding:11px 14px;}
+    .ai-fab .lbl{display:none;}
+  }
+  .shell.locked ~ .ai-fab{display:none;}
+
+  /* sorotan singkat saat kiriman dibuka dari Beranda */
+  @keyframes sorot{
+    0%{box-shadow:0 0 0 0 rgba(242,112,29,.55);}
+    35%{box-shadow:0 0 0 5px rgba(242,112,29,.28);}
+    100%{box-shadow:0 0 0 0 rgba(242,112,29,0);}
+  }
+  .feed-item.sorot{animation:sorot 1.7s ease-out 1;border-color:var(--orange)!important;}
+
   /* pengumuman versi highlight (dengan gambar) */
   .ann-hl{position:relative;border-radius:15px;overflow:hidden;margin-bottom:14px;
     background:var(--slate);box-shadow:0 6px 22px rgba(31,41,55,.16);
@@ -511,6 +544,10 @@
     </div>
   </div>
 </div>
+
+<button class="ai-fab" id="ai-fab" type="button" hidden>
+  <span class="wa">&#128172;</span><span class="lbl">Tanya AI</span>
+</button>
 
 <div class="overlay" id="profil-overlay" hidden>
   <div class="gate-card">
@@ -1736,7 +1773,7 @@ function fncSudahTayang(it){
       const wm = (kind==='an'||it.__eks) && profil
         ? '<div class="wm-tag">'+esc(profil.id)+'</div>' : '';
       const vid = it.url ? blokVideo(it) : '';
-      return '<div class="feed-item">'+wm+
+      return '<div class="feed-item" data-kid="'+esc(it.id||'')+'">'+wm+
         (vid?'<div class="feed-pad" style="padding-bottom:0;">'+vid+'</div>':'')+
         (!vid&&cover?'<img class="feed-cover" src="'+esc(cover)+'" alt="" loading="lazy">':'')+
         '<div class="feed-pad"><div class="feed-top">'+
@@ -1910,7 +1947,7 @@ function fncSudahTayang(it){
   /* ---------- REKAP LIVE ---------- */
   function kartuRekap(it){
     const wm = it.__eks && profil ? '<div class="wm-tag">'+esc(profil.id)+'</div>' : '';
-    return '<div class="feed-item">'+wm+
+    return '<div class="feed-item" data-kid="'+esc(it.id||'')+'">'+wm+
       '<div class="feed-pad">'+
         '<div class="feed-top">'+
           (it.__eks?'<span class="feed-tag">Eksklusif</span>':'')+
@@ -1971,7 +2008,7 @@ function fncSudahTayang(it){
     const wm = it.__eks && profil ? '<div class="wm-tag">'+esc(profil.id)+'</div>' : '';
     const j=it.jenis||'Video';
     const isVid=kelasJenis(j)==='video';
-    return '<div class="feed-item">'+wm+
+    return '<div class="feed-item" data-kid="'+esc(it.id||'')+'">'+wm+
       '<div class="feed-pad">'+
         '<div class="feed-top">'+
           '<span class="mat-kind '+kelasJenis(j)+'">'+esc(j)+'</span>'+
@@ -2418,6 +2455,7 @@ function fncSudahTayang(it){
     }
   };
   $('upg-cancel').onclick=()=>{ $('upgrade-overlay').hidden=true; };
+  if($('ai-fab'))$('ai-fab').onclick=bukaAI;
 
   /* ---------- keluar / ganti kode akses ----------
      Hanya menghapus kode & tingkatan akses. Profil, akun, dan jurnal TIDAK dihapus. */
@@ -2435,6 +2473,7 @@ function fncSudahTayang(it){
     });
     ['news-stamp','an-stamp','rk-stamp','mt-stamp'].forEach(id=>{ if($(id))$(id).textContent=''; });
     $('shell').classList.add('locked');
+    if($('ai-fab'))$('ai-fab').hidden=true;
     $('gate-overlay').hidden=false;
     $('gate-err').hidden=true; $('gate-code').value='';
     setTimeout(()=>$('gate-code').focus(),140);
@@ -2464,9 +2503,13 @@ function fncSudahTayang(it){
     return t.length>n ? t.slice(0,n)+'...' : t;
   }
   const IKON={Berita:'&#128240;',Eksklusif:'&#128274;',Analisa:'&#128200;',
-              Rekap:'&#127909;',Materi:'&#128218;'};
+              Rekap:'&#127909;',Materi:'&#128218;',
+              RekapEks:'&#127909;',MateriEks:'&#128218;'};
+  const LABEL={RekapEks:'Rekap',MateriEks:'Materi'};
   function kartuUpdate(it,sumber,view,terkunci){
-    const cls = (sumber==='Analisa'||sumber==='Materi') ? 'an' : (sumber==='Eksklusif' ? 'eks' : '');
+    const tampil = LABEL[sumber]||sumber;
+    const cls = (sumber==='Analisa'||sumber==='Materi'||sumber==='MateriEks') ? 'an'
+              : ((sumber==='Eksklusif'||sumber==='RekapEks') ? 'eks' : '');
     const gbr = it.thumb||it.image||((it.images&&it.images[0])||'');
     const isiThumb = gbr
       ? '<img src="'+esc(gbr)+'" alt="" loading="lazy">'
@@ -2478,12 +2521,14 @@ function fncSudahTayang(it){
     const thumb = terkunci
       ? '<div class="hc-thumb blur">'+isiKunci+'<div class="lk-mini">&#128274;</div></div>'
       : '<div class="hc-thumb">'+isiThumb+'</div>';
-    const aksi = terkunci ? 'window.__bukaUpgrade()' : "window.__go('"+view+"')";
+    const aksi = terkunci
+      ? 'window.__bukaUpgrade()'
+      : "window.__bukaKiriman('"+view+"','"+String(it.id||'').replace(/'/g,'')+"','"+sumber+"')";
     return '<div class="home-card" onclick="'+aksi+'">'+thumb+
       '<div class="hc-body">'+
         (terkunci ? '<h4 style="color:var(--gray);">Konten Eksklusif</h4>'
                   : (it.title?'<h4>'+esc(it.title)+'</h4>':'<h4>&mdash;</h4>'))+
-        '<div class="hc-top"><span class="hc-src '+cls+'">'+esc(sumber)+'</span>'+
+        '<div class="hc-top"><span class="hc-src '+cls+'">'+esc(tampil)+'</span>'+
         (!terkunci&&it.pair?'<span class="hc-src">'+esc(it.pair)+'</span>':'')+
         '<span class="hc-date">'+stempelWaktu(it)+'</span></div>'+
         (terkunci?'<div class="hc-lockrow">&#128274; Ketuk untuk buka akses</div>':'')+
@@ -2564,9 +2609,9 @@ function fncSudahTayang(it){
         urutBaru(semua).slice(0,3).forEach(x=>kumpul.push([x,'Analisa','analisa']));
       }catch(e){}
       try{ const d=await fetchJSON(REKAP_EX_URL); const s=await bukaIsi(d,await ambilKode()); catat(s);
-        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap'])); }catch(e){}
+        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'RekapEks','rekap'])); }catch(e){}
       try{ const d=await fetchJSON(MATERI_EX_URL); const s=await bukaIsi(d,await ambilKode()); catat(s);
-        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi'])); }catch(e){}
+        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'MateriEks','materi'])); }catch(e){}
     }else{
       /* Member Private tetap melihat kartunya — tapi hanya dari bagian teaser.
          Isi, link, dan gambar asli tidak pernah diambil. */
@@ -2587,6 +2632,14 @@ function fncSudahTayang(it){
     let out='';
     const ann=await ambilPengumuman();
     if(ann.length){ out+=ann.map(kartuAnn).join(''); }
+    out+='<div class="ai-card" onclick="window.__bukaAI()">'+
+      '<div class="ai-ic">&#129302;</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<b>Tanya AI Agent FNC</b>'+
+        '<p>Punya pertanyaan seputar trading? Chat AI Agent kami di WhatsApp, '+
+        'balasannya langsung.</p>'+
+        '<span class="go">&#128172; Mulai Chat</span>'+
+      '</div></div>';
     if(kumpul.length){
       out+='<div class="home-sec"><div class="home-head"><h3>Update Terbaru</h3>'+
         '<a onclick="window.__go(\'news\')">Lihat semua</a></div>'+
@@ -2634,6 +2687,62 @@ function fncSudahTayang(it){
     const d=await fetchJSON(MATERI_EX_URL);
     return urutBaru(await bukaIsi(d,await ambilKode()));
   }
+  /* ---------- AI Agent FNC Academy (WhatsApp) ----------
+     Membuka WhatsApp dengan pesan pembuka yang sudah terisi, jadi member
+     tidak perlu mengetik apa-apa untuk memulai. */
+  const AI_NOMOR='6281918688086';
+  const AI_SAPAAN='Hallo Ai bisakah aku konsultasi seputar trading?';
+  function bukaAI(){
+    const url='https://wa.me/'+AI_NOMOR+'?text='+encodeURIComponent(AI_SAPAAN);
+    try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+  }
+  window.__bukaAI=bukaAI;
+
+  /* Buka tab lalu gulirkan ke kiriman yang diklik — bukan sekadar pindah tab.
+     Segmen (Umum/Eksklusif) ikut disesuaikan supaya kirimannya benar-benar ada. */
+  async function bukaKiriman(view,id,sumber){
+    if(view==='news'){
+      const mau = (sumber==='Eksklusif') ? 'eks' : 'umum';
+      if(newsKind!==mau){
+        newsKind=mau;
+        document.querySelectorAll('#news-seg .seg-btn').forEach(b=>
+          b.classList.toggle('active',b.dataset.nk===mau));
+      }
+    }
+    if(view==='rekap'){
+      const mau = (sumber==='RekapEks') ? 'eks' : 'umum';
+      if(rkKind!==mau){
+        rkKind=mau;
+        document.querySelectorAll('#rk-seg .seg-btn').forEach(b=>
+          b.classList.toggle('active',b.dataset.rk===mau));
+      }
+    }
+    if(view==='materi'){
+      const mau = (sumber==='MateriEks') ? 'eks' : 'umum';
+      if(mtKind!==mau){
+        mtKind=mau;
+        document.querySelectorAll('#mt-seg .seg-btn').forEach(b=>
+          b.classList.toggle('active',b.dataset.mt===mau));
+      }
+    }
+    go(view);
+    if(!id)return;
+    /* Tunggu daftarnya selesai dimuat, baru gulirkan. */
+    for(let i=0;i<24;i++){
+      await new Promise(r=>setTimeout(r,130));
+      const el=document.querySelector('#v-'+view+' .feed-item[data-kid="'+
+        String(id).replace(/"/g,'')+'"]');
+      if(el){
+        el.scrollIntoView({behavior:'smooth',block:'center'});
+        el.classList.remove('sorot');
+        void el.offsetWidth;              /* paksa animasi diulang */
+        el.classList.add('sorot');
+        setTimeout(()=>el.classList.remove('sorot'),2200);
+        return;
+      }
+    }
+  }
+  window.__bukaKiriman=(v,i,s)=>bukaKiriman(v,i,s);
   window.__go=v=>go(v);
 
   /* ---------- PROFIL MEMBER (lokal) ---------- */
@@ -2713,6 +2822,7 @@ function fncSudahTayang(it){
   async function unlock(){
     $('gate-overlay').hidden=true;
     $('shell').classList.remove('locked');
+    if($('ai-fab'))$('ai-fab').hidden=false;
     await store.set(K_GATE,true);
     const seen=await store.get(K_SEEN);
     if(!seen){ $('welcome-overlay').hidden=false; }
@@ -2756,6 +2866,7 @@ function fncSudahTayang(it){
     const unlocked=await store.get(K_GATE);
     if(unlocked===true){
       $('shell').classList.remove('locked');
+      if($('ai-fab'))$('ai-fab').hidden=false;
       const seen=await store.get(K_SEEN);
       if(!seen) $('welcome-overlay').hidden=false;
       else { renderBeranda(); replayAnim('beranda'); }
