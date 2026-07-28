@@ -419,6 +419,53 @@
   }
   .shell.locked ~ .ai-fab{display:none;}
 
+  /* ===== kartu ringkas: judul dulu, isi dibuka kalau diklik ===== */
+  .fi-head{display:flex;gap:13px;align-items:flex-start;padding:13px 15px;cursor:pointer;
+    user-select:none;transition:background .14s;}
+  .fi-head:hover{background:var(--cream);}
+  .fi-thumb{flex:0 0 96px;width:96px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;
+    background:#F1EEE7;position:relative;}
+  .fi-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .fi-thumb .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#E8E3D8,#F3EFE6);font-size:17px;opacity:.5;}
+  .fi-thumb .vmark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:26px;height:26px;border-radius:50%;background:rgba(242,112,29,.92);
+    display:flex;align-items:center;justify-content:center;}
+  .fi-thumb .vmark::after{content:'';border-left:8px solid #fff;border-top:5px solid transparent;
+    border-bottom:5px solid transparent;margin-left:2px;}
+  .fi-info{flex:1;min-width:0;}
+  .fi-info h4{margin:0 0 5px;font-size:14.5px;line-height:1.42;color:var(--slate);font-weight:700;}
+  .fi-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .fi-chev{flex:0 0 auto;align-self:center;color:var(--gray);font-size:12px;
+    transition:transform .22s ease;}
+  .feed-item.buka .fi-chev{transform:rotate(180deg);}
+  .fi-isi{display:none;border-top:1px solid var(--line);}
+  .feed-item.buka .fi-isi{display:block;animation:bukaIsi .28s ease both;}
+  @keyframes bukaIsi{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:none;}}
+  /* ===== pencarian ===== */
+  .cari{position:relative;margin-bottom:13px;}
+  .cari input{width:100%;padding:11px 38px 11px 38px;border:1.5px solid var(--line);
+    border-radius:11px;font-size:13.5px;font-family:inherit;color:var(--slate);
+    background:#fff;transition:border-color .15s,box-shadow .15s;}
+  .cari input:focus{outline:none;border-color:var(--orange);
+    box-shadow:0 0 0 3px rgba(242,112,29,.12);}
+  .cari .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);
+    color:var(--gray);font-size:14px;pointer-events:none;}
+  .cari .hapus{position:absolute;right:11px;top:50%;transform:translateY(-50%);
+    width:22px;height:22px;border:none;border-radius:50%;background:var(--cream);
+    color:var(--slate-2);cursor:pointer;font-size:13px;line-height:1;display:none;}
+  .cari.isi .hapus{display:block;}
+  .cari .hapus:hover{background:var(--orange);color:#fff;}
+  .cari-info{font-size:12px;color:var(--gray);margin:-6px 0 11px;}
+  mark{background:#FEF3C7;color:inherit;border-radius:3px;padding:0 2px;}
+  /* ===== muat lebih banyak ===== */
+  .lagi{width:100%;padding:12px;margin-top:11px;border:1.5px dashed var(--line);
+    border-radius:12px;background:transparent;color:var(--orange-deep);font-weight:700;
+    font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s;}
+  .lagi:hover{border-color:var(--orange);background:var(--cream);}
+  .lagi small{display:block;font-weight:400;color:var(--gray);font-size:11.5px;margin-top:3px;}
+  @media(max-width:460px){ .fi-thumb{flex:0 0 78px;width:78px;} }
+
   /* sorotan singkat saat kiriman dibuka dari Beranda */
   @keyframes sorot{
     0%{box-shadow:0 0 0 0 rgba(242,112,29,.55);}
@@ -684,6 +731,8 @@
           <button class="seg-btn active" type="button" data-rk="umum">Private</button>
           <button class="seg-btn" type="button" data-rk="eks">Eksklusif &#128274;</button>
         </div>
+        <div class="cari" id="cari-rk-box"><span class="ic">&#128269;</span><input type="search" id="cari-rk" placeholder="Cari judul atau isi..." autocomplete="off"><button class="hapus" type="button" aria-label="Hapus pencarian">&times;</button></div>
+        <div class="cari-info" id="cari-rk-info" hidden></div>
         <div id="rk-list"></div>
       </div>
     </div>
@@ -702,6 +751,8 @@
           <button class="seg-btn active" type="button" data-mt="umum">Private</button>
           <button class="seg-btn" type="button" data-mt="eks">Eksklusif &#128274;</button>
         </div>
+        <div class="cari" id="cari-mt-box"><span class="ic">&#128269;</span><input type="search" id="cari-mt" placeholder="Cari judul atau isi..." autocomplete="off"><button class="hapus" type="button" aria-label="Hapus pencarian">&times;</button></div>
+        <div class="cari-info" id="cari-mt-info" hidden></div>
         <div id="mt-list"></div>
       </div>
     </div>
@@ -804,6 +855,8 @@
           <button class="seg-btn" data-nk="eks">Eksklusif &#128274;</button>
         </div>
 
+        <div class="cari" id="cari-news-box"><span class="ic">&#128269;</span><input type="search" id="cari-news" placeholder="Cari judul atau isi..." autocomplete="off"><button class="hapus" type="button" aria-label="Hapus pencarian">&times;</button></div>
+        <div class="cari-info" id="cari-news-info" hidden></div>
         <div id="news-list"></div>
 
         <div id="news-lock" hidden>
@@ -849,6 +902,8 @@
             <button class="btn ghost sm" id="an-lock">Kunci</button>
           </div>
         </div>
+        <div class="cari" id="cari-an-box"><span class="ic">&#128269;</span><input type="search" id="cari-an" placeholder="Cari judul atau isi..." autocomplete="off"><button class="hapus" type="button" aria-label="Hapus pencarian">&times;</button></div>
+        <div class="cari-info" id="cari-an-info" hidden></div>
         <div id="analisa-list"></div>
       </div>
     </div>
@@ -1690,6 +1745,16 @@ function fncSudahTayang(it){
       }else if(mQ){
         if(mode!=='q'){ tutup(); keluar+='<blockquote class="wa-q">'; mode='q'; }
         keluar+=mQ[1]+'<br>';
+      }else if(!b.trim() && (mode==='ul'||mode==='ol')){
+        /* Baris kosong di TENGAH daftar tidak memutus daftarnya. */
+        let lanjut=false;
+        for(let k=i+1;k<baris.length;k++){
+          const n=baris[k];
+          if(!n.trim())continue;
+          lanjut = mode==='ul' ? /^\s*[-•]\s+/.test(n) : /^\s*\d+[.)]\s+/.test(n);
+          break;
+        }
+        if(!lanjut){ tutup(); }
       }else{
         tutup();
         keluar+=b+(i<baris.length-1?'<br>':'');
@@ -1808,12 +1873,110 @@ function fncSudahTayang(it){
     return next||null;
   }
 
+  /* ============================================================
+     MESIN DAFTAR: pencarian + muat bertahap + kartu ringkas
+     ============================================================ */
+  const daftarPenuh={};                 /* seluruh kiriman per daftar, sebelum disaring */
+  const PER_HAL=12;                     /* dimuat lebih dulu saat tab dibuka */
+  const tampil={};                      /* berapa yang sedang ditampilkan per daftar */
+  const kataCari={};                    /* kata kunci per daftar */
+
+  function teksPolos(s){
+    return String(s||'').replace(/[*_~`]/g,' ').replace(/\s+/g,' ').trim();
+  }
+  function cocok(it,q){
+    if(!q)return true;
+    const k=q.toLowerCase();
+    return [it.title,it.body,it.tag,it.pair,it.bias,it.jenis]
+      .some(x=>String(x||'').toLowerCase().indexOf(k)>=0);
+  }
+  /* Menandai kata yang dicari. Dijalankan pada teks yang SUDAH di-escape,
+     dan tag HTML dilewati supaya tidak merusak markup. */
+  function tandai(html,q){
+    if(!q)return html;
+    const k=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    return html.replace(/>([^<]+)</g,(m,isi)=>
+      '>'+isi.replace(new RegExp('('+k+')','gi'),'<mark>$1</mark>')+'<');
+  }
+  function ringkasan(it){
+    const t=teksPolos(it.body);
+    return t.length>96 ? t.slice(0,96)+'...' : t;
+  }
+  /* Kepala kartu: gambar kecil + judul + waktu. Isi disembunyikan sampai diklik. */
+  function kepalaKartu(it,label,adaVideo){
+    const gbr=it.thumb||it.image||((it.images||[])[0])||'';
+    const thumb='<div class="fi-thumb">'+
+      (gbr?'<img src="'+esc(gbr)+'" alt="" loading="lazy">':'<div class="ph">&#128196;</div>')+
+      (adaVideo?'<div class="vmark"></div>':'')+'</div>';
+    return '<div class="fi-head">'+thumb+
+      '<div class="fi-info">'+
+        (it.title?'<h4>'+esc(it.title)+'</h4>':'<h4>&mdash;</h4>')+
+        '<div class="fi-meta">'+(label||'')+
+        '<span class="feed-date">'+stempelWaktu(it)+'</span></div>'+
+      '</div>'+
+      '<span class="fi-chev">&#9660;</span></div>';
+  }
+  function tombolLagi(elId,sisa){
+    return '<button class="lagi" data-lagi="'+elId+'">Muat lebih banyak'+
+      '<small>'+sisa+' kiriman lagi</small></button>';
+  }
+  /* Menyaring, memotong sesuai halaman, lalu menggambar. */
+  function gambarDaftar(elId,semua,buatKartu,kosongTxt){
+    const el=$(elId); if(!el)return;
+    const q=kataCari[elId]||'';
+    const hasil=(semua||[]).filter(it=>cocok(it,q));
+    const batas=tampil[elId]||PER_HAL;
+    const potong=hasil.slice(0,batas);
+
+    const info=$( (elId==='news-list'?'cari-news':
+                   elId==='analisa-list'?'cari-an':
+                   elId==='rk-list'?'cari-rk':'cari-mt') + '-info');
+    if(info){
+      if(q){ info.hidden=false;
+        info.textContent = hasil.length
+          ? hasil.length+' hasil untuk "'+q+'"'
+          : 'Tidak ada hasil untuk "'+q+'"';
+      } else info.hidden=true;
+    }
+    if(!hasil.length){
+      el.innerHTML='<div class="feed-empty">'+
+        (q?'Tidak ada yang cocok dengan pencarianmu.<br>Coba kata kunci lain.':kosongTxt)+
+        '</div>';
+      return;
+    }
+    let out=potong.map((it,i)=>buatKartu(it,i)).join('');
+    if(q)out=tandai(out,q);
+    if(hasil.length>batas)out+=tombolLagi(elId,hasil.length-batas);
+    el.innerHTML=out;
+  }
+
+  /* Menggambar ulang satu daftar dari data yang sudah tersimpan. */
+  function gambarUlang(elId){
+    const semua=daftarPenuh[elId]||[];
+    const f=pembuatKartu[elId];
+    if(f)gambarDaftar(elId,semua,f.buat,f.kosong);
+  }
+  const pembuatKartu={};                /* cara menggambar tiap daftar */
+
+  /* buka/tutup kartu */
+  document.addEventListener('click',function(e){
+    const lagi=e.target.closest('[data-lagi]');
+    if(lagi){
+      const id=lagi.dataset.lagi;
+      tampil[id]=(tampil[id]||PER_HAL)+PER_HAL;
+      gambarUlang(id);
+      return;
+    }
+    const kepala=e.target.closest('.fi-head');
+    if(kepala){
+      const kartu=kepala.closest('.feed-item');
+      if(kartu)kartu.classList.toggle('buka');
+    }
+  });
+
   function renderFeed(elId,items,kind){
-    const el=$(elId);
-    if(!items||!items.length){
-      el.innerHTML='<div class="feed-empty">Belum ada '+(kind==='an'?'analisa':'berita')+
-        ' yang diposting.<br>Cek lagi nanti ya.</div>';return;}
-    el.innerHTML=items.map(it=>{
+    daftarPenuh[elId]=items||[];
+    const buat=(it,i)=>{
       const imgs=(it.images||[]).filter(Boolean);
       const cover=it.image||imgs[0]||null;
       const rest=it.image?imgs:imgs.slice(1);
@@ -1825,18 +1988,24 @@ function fncSudahTayang(it){
       const wm = (kind==='an'||it.__eks) && profil
         ? '<div class="wm-tag">'+esc(profil.id)+'</div>' : '';
       const vid = it.url ? blokVideo(it) : '';
-      return '<div class="feed-item" data-kid="'+esc(it.id||'')+'">'+wm+
-        (vid?'<div class="feed-pad" style="padding-bottom:0;">'+vid+'</div>':'')+
-        (!vid&&cover?'<img class="feed-cover" src="'+esc(cover)+'" alt="" loading="lazy">':'')+
-        '<div class="feed-pad"><div class="feed-top">'+
-          (it.pair?'<span class="feed-tag">'+esc(it.pair)+'</span>':'')+
-          (tag?'<span class="feed-tag '+tagCls+'">'+esc(tag)+'</span>':'')+
-          '<span class="feed-date">'+stempelWaktu(it)+'</span></div>'+
-        (it.title?'<h4>'+esc(it.title)+'</h4>':'')+
-        '<div class="feed-body">'+waFormat(it.body)+'</div>'+
-        (rest.length?'<div class="feed-gal">'+rest.map(s=>'<img src="'+esc(s)+'" alt="" loading="lazy">').join('')+'</div>':'')+
-        '</div></div>';
-    }).join('');
+      const label=(it.pair?'<span class="feed-tag">'+esc(it.pair)+'</span>':'')+
+                  (tag?'<span class="feed-tag '+tagCls+'">'+esc(tag)+'</span>':'');
+      /* kiriman paling baru dibiarkan terbuka */
+      const buka = (i===0 && !(kataCari[elId]||'')) ? ' buka' : '';
+      return '<div class="feed-item'+buka+'" data-kid="'+esc(it.id||'')+'">'+wm+
+        kepalaKartu(it,label,!!it.url)+
+        '<div class="fi-isi">'+
+          (vid?'<div class="feed-pad" style="padding-bottom:0;">'+vid+'</div>':'')+
+          (!vid&&cover?'<img class="feed-cover" src="'+esc(cover)+'" alt="" loading="lazy">':'')+
+          '<div class="feed-pad">'+
+          '<div class="feed-body">'+waFormat(it.body)+'</div>'+
+          (rest.length?'<div class="feed-gal">'+rest.map(s=>'<img src="'+esc(s)+'" alt="" loading="lazy">').join('')+'</div>':'')+
+          '</div></div></div>';
+    };
+    const kosong='Belum ada '+(kind==='an'?'analisa':'berita')+
+      ' yang diposting.<br>Cek lagi nanti ya.';
+    pembuatKartu[elId]={buat:buat,kosong:kosong};
+    gambarDaftar(elId,items,buat,kosong);
   }
 
   /* ---------- gerbang bersama untuk berita eksklusif & analisa ----------
@@ -1997,19 +2166,19 @@ function fncSudahTayang(it){
   }
 
   /* ---------- REKAP LIVE ---------- */
-  function kartuRekap(it){
+  function kartuRekap(it,i){
     const wm = it.__eks && profil ? '<div class="wm-tag">'+esc(profil.id)+'</div>' : '';
-    return '<div class="feed-item" data-kid="'+esc(it.id||'')+'">'+wm+
-      '<div class="feed-pad">'+
-        '<div class="feed-top">'+
-          (it.__eks?'<span class="feed-tag">Eksklusif</span>':'')+
-          '<span class="feed-date">'+stempelWaktu(it)+'</span></div>'+
-        (it.title?'<h4>'+esc(it.title)+'</h4>':'')+
+    const label=(it.__eks?'<span class="feed-tag">Eksklusif</span>':'')+
+                (it.dur?'<span class="feed-tag">'+esc(it.dur)+'</span>':'');
+    const buka = (i===0 && !(kataCari['rk-list']||'')) ? ' buka' : '';
+    return '<div class="feed-item'+buka+'" data-kid="'+esc(it.id||'')+'">'+wm+
+      kepalaKartu(it,label,!!it.url)+
+      '<div class="fi-isi"><div class="feed-pad">'+
         (it.url?blokVideo(it):'')+
         (it.body?'<div class="feed-body" style="margin-top:10px;">'+waFormat(it.body)+'</div>':'')+
         (it.url?'<div class="ext-btn" onclick="window.__buka(\''+esc(it.url).replace(/'/g,"\\'")+'\')">'+
           '&#9654; Tonton di Google Drive</div>':'')+
-      '</div></div>';
+      '</div></div></div>';
   }
   async function loadRekap(force){
     const eks = rkKind==='eks';
@@ -2038,9 +2207,11 @@ function fncSudahTayang(it){
     $('rk-list').innerHTML=skeletonFeed(2);
     try{
       const c=await loadRekap(force);
-      $('rk-list').innerHTML = c.items.length
-        ? c.items.map(kartuRekap).join('')
-        : '<div class="feed-empty">Belum ada rekap yang diposting.<br>Cek lagi nanti ya.</div>';
+      daftarPenuh['rk-list']=c.items||[];
+      pembuatKartu['rk-list']={buat:kartuRekap,
+        kosong:'Belum ada rekap yang diposting.<br>Cek lagi nanti ya.'};
+      gambarDaftar('rk-list',c.items,kartuRekap,
+        'Belum ada rekap yang diposting.<br>Cek lagi nanti ya.');
       $('rk-stamp').textContent=c.updated?'Diperbarui '+tanggalID(c.updated):'';
     }catch(e){
       if(e&&e.message==='KODESALAH'){ await kunciGerbang(); return; }
@@ -2056,23 +2227,22 @@ function fncSudahTayang(it){
     if(s.indexOf('slide')>=0||s.indexOf('ppt')>=0)return 'slide';
     return 'video';
   }
-  function kartuMateri(it){
+  function kartuMateri(it,i){
     const wm = it.__eks && profil ? '<div class="wm-tag">'+esc(profil.id)+'</div>' : '';
     const j=it.jenis||'Video';
     const isVid=kelasJenis(j)==='video';
-    return '<div class="feed-item" data-kid="'+esc(it.id||'')+'">'+wm+
-      '<div class="feed-pad">'+
-        '<div class="feed-top">'+
-          '<span class="mat-kind '+kelasJenis(j)+'">'+esc(j)+'</span>'+
-          (it.__eks?'<span class="feed-tag">Eksklusif</span>':'')+
-          '<span class="feed-date">'+stempelWaktu(it)+'</span></div>'+
-        (it.title?'<h4>'+esc(it.title)+'</h4>':'')+
+    const label='<span class="mat-kind '+kelasJenis(j)+'">'+esc(j)+'</span>'+
+                (it.__eks?'<span class="feed-tag">Eksklusif</span>':'');
+    const buka = (i===0 && !(kataCari['mt-list']||'')) ? ' buka' : '';
+    return '<div class="feed-item'+buka+'" data-kid="'+esc(it.id||'')+'">'+wm+
+      kepalaKartu(it,label,isVid&&!!it.url)+
+      '<div class="fi-isi"><div class="feed-pad">'+
         (isVid&&it.url?blokVideo(it):
           (it.thumb?'<img class="feed-cover" src="'+esc(it.thumb)+'" alt="" loading="lazy">':''))+
         (it.body?'<div class="feed-body" style="margin-top:10px;">'+waFormat(it.body)+'</div>':'')+
         (it.url?'<div class="ext-btn" onclick="window.__buka(\''+esc(it.url).replace(/'/g,"\\'")+'\')">'+
           '&#128229; Buka materi</div>':'')+
-      '</div></div>';
+      '</div></div></div>';
   }
   async function loadMateri(force){
     const eks = mtKind==='eks';
@@ -2101,9 +2271,11 @@ function fncSudahTayang(it){
     $('mt-list').innerHTML=skeletonFeed(2);
     try{
       const c=await loadMateri(force);
-      $('mt-list').innerHTML = c.items.length
-        ? c.items.map(kartuMateri).join('')
-        : '<div class="feed-empty">Belum ada materi yang diposting.<br>Cek lagi nanti ya.</div>';
+      daftarPenuh['mt-list']=c.items||[];
+      pembuatKartu['mt-list']={buat:kartuMateri,
+        kosong:'Belum ada materi yang diposting.<br>Cek lagi nanti ya.'};
+      gambarDaftar('mt-list',c.items,kartuMateri,
+        'Belum ada materi yang diposting.<br>Cek lagi nanti ya.');
       $('mt-stamp').textContent=c.updated?'Diperbarui '+tanggalID(c.updated):'';
     }catch(e){
       if(e&&e.message==='KODESALAH'){ await kunciGerbang(); return; }
@@ -2112,8 +2284,29 @@ function fncSudahTayang(it){
     }
   }
 
+  /* Menyambungkan kotak pencarian ke daftarnya masing-masing. */
+  function pasangPencarian(){
+    [['cari-news','news-list'],['cari-an','analisa-list'],
+     ['cari-rk','rk-list'],['cari-mt','mt-list']].forEach(([inp,list])=>{
+      const el=$(inp); if(!el)return;
+      const kotak=$(inp+'-box');
+      let jeda=null;
+      const jalan=()=>{
+        const q=(el.value||'').trim();
+        kotak.classList.toggle('isi',!!q);
+        kataCari[list]=q;
+        tampil[list]=PER_HAL;          /* mulai lagi dari halaman pertama */
+        gambarUlang(list);
+      };
+      el.addEventListener('input',()=>{ clearTimeout(jeda); jeda=setTimeout(jalan,220); });
+      el.addEventListener('keydown',e=>{ if(e.key==='Escape'){ el.value=''; jalan(); } });
+      kotak.querySelector('.hapus').onclick=()=>{ el.value=''; el.focus(); jalan(); };
+    });
+  }
+
   function initFeeds(){
     mulaiPengawasJadwal();
+    pasangPencarian();
     $('rk-reload').onclick=()=>showRekap(true);
     $('mt-reload').onclick=()=>showMateri(true);
     document.querySelectorAll('#rk-seg .seg-btn').forEach(b=>{
@@ -2785,6 +2978,7 @@ function fncSudahTayang(it){
       const el=document.querySelector('#v-'+view+' .feed-item[data-kid="'+
         String(id).replace(/"/g,'')+'"]');
       if(el){
+        el.classList.add('buka');          /* buka isinya saat dituju dari Beranda */
         el.scrollIntoView({behavior:'smooth',block:'center'});
         el.classList.remove('sorot');
         void el.offsetWidth;              /* paksa animasi diulang */
