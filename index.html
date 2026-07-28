@@ -691,6 +691,76 @@
   .cari.isi .hapus{display:block;}
   .cari .hapus:hover{background:var(--orange);color:#fff;}
   .cari-info{font-size:12px;color:var(--gray);margin:-6px 0 11px;}
+  /* ===== KARTU SOROTAN (kiriman teratas) =====
+     Di layar lebar tampil besar dengan gambar penuh; di HP menumpuk
+     jadi satu kolom supaya tetap nyaman dibaca. */
+  .utama{position:relative;border-radius:18px;overflow:hidden;margin-bottom:14px;
+    background:var(--kartu);border:1px solid var(--line);box-shadow:var(--bayang-2);
+    cursor:pointer;transition:transform .24s,box-shadow .24s,border-color .24s;
+    animation:riseIn .5s cubic-bezier(.22,.8,.3,1) both;}
+  .utama:hover{transform:translateY(-3px);box-shadow:var(--bayang-3);border-color:var(--orange);}
+  .utama:active{transform:translateY(-1px);}
+  .utama-gbr{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#EFEAE2;}
+  .utama-gbr img{width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .5s cubic-bezier(.22,.8,.3,1);}
+  .utama:hover .utama-gbr img{transform:scale(1.04);}
+  .utama-gbr .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#E8E3D8,#F3EFE6);font-size:34px;opacity:.45;}
+  .utama-gbr .vmark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:52px;height:52px;border-radius:50%;background:rgba(242,112,29,.94);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(0,0,0,.34);}
+  .utama-gbr .vmark::after{content:'';border-left:16px solid #fff;border-top:10px solid transparent;
+    border-bottom:10px solid transparent;margin-left:4px;}
+  .utama-pita{position:absolute;left:14px;top:14px;display:inline-flex;align-items:center;gap:6px;
+    padding:5px 12px;border-radius:20px;background:var(--orange);color:#fff;
+    font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+    box-shadow:0 3px 12px rgba(0,0,0,.28);}
+  .utama-isi{padding:16px 18px 18px;}
+  .utama-isi h3{margin:0 0 8px;font-size:19px;line-height:1.32;color:var(--slate);
+    font-weight:700;letter-spacing:-.01em;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .utama-isi p{margin:0 0 12px;font-size:13px;line-height:1.65;color:var(--slate-2);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .utama-kaki{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+  .utama-full{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .utama.buka .utama-full{display:block;animation:bukaIsi .3s ease both;}
+  .utama.buka .utama-isi h3{-webkit-line-clamp:unset;overflow:visible;}
+  .utama.buka .utama-isi p{display:none;}
+  .utama.buka .utama-baca{background:var(--orange);}
+  .utama.buka .utama-baca::after{content:'\2191';}
+  .utama-baca{display:inline-flex;align-items:center;gap:7px;padding:9px 17px;border-radius:22px;
+    background:var(--slate);color:#fff;font-size:12.5px;font-weight:700;
+    transition:background .18s,gap .18s;}
+  .utama:hover .utama-baca{background:var(--orange);gap:10px;}
+  .utama-baca::after{content:'\2192';font-size:14px;}
+  html[data-tema="gelap"] .utama-baca{background:#2B3542;}
+  html[data-tema="gelap"] .utama:hover .utama-baca{background:var(--orange);}
+  html[data-tema="gelap"] .utama-gbr{background:#232B36;}
+  html[data-tema="gelap"] .utama-isi h3{text-shadow:var(--glow);}
+
+  /* Susunan dua kolom di layar lebar: sorotan di kiri, daftar di kanan. */
+  @media(min-width:1000px){
+    .sorot-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;align-items:start;}
+    .sorot-grid .kanan{max-height:none;}
+    .utama{margin-bottom:0;}
+    .utama-isi{padding:18px 20px 20px;}
+    .utama-isi h3{font-size:21px;}
+  }
+  @media(min-width:1220px){
+    .sorot-grid{grid-template-columns:1.5fr 1fr;gap:22px;}
+    .utama-isi h3{font-size:23px;}
+  }
+  /* HP: gambar tetap di atas, teks di bawah, ukuran dirapatkan. */
+  @media(max-width:560px){
+    .utama{border-radius:16px;margin-bottom:12px;}
+    .utama-isi{padding:13px 14px 15px;}
+    .utama-isi h3{font-size:16px;-webkit-line-clamp:3;}
+    .utama-isi p{font-size:12.5px;-webkit-line-clamp:2;}
+    .utama-baca{padding:8px 15px;font-size:12px;}
+    .utama-pita{left:11px;top:11px;padding:4px 10px;font-size:9.5px;}
+    .utama-gbr .vmark{width:44px;height:44px;}
+  }
+
   /* ===== penyaring cepat ===== */
   .saring{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:-4px 0 13px;}
   .saring .chip{border:1.5px solid var(--line);background:var(--kartu);color:var(--slate-2);
@@ -2269,6 +2339,10 @@ function fncSudahTayang(it){
   function gambarDaftar(elId,semua,buatKartu,kosongTxt){
     const el=$(elId); if(!el)return;
     const q=kataCari[elId]||'';
+    /* Sorotan hanya dipakai di tab Berita, dan hanya saat tidak sedang
+       mencari atau menyaring — supaya hasil pencarian tetap setara. */
+    const pakaiSorotan = (elId==='news-list') && !q &&
+      !saringAktif[elId] && !saringTgl[elId];
     const hasil=(semua||[]).filter(it=>cocok(it,q,elId));
     const batas=tampil[elId]||PER_HAL;
     const potong=hasil.slice(0,batas);
@@ -2295,7 +2369,14 @@ function fncSudahTayang(it){
         '</div>';
       return;
     }
-    let out=potong.map((it,i)=>buatKartu(it,i)).join('');
+    let out='';
+    if(pakaiSorotan && potong.length){
+      const s=potong[0];
+      out+=kartuSorotan(s,'Berita','news','window.__tutupBukaSorotan(this)',true);
+      out+=potong.slice(1).map((it,i)=>buatKartu(it,i+1)).join('');
+    }else{
+      out+=potong.map((it,i)=>buatKartu(it,i)).join('');
+    }
     if(q)out=tandai(out,q);
     if(hasil.length>batas)out+=tombolLagi(elId,hasil.length-batas);
     el.innerHTML=out;
@@ -3245,6 +3326,10 @@ function fncSudahTayang(it){
     let out='';
     const ann=await ambilPengumuman();
     if(ann.length){ out+=ann.map(kartuAnn).join(''); }
+    /* Kiriman paling baru tampil besar sebagai sorotan. Yang terkunci tidak
+       pernah dijadikan sorotan — judulnya tidak boleh terbaca. */
+    let sorotan=null;
+    if(kumpul.length && !kumpul[0][3]){ sorotan=kumpul.shift(); }
     out+='<div class="ai-card" onclick="window.__bukaAI()">'+
       '<div class="ai-ic">&#129302;</div>'+
       '<div style="flex:1;min-width:0;">'+
@@ -3253,10 +3338,21 @@ function fncSudahTayang(it){
         'balasannya langsung.</p>'+
         '<span class="go">&#128172; Mulai Chat</span>'+
       '</div></div>';
-    if(kumpul.length){
+    if(sorotan||kumpul.length){
+      let blokSorot='';
+      if(sorotan){
+        const si=sorotan[0], ss=sorotan[1], sv=sorotan[2];
+        const aksi="window.__bukaKiriman('"+sv+"','"+
+          String(si.id||'').replace(/'/g,'')+"','"+ss+"')";
+        blokSorot='<div class="kiri">'+kartuSorotan(si,ss,sv,aksi)+'</div>';
+      }
       out+='<div class="home-sec"><div class="home-head"><h3>Update Terbaru</h3>'+
         '<a onclick="window.__go(\'news\')">Lihat semua</a></div>'+
-        kumpul.slice(0,7).map(a=>kartuUpdate(a[0],a[1],a[2],a[3])).join('')+'</div>';
+        '<div class="sorot-grid">'+blokSorot+
+          '<div class="kanan">'+
+            kumpul.slice(0,6).map(a=>kartuUpdate(a[0],a[1],a[2],a[3])).join('')+
+          '</div>'+
+        '</div></div>';
     }
     if(tier!=='eks'){
       out+='<div class="home-sec"><div class="upsell"><h4>&#128274; Buka Akses Eksklusif</h4>'+
@@ -3416,6 +3512,12 @@ function fncSudahTayang(it){
       await new Promise(r=>setTimeout(r,130));
       const el=document.querySelector('#v-'+view+' .feed-item[data-kid="'+
         String(id).replace(/"/g,'')+'"]');
+      /* Kiriman teratas di tab Berita tampil sebagai sorotan, bukan kartu biasa. */
+      if(!el && view==='news'){
+        const s=document.querySelector('#news-list .utama');
+        if(s){ s.classList.add('buka');
+          s.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+      }
       if(el){
         el.classList.add('buka');          /* buka isinya saat dituju dari Beranda */
         el.scrollIntoView({behavior:'smooth',block:'center'});
@@ -3428,6 +3530,46 @@ function fncSudahTayang(it){
     }
   }
   window.__bukaKiriman=(v,i,s)=>bukaKiriman(v,i,s);
+  /* Sorotan di tab Berita: kartunya ada di daftar yang sama, jadi cukup
+     buka lalu gulir ke sana. */
+  window.__tutupBukaSorotan=function(el){
+    if(el&&el.classList)el.classList.toggle('buka');
+  };
+  window.__bukaSorotan=function(id){
+    const el=document.querySelector('#news-list .feed-item[data-kid="'+
+      String(id).replace(/"/g,'')+'"]');
+    if(el){
+      el.classList.add('buka');
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      el.classList.remove('sorot'); void el.offsetWidth; el.classList.add('sorot');
+      setTimeout(()=>el.classList.remove('sorot'),2200);
+    }
+  };
+  /* Kartu sorotan untuk kiriman teratas. Kalau isiPenuh diisi, isinya
+     bisa dibuka langsung di tempat tanpa berpindah ke kartu lain. */
+  function kartuSorotan(it,sumber,view,aksi,isiPenuh){
+    const gbr=it.thumb||it.image||((it.images||[])[0])||'';
+    const tampilLbl=LABEL[sumber]||sumber;
+    const ringkas=potongTeks(it.body,150);
+    return '<div class="utama" onclick="'+aksi+'">'+
+      '<div class="utama-gbr">'+
+        (gbr?'<img src="'+esc(gbr)+'" alt="" loading="lazy">'
+            :'<div class="ph">'+(IKON[sumber]||'&#128196;')+'</div>')+
+        (it.url?'<div class="vmark"></div>':'')+
+        '<span class="utama-pita">'+esc(tampilLbl)+'</span>'+
+      '</div>'+
+      '<div class="utama-isi">'+
+        (it.title?'<h3>'+esc(it.title)+'</h3>':'<h3>&mdash;</h3>')+
+        (ringkas?'<p>'+esc(ringkas)+'</p>':'')+
+        '<div class="utama-kaki">'+
+          '<span class="utama-baca">Baca selengkapnya</span>'+
+          '<span class="hc-date">'+stempelWaktu(it)+'</span>'+
+        '</div>'+
+        (isiPenuh?'<div class="utama-full"><div class="feed-body">'+
+          waFormat(it.body)+'</div></div>':'')+
+      '</div></div>';
+  }
+
   function pintasKartu(ikon,judul,ket,view){
     return '<a onclick="window.__go(\''+view+'\')">'+
       '<div class="ik">'+ikon+'</div>'+
