@@ -16,6 +16,7 @@
     --line:#EAD9C7; --line-2:#F0E4D6; --white:#fff;
     --win:#16A34A; --loss:#DC2626;
     --kartu:#fff;              /* latar kartu & kotak */
+    --teks-isi:#374151;        /* teks paragraf, dibuat lebih terang di mode gelap */
     --hal:#F3EFE9;             /* latar halaman paling luar */
     --glow:none;               /* efek cahaya teks, hanya aktif di mode gelap */
     --glow-kuat:none;
@@ -27,13 +28,14 @@
      Semua warna diturunkan dari variabel yang sama, jadi seluruh halaman
      ikut berganti tanpa perlu aturan terpisah per komponen. */
   html[data-tema="gelap"]{
-    --cream:#2A2118; --cream-bg:#141A22;
+    --cream:#232B36; --cream-bg:#141A22;
     --slate:#E8ECF1; --slate-2:#C3CBD5; --gray:#8C97A5;
     --line:#2C3644; --line-2:#232B36; --white:#141A22;
     --kartu:#1B222C; --hal:#0D1218;
+    --teks-isi:#DBE2EA;        /* jauh lebih terang supaya paragraf enak dibaca */
     --orange-deep:#FDBA74;
     --win:#4ADE80; --loss:#F87171;
-    --glow:0 0 14px rgba(232,236,241,.16);
+    --glow:0 0 12px rgba(232,236,241,.13);
     --glow-kuat:0 0 20px rgba(242,112,29,.35);
     --kursor:rgba(242,112,29,.09);
     color-scheme:dark;
@@ -284,7 +286,7 @@
   .feed-tag.neu{background:#F1F5F9;color:#475569;}
   .feed-date{font-size:10.5px;color:var(--gray);font-family:var(--mono);}
   .feed-item h4{margin:0 0 8px;font-size:16.5px;line-height:1.35;color:var(--slate);}
-  .feed-body{font-size:13.5px;line-height:1.75;color:#374151;word-break:break-word;}
+  .feed-body{font-size:13.5px;line-height:1.75;color:var(--teks-isi);word-break:break-word;}
   .feed-body b{color:var(--slate);} .feed-body a{color:var(--orange-deep);}
   .feed-body .wa-ul,.feed-body .wa-ol{margin:8px 0;padding-left:22px;}
   .feed-body .wa-ul li,.feed-body .wa-ol li{margin:4px 0;line-height:1.7;}
@@ -447,7 +449,42 @@
   html[data-tema="gelap"] h3,html[data-tema="gelap"] h4{text-shadow:var(--glow);}
   html[data-tema="gelap"] .brand h1{text-shadow:var(--glow-kuat);}
   html[data-tema="gelap"] .tab.active{text-shadow:var(--glow-kuat);}
-  html[data-tema="gelap"] .feed-body,html[data-tema="gelap"] .fi-info h4{text-shadow:var(--glow);}
+  /* Glow sengaja TIDAK dipakai pada paragraf panjang — efeknya membuat
+     teks berkabut dan susah dibaca. Hanya judul yang diberi cahaya. */
+  html[data-tema="gelap"] .fi-info h4{text-shadow:var(--glow);}
+  html[data-tema="gelap"] .feed-body{text-shadow:none;}
+  html[data-tema="gelap"] .feed-body i,html[data-tema="gelap"] .feed-body em{color:#EAF0F6;}
+  html[data-tema="gelap"] .feed-body b,html[data-tema="gelap"] .feed-body strong{color:#FFFFFF;}
+  html[data-tema="gelap"] .feed-body a{color:#FDBA74;}
+  html[data-tema="gelap"] .wa-q{color:#CBD5E1;}
+  html[data-tema="gelap"] .home-card p,html[data-tema="gelap"] .fi-info h4{color:var(--slate);}
+  html[data-tema="gelap"] .feed-date,html[data-tema="gelap"] .hc-date{color:#94A3B8;}
+  html[data-tema="gelap"] .pill.be{background:#334155;color:#CBD5E1;}
+  /* label & kotak berwarna: versi gelap */
+  html[data-tema="gelap"] .pill.win{background:#14351F;color:#86EFAC;}
+  html[data-tema="gelap"] .pill.loss{background:#3A1717;color:#FCA5A5;}
+  html[data-tema="gelap"] .feed-tag{background:#2B3542;color:#CBD5E1;}
+  html[data-tema="gelap"] .feed-tag.bull{background:#14351F;color:#86EFAC;}
+  html[data-tema="gelap"] .feed-tag.bear{background:#3A1717;color:#FCA5A5;}
+  html[data-tema="gelap"] .feed-tag.neu{background:#2B3542;color:#CBD5E1;}
+  html[data-tema="gelap"] .hc-src{background:#2B3542;color:#E2C4A8;}
+  html[data-tema="gelap"] .hc-src.eks{background:#3A2C0E;color:#FCD34D;}
+  html[data-tema="gelap"] .hc-src.an{background:#122E42;color:#A8D8F5;}
+  html[data-tema="gelap"] .mat-kind.pdf{background:#3A1717;color:#FCA5A5;}
+  html[data-tema="gelap"] .mat-kind.slide{background:#3A2C0E;color:#FCD34D;}
+  html[data-tema="gelap"] .mat-kind.video{background:#1D2151;color:#C7CDFF;}
+  html[data-tema="gelap"] .gate-err{background:#2A1414;color:#FCA5A5;}
+  html[data-tema="gelap"] .calc-out.muted{background:#1F2732;color:var(--gray);}
+  html[data-tema="gelap"] .btn.danger:hover,html[data-tema="gelap"] .icon-btn:hover{background:#2A1414;}
+  html[data-tema="gelap"] .tier-chip.priv{background:rgba(255,255,255,.12);color:#E2E8F0;}
+  html[data-tema="gelap"] .fi-thumb .ph,html[data-tema="gelap"] .hc-thumb .ph{color:#8C97A5;}
+  html[data-tema="gelap"] .lagi{border-color:#3A4553;}
+  html[data-tema="gelap"] .lagi:hover{background:#232B36;border-color:var(--orange);}
+  html[data-tema="gelap"] .cari input{background:#161C25;}
+  html[data-tema="gelap"] .cari .hapus{background:#2B3542;color:#CBD5E1;}
+  html[data-tema="gelap"] .mini{background:#1F2732;}
+  html[data-tema="gelap"] .prof-av{color:#fff;}
+  html[data-tema="gelap"] .notice-bar{background:#2E2410;border-color:#5C4712;color:#FCD34D;}
   html[data-tema="gelap"] .hero{background:linear-gradient(135deg,#1B2430,#111820);}
   html[data-tema="gelap"] .fi-thumb,html[data-tema="gelap"] .hc-thumb{background:#232B36;}
   html[data-tema="gelap"] .fi-thumb .ph,html[data-tema="gelap"] .hc-thumb .ph{
