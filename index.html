@@ -3326,18 +3326,12 @@ function fncSudahTayang(it){
     let out='';
     const ann=await ambilPengumuman();
     if(ann.length){ out+=ann.map(kartuAnn).join(''); }
-    /* Kiriman paling baru tampil besar sebagai sorotan. Yang terkunci tidak
-       pernah dijadikan sorotan — judulnya tidak boleh terbaca. */
+    /* Sorotan diambil dari kiriman TERBARU yang tidak terkunci.
+       Kalau yang teratas kebetulan eksklusif, cari yang berikutnya —
+       supaya member Private tetap mendapat sorotan, bukan kosong. */
     let sorotan=null;
-    if(kumpul.length && !kumpul[0][3]){ sorotan=kumpul.shift(); }
-    out+='<div class="ai-card" onclick="window.__bukaAI()">'+
-      '<div class="ai-ic">&#129302;</div>'+
-      '<div style="flex:1;min-width:0;">'+
-        '<b>Tanya AI Agent FNC</b>'+
-        '<p>Punya pertanyaan seputar trading? Chat AI Agent kami di WhatsApp, '+
-        'balasannya langsung.</p>'+
-        '<span class="go">&#128172; Mulai Chat</span>'+
-      '</div></div>';
+    const iSorot=kumpul.findIndex(a=>!a[3]);
+    if(iSorot>=0){ sorotan=kumpul.splice(iSorot,1)[0]; }
     if(sorotan||kumpul.length){
       let blokSorot='';
       if(sorotan){
@@ -3388,6 +3382,16 @@ function fncSudahTayang(it){
         pintasKartu('&#127909;','Rekap Live','Tonton ulang sesi','rekap')+
         pintasKartu('&#128218;','Materi','Modul belajar','materi')+
         pintasKartu('&#129518;','Kalkulator','Hitung lot & risiko','calc')+
+      '</div></div>';
+
+    /* ---------- Tanya AI Agent ---------- */
+    out+='<div class="ai-card" onclick="window.__bukaAI()">'+
+      '<div class="ai-ic">&#129302;</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<b>Tanya AI Agent FNC</b>'+
+        '<p>Punya pertanyaan seputar trading? Chat AI Agent kami di WhatsApp, '+
+        'balasannya langsung.</p>'+
+        '<span class="go">&#128172; Mulai Chat</span>'+
       '</div></div>';
 
     /* ---------- penutup ---------- */
