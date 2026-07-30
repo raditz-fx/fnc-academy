@@ -2147,8 +2147,9 @@ function fncSudahTayang(it){
       return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}).replace('.',':');
     }catch(e){ return ''; }
   }
-  function stempelWaktu(it){
+  function stempelWaktu(it,tanpaJam){
     const tgl=tanggalID(it.pub||it.date);
+    if(tanpaJam)return tgl;
     const jam=it.pub?jamID(it.pub):'';
     return jam ? (tgl+' &middot; '+jam) : tgl;
   }
@@ -2182,7 +2183,7 @@ function fncSudahTayang(it){
   /* ---------- media ---------- */
   function blokVideo(it){
     if(!it.url)return '';
-    const thumb=it.thumb||it.image||'';
+    const thumb=it.thumb||it.image||((it.images||[])[0])||'';
     return '<div class="vid-wrap" onclick="window.__buka(\''+esc(it.url).replace(/'/g,"\\'")+'\')">'+
       (thumb?'<img src="'+esc(thumb)+'" alt="" loading="lazy">'
             :'<div class="vid-ph">REKAMAN VIDEO</div>')+
@@ -2206,8 +2207,19 @@ function fncSudahTayang(it){
     return (d&&d.items)||[];
   }
   /* Urut terbaru dulu, DAN sembunyikan yang jadwal tayangnya belum tiba. */
-  const urutBaru=a=>(a||[]).filter(fncSudahTayang)
-    .sort((x,y)=>fncWaktuTerbit(y)-fncWaktuTerbit(x));
+  /* Urutan tampil.
+     Kalau admin sudah menyusun urutannya sendiri (semua kiriman punya
+     nomor "urut"), urutan itulah yang dipakai — penting untuk Materi,
+     karena modul harus berurutan 1,2,3, bukan yang terbaru di atas.
+     Kalau tidak ada nomor urut, kembali ke urutan terbaru seperti biasa. */
+  function adaUrutManual(a){
+    return !!(a && a.length && a.every(x=>x && typeof x.urut==='number'));
+  }
+  const urutBaru=a=>{
+    const isi=(a||[]).filter(fncSudahTayang);
+    if(adaUrutManual(a))return isi.sort((x,y)=>x.urut-y.urut);
+    return isi.sort((x,y)=>fncWaktuTerbit(y)-fncWaktuTerbit(x));
+  };
   /* Kapan item terjadwal berikutnya muncul (untuk penyegaran otomatis). */
   function tayangBerikut(a){
     const now=Date.now();
@@ -2318,7 +2330,7 @@ function fncSudahTayang(it){
     return t.length>96 ? t.slice(0,96)+'...' : t;
   }
   /* Kepala kartu: gambar kecil + judul + waktu. Isi disembunyikan sampai diklik. */
-  function kepalaKartu(it,label,adaVideo){
+  function kepalaKartu(it,label,adaVideo,tanpaJam){
     const gbr=it.thumb||it.image||((it.images||[])[0])||'';
     const thumb='<div class="fi-thumb">'+
       (gbr?'<img src="'+esc(gbr)+'" alt="" loading="lazy">':'<div class="ph">&#128196;</div>')+
@@ -2327,7 +2339,7 @@ function fncSudahTayang(it){
       '<div class="fi-info">'+
         (it.title?'<h4>'+esc(it.title)+'</h4>':'<h4>&mdash;</h4>')+
         '<div class="fi-meta">'+(label||'')+
-        '<span class="feed-date">'+stempelWaktu(it)+'</span></div>'+
+        '<span class="feed-date">'+stempelWaktu(it,tanpaJam)+'</span></div>'+
       '</div>'+
       '<span class="fi-chev">&#9660;</span></div>';
   }
@@ -2434,7 +2446,8 @@ function fncSudahTayang(it){
         ? '<div class="wm-tag">'+esc(profil.id)+'</div>' : '';
       const vid = it.url ? blokVideo(it) : '';
       const label=(it.pair?'<span class="feed-tag">'+esc(it.pair)+'</span>':'')+
-                  (tag?'<span class="feed-tag '+tagCls+'">'+esc(tag)+'</span>':'');
+                  (tag?'<span class="feed-tag '+tagCls+'">'+esc(tag)+'</span>':'')+
+                  (it.url&&it.dur?'<span class="feed-tag">'+esc(it.dur)+'</span>':'');
       /* kiriman paling baru dibiarkan terbuka */
       const buka = (i===0 && !(kataCari[elId]||'')) ? ' buka' : '';
       return '<div class="feed-item'+buka+'" data-kid="'+esc(it.id||'')+'">'+wm+
@@ -2444,6 +2457,8 @@ function fncSudahTayang(it){
           (!vid&&cover?'<img class="feed-cover" src="'+esc(cover)+'" alt="" loading="lazy">':'')+
           '<div class="feed-pad">'+
           '<div class="feed-body">'+waFormat(it.body)+'</div>'+
+          (it.url?'<div class="ext-btn" onclick="event.stopPropagation();window.__buka(\''+
+            esc(it.url).replace(/'/g,"\\'")+'\')">&#9654; Tonton di Google Drive</div>':'')+
           (rest.length?'<div class="feed-gal">'+rest.map(s=>'<img src="'+esc(s)+'" alt="" loading="lazy">').join('')+'</div>':'')+
           '</div></div></div>';
     };
@@ -2679,10 +2694,12 @@ function fncSudahTayang(it){
     const j=it.jenis||'Video';
     const isVid=kelasJenis(j)==='video';
     const label='<span class="mat-kind '+kelasJenis(j)+'">'+esc(j)+'</span>'+
-                (it.__eks?'<span class="feed-tag">Eksklusif</span>':'');
+                (it.__eks?'<span class="feed-tag">Eksklusif</span>':'')+
+                (isVid&&it.dur?'<span class="feed-tag">'+esc(it.dur)+'</span>':'');
     const buka = (i===0 && !(kataCari['mt-list']||'')) ? ' buka' : '';
+    /* Materi tidak menampilkan jam — modul belajar tidak terikat waktu. */
     return '<div class="feed-item'+buka+'" data-kid="'+esc(it.id||'')+'">'+wm+
-      kepalaKartu(it,label,isVid&&!!it.url)+
+      kepalaKartu(it,label,isVid&&!!it.url,true)+
       '<div class="fi-isi"><div class="feed-pad">'+
         (isVid&&it.url?blokVideo(it):
           (it.thumb?'<img class="feed-cover" src="'+esc(it.thumb)+'" alt="" loading="lazy">':''))+
@@ -3514,14 +3531,11 @@ function fncSudahTayang(it){
     /* Tunggu daftarnya selesai dimuat, baru gulirkan. */
     for(let i=0;i<24;i++){
       await new Promise(r=>setTimeout(r,130));
-      const el=document.querySelector('#v-'+view+' .feed-item[data-kid="'+
-        String(id).replace(/"/g,'')+'"]');
-      /* Kiriman teratas di tab Berita tampil sebagai sorotan, bukan kartu biasa. */
-      if(!el && view==='news'){
-        const s=document.querySelector('#news-list .utama');
-        if(s){ s.classList.add('buka');
-          s.scrollIntoView({behavior:'smooth',block:'center'}); return; }
-      }
+      /* Kiriman bisa berupa kartu biasa ATAU kartu sorotan — dicari
+         berdasarkan penanda id yang sama, supaya tidak salah lompat. */
+      const kid=String(id).replace(/"/g,'');
+      const el=document.querySelector('#v-'+view+' .feed-item[data-kid="'+kid+'"], '+
+        '#v-'+view+' .utama[data-kid="'+kid+'"]');
       if(el){
         el.classList.add('buka');          /* buka isinya saat dituju dari Beranda */
         el.scrollIntoView({behavior:'smooth',block:'center'});
@@ -3555,7 +3569,7 @@ function fncSudahTayang(it){
     const gbr=it.thumb||it.image||((it.images||[])[0])||'';
     const tampilLbl=LABEL[sumber]||sumber;
     const ringkas=potongTeks(it.body,150);
-    return '<div class="utama" onclick="'+aksi+'">'+
+    return '<div class="utama" data-kid="'+esc(it.id||'')+'" onclick="'+aksi+'">'+
       '<div class="utama-gbr">'+
         (gbr?'<img src="'+esc(gbr)+'" alt="" loading="lazy">'
             :'<div class="ph">'+(IKON[sumber]||'&#128196;')+'</div>')+
