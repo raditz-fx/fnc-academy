@@ -1565,76 +1565,107 @@
    Isi asli tidak pernah dikirim ke member yang belum punya kode.
    ============================================================ */
 function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
-const FNC_ITER=200000;
-const _keyCache=new Map();
-function _b64e(buf){const b=new Uint8Array(buf);let s='';
-  for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));
-  return btoa(s);}
-function _b64d(str){const s=atob(str),b=new Uint8Array(s.length);
-  for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
-function fncKriptoSiap(){
-  return !!(typeof crypto!=='undefined'&&crypto.subtle&&crypto.getRandomValues);
-}
-async function _kunci(code,salt,iter){
-  const tag=code+'|'+_b64e(salt)+'|'+iter;
-  if(_keyCache.has(tag))return _keyCache.get(tag);
-  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveKey']);
-  const k=await crypto.subtle.deriveKey(
-    {name:'PBKDF2',salt:salt,iterations:iter,hash:'SHA-256'},
-    base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
-  _keyCache.set(tag,k);
-  return k;
-}
-/* Ringkasan aman untuk pratinjau — SENGAJA TIDAK memuat judul.
-   Judul saja sudah cukup membocorkan isi berita/analisa, jadi yang boleh
-   keluar hanya: waktu, label kategori, dan gambar mini beresolusi sangat
-   rendah (dibuat oleh admin, ~32px) yang mustahil dibaca detailnya. */
-function fncTeaser(arr){
-  return (arr||[]).map(function(x){
-    return {
-      id:   x.id||'',
-      date: x.date||'',
-      pub:  x.pub||null,
-      tag:  x.tag||'',
-      jenis:x.jenis||'',
-      blur: x.blur||null,
-      vid:  !!(x.url||x.video)
-    };
-  });
-}
-async function fncEnkripsi(code,obj,pakaiTeaser){
-  if(!fncKriptoSiap())throw new Error('NOCRYPTO');
-  const salt=crypto.getRandomValues(new Uint8Array(16));
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const key=await _kunci(code,salt,FNC_ITER);
-  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,
-    new TextEncoder().encode(JSON.stringify(obj)));
-  const out={v:3,alg:'AES-256-GCM',kdf:'PBKDF2-SHA256',iter:FNC_ITER,
-    salt:_b64e(salt),iv:_b64e(iv),ct:_b64e(ct)};
-  if(pakaiTeaser!==false)out.teaser=fncTeaser(obj);
-  return out;
-}
-async function fncDekripsi(code,d){
-  if(!fncKriptoSiap())throw new Error('NOCRYPTO');
-  const key=await _kunci(code,_b64d(d.salt),d.iter||FNC_ITER);
-  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:_b64d(d.iv)},key,_b64d(d.ct));
-  return JSON.parse(new TextDecoder().decode(pt));
-}
-async function fncHash(s){
-  const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('');
-}
-/* ---------- jadwal tayang ---------- */
-function fncWaktuTerbit(it){
-  if(it&&it.pub){const t=new Date(it.pub).getTime();if(!isNaN(t))return t;}
-  if(it&&it.date){const t=new Date(it.date+'T00:00:00').getTime();if(!isNaN(t))return t;}
-  return 0;
-}
-function fncSudahTayang(it){
-  if(!it||!it.pub)return true;
-  const t=new Date(it.pub).getTime();
-  return isNaN(t)?true:t<=Date.now();
-}
+  const FNC_ITER=200000;
+  const _keyCache=new Map();
+  function _b64e(buf){const b=new Uint8Array(buf);let s='';
+    for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode.apply(null,b.subarray(i,i+8192));
+    return btoa(s);}
+  function _b64d(str){const s=atob(str),b=new Uint8Array(s.length);
+    for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b;}
+  function fncKriptoSiap(){
+    return !!(typeof crypto!=='undefined'&&crypto.subtle&&crypto.getRandomValues);
+  }
+  async function _kunci(code,salt,iter){
+    const tag=code+'|'+_b64e(salt)+'|'+iter;
+    if(_keyCache.has(tag))return _keyCache.get(tag);
+    const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(code),'PBKDF2',false,['deriveKey']);
+    const k=await crypto.subtle.deriveKey(
+      {name:'PBKDF2',salt:salt,iterations:iter,hash:'SHA-256'},
+      base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+    _keyCache.set(tag,k);
+    return k;
+  }
+  /* Ringkasan aman untuk pratinjau — SENGAJA TIDAK memuat judul.
+     Judul saja sudah cukup membocorkan isi. */
+  function fncTeaser(arr){
+    return (arr||[]).map(function(x){
+      return {
+        id:   x.id||'',
+        date: x.date||'',
+        pub:  x.pub||null,
+        tag:  x.tag||'',
+        jenis:x.jenis||'',
+        blur: x.blur||null,
+        vid:  !!(x.url||x.video)
+      };
+    });
+  }
+  /* ---------- v4: enkripsi sekali, kunci dibungkus per kode ---------- */
+  async function fncEnkripsiV4(kodeList,obj,pakaiTeaser){
+    if(!fncKriptoSiap())throw new Error('NOCRYPTO');
+    const kode=(kodeList||[]).map(fncNormKode).filter(Boolean);
+    if(!kode.length)throw new Error('NOKODE');
+
+    /* kunci isi: acak, tidak berasal dari kode manapun */
+    const kunciIsi=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt','decrypt']);
+    const iv=crypto.getRandomValues(new Uint8Array(12));
+    const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv:iv},kunciIsi,
+      new TextEncoder().encode(JSON.stringify(obj)));
+    const mentah=await crypto.subtle.exportKey('raw',kunciIsi);
+
+    const bungkus=[];
+    for(const k of kode){
+      const salt=crypto.getRandomValues(new Uint8Array(16));
+      const ivk=crypto.getRandomValues(new Uint8Array(12));
+      const kk=await _kunci(k,salt,FNC_ITER);
+      const wrap=await crypto.subtle.encrypt({name:'AES-GCM',iv:ivk},kk,mentah);
+      bungkus.push({salt:_b64e(salt),iv:_b64e(ivk),wrap:_b64e(wrap)});
+    }
+    const out={v:4,alg:'AES-256-GCM',kdf:'PBKDF2-SHA256',iter:FNC_ITER,
+      iv:_b64e(iv),ct:_b64e(ct),kunci:bungkus};
+    if(pakaiTeaser!==false)out.teaser=fncTeaser(obj);
+    return out;
+  }
+  /* v3 lama: satu kode, kunci diturunkan langsung dari kodenya */
+  async function fncEnkripsi(code,obj,pakaiTeaser){
+    return fncEnkripsiV4([code],obj,pakaiTeaser);
+  }
+  async function fncDekripsi(code,d){
+    if(!fncKriptoSiap())throw new Error('NOCRYPTO');
+    const k=fncNormKode(code);
+    if(d && d.v===4 && Array.isArray(d.kunci)){
+      /* coba tiap bungkus kunci sampai ada yang terbuka */
+      for(const b of d.kunci){
+        try{
+          const kk=await _kunci(k,_b64d(b.salt),d.iter||FNC_ITER);
+          const mentah=await crypto.subtle.decrypt({name:'AES-GCM',iv:_b64d(b.iv)},kk,_b64d(b.wrap));
+          const kunciIsi=await crypto.subtle.importKey('raw',mentah,{name:'AES-GCM'},false,['decrypt']);
+          const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:_b64d(d.iv)},kunciIsi,_b64d(d.ct));
+          return JSON.parse(new TextDecoder().decode(pt));
+        }catch(e){ /* bungkus ini bukan untuk kode tersebut, coba berikutnya */ }
+      }
+      throw new Error('KODESALAH');
+    }
+    /* format lama v2/v3 */
+    const key=await _kunci(k,_b64d(d.salt),d.iter||FNC_ITER);
+    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:_b64d(d.iv)},key,_b64d(d.ct));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+  async function fncHash(s){
+    const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  /* ---------- jadwal tayang ---------- */
+  function fncWaktuTerbit(it){
+    if(it&&it.pub){const t=new Date(it.pub).getTime();if(!isNaN(t))return t;}
+    if(it&&it.date){const t=new Date(it.date+'T00:00:00').getTime();if(!isNaN(t))return t;}
+    return 0;
+  }
+  function fncSudahTayang(it){
+    if(!it||!it.pub)return true;
+    const t=new Date(it.pub).getTime();
+    return isNaN(t)?true:t<=Date.now();
+  }
 
   const K_ACC='fncjt_accounts', K_TR='fncjt_trades', K_SET='fncjt_settings',
         K_SEEN='fncjt_seen', K_GATE='fncjt_unlocked',
@@ -2218,7 +2249,7 @@ function fncSudahTayang(it){
      v1  = base64 lama (masih didukung supaya berkas lama tetap terbaca)
      polos = berita umum, memang tidak dikunci */
   async function bukaIsi(d,kode){
-    if(d&&(d.v===2||d.v===3)&&d.ct){
+    if(d&&(d.v===2||d.v===3||d.v===4)&&d.ct){
       if(!kode)throw new Error('KODESALAH');
       try{ return await fncDekripsi(kode,d); }
       catch(e){ throw new Error('KODESALAH'); }
@@ -2499,6 +2530,16 @@ function fncSudahTayang(it){
     kodeEks=(typeof k==='string'&&k)?k:null;
     return kodeEks;
   }
+  /* Kode yang dipakai untuk membuka berkas private (Rekap & Materi).
+     Member eksklusif memakai kode eksklusifnya — berkas private punya
+     bungkus kunci untuk kedua kode. */
+  async function ambilKodeAkses(){
+    if(kodeAkses)return kodeAkses;
+    let k=null;
+    try{ k=await store.get(K_KODE); }catch(e){}
+    kodeAkses=(typeof k==='string'&&k)?k:null;
+    return kodeAkses;
+  }
   const sudahBuka=async()=>!!(await ambilKode());
   /* Uji kode ke berkas sungguhan. true kalau ada berkas yang berhasil dibuka. */
   async function ujiKode(kode){
@@ -2672,12 +2713,20 @@ function fncSudahTayang(it){
     }
     if(rekapCache&&!force)return rekapCache;
     const d=await fetchJSON(REKAP_URL);
-    const semua=await bukaIsi(d,null);
+    const semua=await bukaIsi(d,await ambilKodeAkses());
     rekapCache={items:urutBaru(semua),updated:d.updated,next:tayangBerikut(semua)};
     return rekapCache;
   }
   async function showRekap(force){
     const eks = rkKind==='eks';
+    /* Tanpa kunci (pengguna percobaan) -> hanya teaser buram. */
+    if(!eks && tier==='trial'){
+      $('rk-list').innerHTML=skeletonFeed(2); $('rk-stamp').textContent='';
+      try{ const d=await fetchJSON(REKAP_URL);
+        $('rk-list').innerHTML=daftarTerkunci(d.teaser,'Belum ada rekap.');
+      }catch(e){ $('rk-list').innerHTML='<div class="feed-empty">Belum ada rekap.</div>'; }
+      return;
+    }
     if(eks && tier!=='eks'){
       $('rk-list').innerHTML=skeletonFeed(2); $('rk-stamp').textContent='';
       try{ const d=await fetchJSON(REKAP_EX_URL);
@@ -2739,12 +2788,19 @@ function fncSudahTayang(it){
     }
     if(materiCache&&!force)return materiCache;
     const d=await fetchJSON(MATERI_URL);
-    const semua=await bukaIsi(d,null);
+    const semua=await bukaIsi(d,await ambilKodeAkses());
     materiCache={items:urutBaru(semua),updated:d.updated,next:tayangBerikut(semua)};
     return materiCache;
   }
   async function showMateri(force){
     const eks = mtKind==='eks';
+    if(!eks && tier==='trial'){
+      $('mt-list').innerHTML=skeletonFeed(2); $('mt-stamp').textContent='';
+      try{ const d=await fetchJSON(MATERI_URL);
+        $('mt-list').innerHTML=daftarTerkunci(d.teaser,'Belum ada materi.');
+      }catch(e){ $('mt-list').innerHTML='<div class="feed-empty">Belum ada materi.</div>'; }
+      return;
+    }
     if(eks && tier!=='eks'){
       $('mt-list').innerHTML=skeletonFeed(2); $('mt-stamp').textContent='';
       try{ const d=await fetchJSON(MATERI_EX_URL);
@@ -3096,13 +3152,9 @@ function fncSudahTayang(it){
     el.classList.add('anim-in');
   }
   function go(view){
-    /* Pagar akses masa percobaan. Ini pemeriksaan yang sesungguhnya —
-       menyembunyikan tab saja tidak cukup, karena tab bisa dipanggil
-       dari mana pun (pintasan, tautan kartu, riwayat). */
-    if(tier==='trial' && TAB_TRIAL.indexOf(view)<0){
-      bukaUpgrade();
-      return;
-    }
+    /* Tab boleh dibuka semua. Pengamannya bukan di sini, melainkan pada
+       berkasnya: isi Rekap, Materi, Analisa, dan Berita Eksklusif
+       terenkripsi, dan pengguna percobaan tidak punya kuncinya. */
     /* Jurnal & Statistik butuh profil dulu */
     if((view==='journal'||view==='dashboard') && !profil){
       bukaProfil(view==='journal'
@@ -3186,12 +3238,15 @@ function fncSudahTayang(it){
     if(hasil==='eks'){
       setTier('eks'); await store.set(K_TIER,'eks');
       kodeEks=v; await store.set(K_ANGATE,v);
-      newsExCache=null; analisaCache=null; rekapExCache=null; materiExCache=null;
+      kodeAkses=v; await store.set(K_KODE,v);
+      newsCache=null; newsExCache=null; analisaCache=null;
+      rekapCache=null; rekapExCache=null; materiCache=null; materiExCache=null;
       $('upgrade-overlay').hidden=true;
       await segarkanAktif();
     }else if(hasil==='private' && tier==='trial'){
       setTier('private'); await store.set(K_TIER,'private');
       kodeEks=null; await store.set(K_ANGATE,'');
+      kodeAkses=v; await store.set(K_KODE,v);
       dataTrial=null;
       $('upgrade-overlay').hidden=true;
       await segarkanAktif();
@@ -3207,9 +3262,10 @@ function fncSudahTayang(it){
   async function keluarAkses(){
     if(!confirm('Keluar dan masukkan kode akses lagi?\n\n'+
       'Profil, akun, dan catatan jurnal kamu TIDAK akan terhapus.'))return;
-    kodeEks=null; dataTrial=null; setTier('private');
+    kodeEks=null; kodeAkses=null; dataTrial=null; setTier('private');
     await store.set(K_GATE,false);
     await store.set(K_TIER,'private');
+    await store.set(K_KODE,'');
     await store.set(K_ANGATE,'');
     newsCache=null; newsExCache=null; analisaCache=null;
     rekapCache=null; rekapExCache=null; materiCache=null; materiExCache=null;
@@ -3341,10 +3397,12 @@ function fncSudahTayang(it){
     const catat=arr=>{ const t=tayangBerikut(arr); if(t)jadwal.push(t); };
     try{ const c=await loadNewsUmum(); catat(c.semua||c.items);
       (c.items||[]).slice(0,4).forEach(x=>kumpul.push([x,'Berita','news'])); }catch(e){}
-    try{ const d=await fetchJSON(REKAP_URL); const s=await bukaIsi(d,null); catat(s);
-      urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap'])); }catch(e){}
-    try{ const d=await fetchJSON(MATERI_URL); const s=await bukaIsi(d,null); catat(s);
-      urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi'])); }catch(e){}
+    if(tier!=='trial'){
+      try{ const d=await fetchJSON(REKAP_URL); const s=await bukaIsi(d,await ambilKodeAkses()); catat(s);
+        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap'])); }catch(e){}
+      try{ const d=await fetchJSON(MATERI_URL); const s=await bukaIsi(d,await ambilKodeAkses()); catat(s);
+        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi'])); }catch(e){}
+    }
     if(tier==='eks'){
       try{ const c=await loadNewsEks(); if(c.next)jadwal.push(c.next);
         (c.items||[]).slice(0,3).forEach(x=>kumpul.push([x,'Eksklusif','news'])); }catch(e){}
@@ -3358,8 +3416,20 @@ function fncSudahTayang(it){
       try{ const d=await fetchJSON(MATERI_EX_URL); const s=await bukaIsi(d,await ambilKode()); catat(s);
         urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'MateriEks','materi'])); }catch(e){}
     }else if(tier==='trial'){
-      /* Pengguna masa percobaan TIDAK mengambil berkas eksklusif sama sekali —
-         bukan sekadar disembunyikan tampilannya. */
+      /* Pengguna percobaan melihat pratinjau buram dari SEMUA yang terkunci —
+         hanya bagian teaser yang diambil, isinya tetap terenkripsi. */
+      const pratinjau=[[NEWS_EX_URL,'Eksklusif','news'],[ANALISA_URL,'Analisa','analisa'],
+                       [REKAP_URL,'Rekap','rekap'],[MATERI_URL,'Materi','materi'],
+                       [REKAP_EX_URL,'RekapEks','rekap'],[MATERI_EX_URL,'MateriEks','materi']];
+      for(const [url,label,view] of pratinjau){
+        try{
+          const d=await fetchJSON(url);
+          catat(d.teaser||[]);
+          (d.teaser||[]).filter(fncSudahTayang)
+            .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a))
+            .slice(0,2).forEach(x=>kumpul.push([x,label,view,true]));
+        }catch(e){}
+      }
     }else{
       /* Member Private tetap melihat kartunya — tapi hanya dari bagian teaser.
          Isi, link, dan gambar asli tidak pernah diambil. */
@@ -3388,8 +3458,9 @@ function fncSudahTayang(it){
           '<b>'+(habis?'Masa percobaan berakhir':'Kamu sedang mencoba FNC Academy')+'</b>'+
           '<p>'+(habis
             ? 'Hubungi admin untuk lanjut jadi member private.'
-            : 'Akses Berita, Jurnal, Statistik, dan Kalkulator. '+
-              'Analisa, Rekap Live, dan Materi terbuka untuk member private.')+'</p>'+
+            : 'Berita, Jurnal, Statistik, dan Kalkulator terbuka penuh. '+
+              'Analisa, Rekap Live, dan Materi masih terkunci — '+
+              'jadi member private untuk membukanya.')+'</p>'+
         '</div>'+
         '<span class="sisa">'+(habis?'Berakhir':'Sisa '+sisa+' hari')+'</span>'+
       '</div>';
@@ -3451,15 +3522,11 @@ function fncSudahTayang(it){
     }
 
     /* ---------- pintasan cepat ---------- */
-    const daftarPintas = tier==='trial'
-      ? [['&#128240;','Berita','Update market','news'],
-         ['&#128221;','Jurnal','Catat trade-mu','journal'],
-         ['&#128202;','Statistik','Lihat performa','dashboard'],
-         ['&#129518;','Kalkulator','Hitung lot & risiko','calc']]
-      : [['&#128200;','Analisa','Pembahasan chart','analisa'],
-         ['&#127909;','Rekap Live','Tonton ulang sesi','rekap'],
-         ['&#128218;','Materi','Modul belajar','materi'],
-         ['&#129518;','Kalkulator','Hitung lot & risiko','calc']];
+    const daftarPintas = [
+      ['&#128200;','Analisa','Pembahasan chart','analisa'],
+      ['&#127909;','Rekap Live','Tonton ulang sesi','rekap'],
+      ['&#128218;','Materi','Modul belajar','materi'],
+      ['&#129518;','Kalkulator','Hitung lot & risiko','calc']];
     out+='<div class="home-sec"><div class="home-head"><h3>Pintasan</h3></div>'+
       '<div class="pintas">'+
         daftarPintas.map(a=>pintasKartu(a[0],a[1],a[2],a[3])).join('')+
@@ -3715,35 +3782,36 @@ function fncSudahTayang(it){
 
   /* Menyembunyikan tab yang tidak termasuk masa percobaan.
      Ini lapisan tampilan; pengaman sebenarnya ada di go() dan di enkripsi berkas. */
+  /* Pengguna percobaan tetap BISA membuka tabnya — isinya yang terkunci,
+     sama seperti member private melihat konten eksklusif. Yang tampil
+     hanya bagian teaser: gambar mini buram + tanggal, tanpa judul. */
   function terapkanAkses(){
     const trial = tier==='trial';
     document.querySelectorAll('.tab').forEach(t=>{
       const v=t.dataset.view;
-      t.hidden = trial && TAB_TRIAL.indexOf(v)<0;
-    });
-    /* segmen Eksklusif di tab Berita ikut disembunyikan */
-    const segEks=document.querySelector('#news-seg .seg-btn[data-nk="eks"]');
-    if(segEks){
-      segEks.hidden=trial;
-      if(trial && newsKind==='eks'){
-        newsKind='umum';
-        document.querySelectorAll('#news-seg .seg-btn').forEach(b=>
-          b.classList.toggle('active',b.dataset.nk==='umum'));
+      t.hidden=false;
+      const kunci = trial && TAB_TRIAL.indexOf(v)<0;
+      let dot=t.querySelector('.lockdot');
+      if(kunci && !dot && v!=='analisa'){
+        dot=document.createElement('span');
+        dot.className='lockdot'; dot.innerHTML='&#128274;';
+        t.appendChild(dot);
+      }else if(!kunci && dot && v!=='analisa'){
+        dot.remove();
       }
-    }
-    /* kalau sedang membuka tab terlarang, pindahkan ke Beranda */
-    if(trial){
-      const aktif=document.querySelector('.view.active');
-      const v=aktif?aktif.id.replace('v-',''):'';
-      if(v && TAB_TRIAL.indexOf(v)<0) go('beranda');
-    }
+    });
+    const dotAn=$('an-lockdot');
+    if(dotAn)dotAn.hidden=(tier==='eks');
+    /* segmen Eksklusif tetap terlihat, tapi isinya pratinjau buram */
+    const segEks=document.querySelector('#news-seg .seg-btn[data-nk="eks"]');
+    if(segEks)segEks.hidden=false;
   }
   /* Uji kode ke berkas terenkripsi. true HANYA kalau dekripsi v2 berhasil. */
   async function kodeEksValid(kode){
     for(const url of [ANALISA_URL,NEWS_EX_URL,REKAP_EX_URL,MATERI_EX_URL]){
       try{
         const d=await fetchJSON(url);
-        if(d&&(d.v===2||d.v===3)&&d.ct){ await fncDekripsi(kode,d); return true; }
+        if(d&&(d.v===2||d.v===3||d.v===4)&&d.ct){ await fncDekripsi(kode,d); return true; }
       }catch(e){}
     }
     return false;
@@ -3758,6 +3826,8 @@ function fncSudahTayang(it){
        2. jumlah hari sejak pertama dipakai di perangkat itu
      ============================================================ */
   const K_TRIAL='fncjt_trial';
+  const K_KODE='fncjt_kode';    /* kode akses yang dipakai — untuk membuka berkas private */
+  let kodeAkses=null;
   let dataTrial=null;   /* {h, mulai, exp, hari} */
 
   function hariKe(ms){ return Math.floor(ms/86400000); }
@@ -3844,6 +3914,9 @@ function fncSudahTayang(it){
       await store.set(K_TIER,t);
       if(t==='eks'){ kodeEks=val; await store.set(K_ANGATE,val); }
       else { kodeEks=null; await store.set(K_ANGATE,''); }   /* buang sisa kode lama */
+      /* Kode percobaan tidak bisa membuka berkas private. */
+      kodeAkses = (t==='trial') ? null : val;
+      await store.set(K_KODE, kodeAkses||'');
       $('gate-err').hidden=true; $('gate-code').value='';
       await unlock();
     }else{
