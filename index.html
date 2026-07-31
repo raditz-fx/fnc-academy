@@ -632,6 +632,30 @@
   html[data-tema="gelap"] .ann.live{background:linear-gradient(135deg,#33161A,#251013);
     border-color:#6B2229;color:#FCA5A5;}
 
+  /* ===== lencana posisi Buy / Sell ===== */
+  .posisi{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;
+    font-size:10.5px;font-weight:800;letter-spacing:.07em;white-space:nowrap;
+    border:1.5px solid transparent;transition:box-shadow .2s,transform .16s;}
+  .posisi::before{content:'';width:0;height:0;border-left:4.5px solid transparent;
+    border-right:4.5px solid transparent;}
+  .posisi.buy{background:rgba(22,163,74,.12);color:#15803D;border-color:rgba(22,163,74,.42);
+    box-shadow:0 0 10px rgba(22,163,74,.30);}
+  .posisi.buy::before{border-bottom:7px solid #16A34A;}
+  .posisi.sell{background:rgba(220,38,38,.12);color:#B91C1C;border-color:rgba(220,38,38,.42);
+    box-shadow:0 0 10px rgba(220,38,38,.30);}
+  .posisi.sell::before{border-top:7px solid #DC2626;}
+  .posisi:hover{transform:translateY(-1px);}
+  .posisi.buy:hover{box-shadow:0 0 16px rgba(22,163,74,.48);}
+  .posisi.sell:hover{box-shadow:0 0 16px rgba(220,38,38,.48);}
+  html[data-tema="gelap"] .posisi.buy{background:rgba(74,222,128,.14);color:#86EFAC;
+    border-color:rgba(74,222,128,.45);box-shadow:0 0 14px rgba(74,222,128,.34);}
+  html[data-tema="gelap"] .posisi.buy::before{border-bottom-color:#4ADE80;}
+  html[data-tema="gelap"] .posisi.sell{background:rgba(248,113,113,.14);color:#FCA5A5;
+    border-color:rgba(248,113,113,.45);box-shadow:0 0 14px rgba(248,113,113,.34);}
+  html[data-tema="gelap"] .posisi.sell::before{border-top-color:#F87171;}
+  html[data-tema="gelap"] .posisi.buy:hover{box-shadow:0 0 22px rgba(74,222,128,.55);}
+  html[data-tema="gelap"] .posisi.sell:hover{box-shadow:0 0 22px rgba(248,113,113,.55);}
+
   /* ===== masa percobaan ===== */
   .tier-chip.trial{background:#0EA5E9;color:#fff;}
   html[data-tema="gelap"] .tier-chip.trial{background:#0369A1;color:#E0F2FE;}
@@ -1166,6 +1190,8 @@
           <div class="field"><label for="in-sl">Stop Loss</label><input type="number" step="any" id="in-sl"></div>
           <div class="field"><label for="in-tp">Take Profit</label><input type="number" step="any" id="in-tp"></div>
           <div class="field"><label for="in-riskpct">Risk %</label><input type="number" step="any" id="in-riskpct" placeholder="1"></div>
+          <div class="field"><label for="in-posisi">Posisi</label>
+            <select id="in-posisi"><option value="Buy">Buy</option><option value="Sell">Sell</option></select></div>
           <div class="field"><label for="in-result">Hasil</label>
             <select id="in-result"><option>Win</option><option>Loss</option><option>BE</option></select></div>
           <div class="field"><label for="in-strategy">Strategi</label><input type="text" id="in-strategy" placeholder="Order Block"></div>
@@ -1190,7 +1216,7 @@
 
       <div class="tbl-wrap">
         <table class="tbl">
-          <thead><tr><th>#</th><th>Tanggal</th><th>Jam</th><th>Market</th><th>Entry</th><th>SL</th><th>TP</th>
+          <thead><tr><th>#</th><th>Tanggal</th><th>Jam</th><th>Market</th><th>Posisi</th><th>Entry</th><th>SL</th><th>TP</th>
             <th>Vol</th><th>Risk%</th><th id="th-risk">Risk $</th><th>R:R</th><th>Hasil</th>
             <th id="th-netmain">Net P/L $</th><th id="th-netsub">Net P/L Rp</th><th>Strategi</th><th>TF</th><th>Alasan</th><th></th></tr></thead>
           <tbody id="journal-tbody"></tbody>
@@ -1790,6 +1816,20 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function fmtSub(usdVal){return fmtSubByCur(usdVal,activeCurrency());}
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
+  /* Arah posisi. Trade lama belum punya kolom ini, jadi ditebak dari
+     letak Stop Loss: SL di bawah Entry = Buy, SL di atas Entry = Sell. */
+  function arahPosisi(t){
+    if(t.posisi==='Buy'||t.posisi==='Sell')return t.posisi;
+    const e=parseFloat(t.entry), s=parseFloat(t.sl);
+    if(isNaN(e)||isNaN(s))return '';
+    return s<e ? 'Buy' : 'Sell';
+  }
+  function lencanaPosisi(t){
+    const a=arahPosisi(t);
+    if(!a)return '<span style="color:var(--gray)">&mdash;</span>';
+    return '<span class="posisi '+a.toLowerCase()+'">'+a.toUpperCase()+'</span>';
+  }
+
   function compute(t){
     const a=acctById(t.accountId);
     if(!a) return {risk:0,rr:0,usd:0,rp:0};
@@ -1997,6 +2037,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       return `<tr><td>${list.length-i}</td><td>${esc(t.date)}</td>
         <td>${t.jam?esc(t.jam):'<span style="color:var(--gray)">&mdash;</span>'}</td>
         <td>${esc(t.market)}</td>
+        <td>${lencanaPosisi(t)}</td>
         <td>${t.entry}</td><td>${t.sl}</td><td>${t.tp}</td><td>${t.vol==null?'-':t.vol}</td>
         <td>${t.riskPct}%</td><td>${fmtMain(c.risk)}</td><td>${c.rr.toFixed(2)}</td>
         <td><span class="pill ${rc}">${esc(t.result)}</span></td>
@@ -2038,9 +2079,21 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     market:$('in-market').value.trim().toUpperCase(),
     entry:parseFloat($('in-entry').value),sl:parseFloat($('in-sl').value),tp:parseFloat($('in-tp').value),
     vol:parseFloat($('in-vol').value)||null,riskPct:parseFloat($('in-riskpct').value),
+    posisi:$('in-posisi').value,
     result:$('in-result').value,strategy:$('in-strategy').value.trim(),
     tf:$('in-tf').value,reason:$('in-reason').value.trim()};}
+  /* Saat Entry & SL diisi, arah posisi menyesuaikan sendiri — tapi tetap
+     bisa diubah manual kalau member memang menginginkannya. */
+  let posisiDiubahManual=false;
+  function selaraskanPosisi(){
+    if(posisiDiubahManual)return;
+    const e=parseFloat($('in-entry').value), s=parseFloat($('in-sl').value);
+    if(isNaN(e)||isNaN(s))return;
+    $('in-posisi').value = s<e ? 'Buy' : 'Sell';
+  }
+
   function updatePreview(){
+    selaraskanPosisi();
     const d=readForm();
     if(!d.accountId||isNaN(d.entry)||isNaN(d.sl)||isNaN(d.tp)||isNaN(d.riskPct)){
       ['cp-risk','cp-rr','cp-usd','cp-rp'].forEach(i=>{$(i).textContent='—';$(i).className='';});return;}
@@ -2074,6 +2127,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     const t=trades.find(x=>x.id===id); if(!t)return;
     editTradeId=id;
     $('in-date').value=t.date;$('in-jam').value=t.jam||'';
+    $('in-posisi').value=arahPosisi(t)||'Buy';
     $('in-account').value=t.accountId;$('in-market').value=t.market;
     $('in-vol').value=t.vol==null?'':t.vol;$('in-entry').value=t.entry;$('in-sl').value=t.sl;$('in-tp').value=t.tp;
     $('in-riskpct').value=t.riskPct;$('in-result').value=t.result;$('in-strategy').value=t.strategy||'';
@@ -3165,9 +3219,13 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   };
 
   /* ---------- EVENTS ---------- */
+  if($('in-posisi'))$('in-posisi').addEventListener('change',()=>{ posisiDiubahManual=true; });
+
   $('toggle-form').onclick=()=>{
     if(!accounts.length){alert('Buat akun dulu di tab Akun.');return;}
-    const f=$('trade-form'); if(!f.classList.contains('open'))resetForm(); f.classList.toggle('open');};
+    const f=$('trade-form');
+    if(!f.classList.contains('open')){ posisiDiubahManual=false; resetForm(); }
+    f.classList.toggle('open');};
   $('cancel-form').onclick=()=>$('trade-form').classList.remove('open');
   $('save-trade').onclick=async()=>{
     const d=readForm();
