@@ -1155,6 +1155,10 @@
       <div class="form" id="trade-form">
         <div class="fgrid">
           <div class="field"><label for="in-date">Tanggal</label><input type="date" id="in-date"></div>
+          <div class="field"><label for="in-jam">Jam Entry</label>
+            <input type="time" id="in-jam" step="60">
+            <div class="hint" style="font-size:11px;color:var(--gray);margin-top:4px;">
+              Dipakai mengurutkan trade di hari yang sama.</div></div>
           <div class="field"><label for="in-account">Akun</label><select id="in-account"></select></div>
           <div class="field"><label for="in-market">Market</label><input type="text" id="in-market" placeholder="XAUUSD"></div>
           <div class="field"><label for="in-vol">Volume (Lot)</label><input type="number" step="any" id="in-vol" placeholder="0.10"></div>
@@ -1186,7 +1190,7 @@
 
       <div class="tbl-wrap">
         <table class="tbl">
-          <thead><tr><th>#</th><th>Tanggal</th><th>Market</th><th>Entry</th><th>SL</th><th>TP</th>
+          <thead><tr><th>#</th><th>Tanggal</th><th>Jam</th><th>Market</th><th>Entry</th><th>SL</th><th>TP</th>
             <th>Vol</th><th>Risk%</th><th id="th-risk">Risk $</th><th>R:R</th><th>Hasil</th>
             <th id="th-netmain">Net P/L $</th><th id="th-netsub">Net P/L Rp</th><th>Strategi</th><th>TF</th><th>Alasan</th><th></th></tr></thead>
           <tbody id="journal-tbody"></tbody>
@@ -1806,7 +1810,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     const bes=wc.filter(x=>x.t.result==='BE'), total=wc.length;
     const netUsd=wc.reduce((s,x)=>s+x.c.usd,0);
     const sumWin=wins.reduce((s,x)=>s+x.c.usd,0), sumLoss=Math.abs(losses.reduce((s,x)=>s+x.c.usd,0));
-    const sorted=[...wc].sort((a,b)=>(a.t.date||'').localeCompare(b.t.date||''));
+    /* kurva ekuitas: kronologis, jadi kebalikan dari daftar jurnal */
+    const sorted=[...wc].map((x,i)=>({x:x,k:kunciUrut(x.t,i)}))
+      .sort((a,b)=>bandingTrade(b.k,a.k)).map(o=>o.x);
     let eq=0,peak=0,maxDD=0; const curve=[0];
     sorted.forEach(x=>{eq+=x.c.usd;curve.push(eq);if(eq>peak)peak=eq;const dd=peak-eq;if(dd>maxDD)maxDD=dd;});
     return {total,wins:wins.length,losses:losses.length,bes:bes.length,netUsd,
@@ -1935,11 +1941,51 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     return list.filter(t=>(!m||t.market===m)&&(!r||t.result===r)&&(!s||t.strategy===s)&&
       (!q||(t.reason||'').toLowerCase().includes(q)));
   }
+  /* ============================================================
+     URUTAN JURNAL
+     Sebelumnya hanya membandingkan tanggal, jadi semua trade di hari
+     yang sama dianggap sama persis dan urutannya jatuh ke urutan input.
+     Sekarang bertingkat: tanggal -> jam entry -> waktu pencatatan.
+     Trade lama yang belum punya jam tetap tertangani lewat urutan
+     pencatatannya, jadi tidak perlu diisi ulang satu per satu.
+     ============================================================ */
+  function kunciUrut(t,i){
+    const tgl=String(t.date||'');
+    const jam=String(t.jam||'');
+    /* waktu pencatatan: dari penanda dibuat, atau dari nomor id demo */
+    let catat=0;
+    if(t.dibuat){ const x=new Date(t.dibuat).getTime(); if(!isNaN(x))catat=x; }
+    return {tgl:tgl, jam:jam, catat:catat, i:i};
+  }
+  function bandingTrade(A,B){
+    /* tanggal: terbaru dulu; yang kosong ditaruh paling bawah */
+    if(A.tgl!==B.tgl){
+      if(!A.tgl)return 1;
+      if(!B.tgl)return -1;
+      return B.tgl.localeCompare(A.tgl);
+    }
+    /* jam: terbaru dulu; yang belum punya jam ditaruh setelah yang punya */
+    if(A.jam!==B.jam){
+      if(!A.jam)return 1;
+      if(!B.jam)return -1;
+      return B.jam.localeCompare(A.jam);
+    }
+    /* waktu pencatatan: yang dicatat belakangan dianggap lebih baru */
+    if(A.catat!==B.catat)return B.catat-A.catat;
+    /* benar-benar seri: yang diinput belakangan tetap di atas */
+    return B.i-A.i;
+  }
+  function urutJurnal(arr){
+    return arr.map((t,i)=>({t:t,k:kunciUrut(t,i)}))
+      .sort((a,b)=>bandingTrade(a.k,b.k))
+      .map(x=>x.t);
+  }
+
   function renderJournal(){
     const base=tradesFor(currentAccId());
     fillSelect('jf-market','Semua Market',[...new Set(base.map(t=>t.market).filter(Boolean))].sort());
     fillSelect('jf-strategy','Semua Strategi',[...new Set(base.map(t=>t.strategy).filter(Boolean))].sort());
-    const list=journalFiltered().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    const list=urutJurnal(journalFiltered());
     $('journal-empty').style.display=list.length?'none':'block';
     const uh=$('th-netmain'); if(uh) uh.textContent='Net P/L '+mainUnit();
     const rh=$('th-netsub'); if(rh) rh.textContent=activeCurrency()==='IDR'?'Net P/L $':'Net P/L Rp';
@@ -1948,7 +1994,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       const c=compute(t);
       const rc=t.result==='Win'?'win':t.result==='Loss'?'loss':'be';
       const uc=c.usd>0?'pos':c.usd<0?'neg':'neu';
-      return `<tr><td>${list.length-i}</td><td>${esc(t.date)}</td><td>${esc(t.market)}</td>
+      return `<tr><td>${list.length-i}</td><td>${esc(t.date)}</td>
+        <td>${t.jam?esc(t.jam):'<span style="color:var(--gray)">&mdash;</span>'}</td>
+        <td>${esc(t.market)}</td>
         <td>${t.entry}</td><td>${t.sl}</td><td>${t.tp}</td><td>${t.vol==null?'-':t.vol}</td>
         <td>${t.riskPct}%</td><td>${fmtMain(c.risk)}</td><td>${c.rr.toFixed(2)}</td>
         <td><span class="pill ${rc}">${esc(t.result)}</span></td>
@@ -1986,7 +2034,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     $('acct-form').scrollIntoView({behavior:'smooth',block:'nearest'});
   }
   function readForm(){return{
-    accountId:$('in-account').value,date:$('in-date').value,
+    accountId:$('in-account').value,date:$('in-date').value,jam:$('in-jam').value||'',
     market:$('in-market').value.trim().toUpperCase(),
     entry:parseFloat($('in-entry').value),sl:parseFloat($('in-sl').value),tp:parseFloat($('in-tp').value),
     vol:parseFloat($('in-vol').value)||null,riskPct:parseFloat($('in-riskpct').value),
@@ -2013,6 +2061,10 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function resetForm(){
     editTradeId=null;
     $('in-date').value=new Date().toISOString().slice(0,10);
+    /* jam diisi otomatis dengan waktu sekarang — tinggal diubah kalau perlu */
+    (function(){ const d=new Date();
+      $('in-jam').value=String(d.getHours()).padStart(2,'0')+':'+
+        String(d.getMinutes()).padStart(2,'0'); })();
     if(accounts.length)$('in-account').value=currentAccId()||accounts[0].id;
     ['in-market','in-vol','in-entry','in-sl','in-tp','in-riskpct','in-strategy','in-reason'].forEach(i=>$(i).value='');
     $('in-result').value='Win';$('in-tf').value='H1';
@@ -2021,7 +2073,8 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function openEdit(id){
     const t=trades.find(x=>x.id===id); if(!t)return;
     editTradeId=id;
-    $('in-date').value=t.date;$('in-account').value=t.accountId;$('in-market').value=t.market;
+    $('in-date').value=t.date;$('in-jam').value=t.jam||'';
+    $('in-account').value=t.accountId;$('in-market').value=t.market;
     $('in-vol').value=t.vol==null?'':t.vol;$('in-entry').value=t.entry;$('in-sl').value=t.sl;$('in-tp').value=t.tp;
     $('in-riskpct').value=t.riskPct;$('in-result').value=t.result;$('in-strategy').value=t.strategy||'';
     $('in-tf').value=t.tf||'H1';$('in-reason').value=t.reason||'';
@@ -3122,7 +3175,8 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       alert('Wajib isi: Akun, Market, Entry, SL, TP, dan Risk %.');return;}
     if(d.sl===d.entry){alert('Stop Loss tidak boleh sama dengan Entry.');return;}
     if(editTradeId)trades=trades.map(t=>t.id===editTradeId?{...t,...d}:t);
-    else trades.push({id:'t_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),...d});
+    else trades.push({id:'t_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+      dibuat:new Date().toISOString(),...d});
     await persist();$('trade-form').classList.remove('open');renderAll();};
 
   $('toggle-acct-form').onclick=()=>{const f=$('acct-form');if(!f.classList.contains('open'))resetAcctForm();f.classList.toggle('open');};
