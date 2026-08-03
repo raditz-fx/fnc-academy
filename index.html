@@ -805,7 +805,9 @@
   }
 
   /* ===== penyaring cepat ===== */
-  .saring{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:-4px 0 13px;}
+  .saring{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:-4px 0 13px;
+    transition:opacity .2s;}
+  .saring.memuat{opacity:.45;pointer-events:none;}
   .saring .chip{border:1.5px solid var(--line);background:var(--kartu);color:var(--slate-2);
     border-radius:20px;padding:6px 13px;font-size:12px;font-weight:600;cursor:pointer;
     font-family:inherit;white-space:nowrap;transition:all .16s;box-shadow:var(--bayang-1);}
@@ -2333,6 +2335,19 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         '<button class="btn sm" onclick="window.__bukaUpgrade()">Buka Akses</button>'+
       '</div></div>';
   }
+  /* Menggambar daftar kartu terkunci lewat mesin yang sama dengan daftar
+     biasa, supaya pencarian dan penyaring tetap berlaku dan tidak ada
+     dua jalur penggambaran yang saling menimpa. */
+  function gambarTerkunci(elId,teaser,kosongTxt){
+    const isi=(teaser||[]).filter(fncSudahTayang)
+      .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a));
+    daftarPenuh[elId]=isi;
+    modeTerkunci[elId]=true;
+    const buat=(it)=>kartuTerkunci(it);
+    pembuatKartu[elId]={buat:buat,kosong:kosongTxt};
+    gambarDaftar(elId,isi,buat,kosongTxt);
+    pasangSaring(elId);
+  }
   function daftarTerkunci(teaser,kosongTxt){
     const t=(teaser||[]).filter(fncSudahTayang).sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a));
     if(!t.length)return '<div class="feed-empty">'+kosongTxt+'</div>';
@@ -2389,6 +2404,29 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
      MESIN DAFTAR: pencarian + muat bertahap + kartu ringkas
      ============================================================ */
   const daftarPenuh={};                 /* seluruh kiriman per daftar, sebelum disaring */
+  /* Nomor urut permintaan per daftar. Setiap kali daftar diminta digambar
+     ulang, nomornya naik. Hasil pengambilan berkas yang datang terlambat
+     akan dibuang kalau nomornya sudah tidak cocok — inilah yang mencegah
+     tampilan satu segmen menimpa segmen lain. */
+  const proses={};
+  /* Menandai daftar yang sedang menampilkan kartu terkunci, supaya
+     kiriman terkunci tidak pernah dijadikan sorotan besar. */
+  const modeTerkunci={};
+  const WADAH_SARING={'news-list':'saring-news','analisa-list':'saring-an',
+                      'rk-list':'saring-rk','mt-list':'saring-mt'};
+  /* Selama daftar dimuat, tombol penyaring dinonaktifkan. Tanpa ini,
+     pengguna bisa menekan tombol milik daftar LAMA yang belum sempat
+     diperbarui — dan hasilnya jadi kosong atau tertukar. */
+  function kunciSaring(id,aktif){
+    const el=$(WADAH_SARING[id]); if(!el)return;
+    el.classList.toggle('memuat',!!aktif);
+  }
+  function mulaiProses(id){
+    proses[id]=(proses[id]||0)+1;
+    kunciSaring(id,true);
+    return proses[id];
+  }
+  function prosesUsang(id,n){ return proses[id]!==n; }
   const PER_HAL=12;                     /* dimuat lebih dulu saat tab dibuka */
   const tampil={};                      /* berapa yang sedang ditampilkan per daftar */
   const kataCari={};                    /* kata kunci per daftar */
@@ -2511,7 +2549,10 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     const q=kataCari[elId]||'';
     /* Sorotan hanya dipakai di tab Berita, dan hanya saat tidak sedang
        mencari atau menyaring — supaya hasil pencarian tetap setara. */
-    const pakaiSorotan = (elId==='news-list') && !q &&
+    /* Sorotan hanya untuk kiriman yang benar-benar terbuka. Kiriman
+       terkunci tidak boleh dibesarkan — judulnya memang tidak ada,
+       dan tampilannya jadi kosong. */
+    const pakaiSorotan = (elId==='news-list') && !q && !modeTerkunci[elId] &&
       !saringAktif[elId] && !saringTgl[elId];
     const hasil=(semua||[]).filter(it=>cocok(it,q,elId));
     const batas=tampil[elId]||PER_HAL;
@@ -2561,6 +2602,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   /* Dipanggil setiap daftar baru selesai dimuat. */
   function pasangSaring(elId){
     try{ segarkanSaring(elId); }catch(e){}
+    kunciSaring(elId,false);
   }
   const pembuatKartu={};                /* cara menggambar tiap daftar */
 
@@ -2569,6 +2611,10 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     const chip=e.target.closest('[data-saring]');
     if(chip){
       const id=chip.dataset.saring;
+      /* Abaikan kalau daftarnya sedang dimuat — tombol ini milik daftar
+         lama yang belum sempat diperbarui, jadi hasilnya akan salah. */
+      const wadah=$(WADAH_SARING[id]);
+      if(wadah && wadah.classList.contains('memuat'))return;
       saringAktif[id]=chip.dataset.nilai||'';
       tampil[id]=PER_HAL;
       gambarUlang(id);
@@ -2591,6 +2637,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
 
   function renderFeed(elId,items,kind){
     daftarPenuh[elId]=items||[];
+    modeTerkunci[elId]=false;
     const buat=(it,i)=>{
       const imgs=(it.images||[]).filter(Boolean);
       const cover=it.image||imgs[0]||null;
@@ -2696,27 +2743,32 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   }
   async function showNews(force){
     const eks = newsKind==='eks';
+    const n = mulaiProses('news-list');
+    $('news-lock').hidden=true; $('news-list').hidden=false;
+    $('news-list').innerHTML=skeletonFeed(2);
     if(eks && tier!=='eks'){
-      $('news-lock').hidden=true; $('news-list').hidden=false;
-      $('news-list').innerHTML=skeletonFeed(2);
       try{
         const d=await fetchJSON(NEWS_EX_URL);
-        $('news-list').innerHTML=daftarTerkunci(d.teaser,'Belum ada berita eksklusif.');
+        if(prosesUsang('news-list',n))return;      /* segmen sudah berganti, buang hasil ini */
+        gambarTerkunci('news-list',d.teaser,'Belum ada berita eksklusif.');
       }catch(e){
-        $('news-list').innerHTML='<div class="feed-empty">Belum ada berita eksklusif.</div>';
+        if(prosesUsang('news-list',n))return;
+        gambarTerkunci('news-list',[],'Belum ada berita eksklusif.');
       }
       $('news-stamp').textContent='';
       return;
     }
-    $('news-lock').hidden=true; $('news-list').hidden=false;
-    $('news-list').innerHTML=skeletonFeed(2);
     try{
       const c = eks ? await loadNewsEks(force) : await loadNewsUmum(force);
+      if(prosesUsang('news-list',n))return;
       renderFeed('news-list',c.items,'news');
       $('news-stamp').textContent=c.updated?'Diperbarui '+tanggalID(c.updated):'';
     }catch(e){
+      if(prosesUsang('news-list',n))return;
       if(e&&e.message==='KODESALAH'){ await kunciGerbang(); return; }
       const nm = eks?'berita-eksklusif.json':'berita.json';
+      daftarPenuh['news-list']=[]; pembuatKartu['news-list']=null;
+      kunciSaring('news-list',false);
       $('news-list').innerHTML='<div class="feed-empty">Belum ada berita, atau berkas <b>'+nm+'</b> '+
         'belum di-upload ke server.<br>Coba muat ulang beberapa saat lagi.</div>';
       $('news-stamp').textContent='';
@@ -2735,6 +2787,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       $('an-stamp').textContent=analisaCache.updated?'Diperbarui '+tanggalID(analisaCache.updated):'';
     }catch(e){
       if(e&&e.message==='KODESALAH'){ await kunciGerbang(); return; }
+      kunciSaring('analisa-list',false);
       $('analisa-list').innerHTML='<div class="feed-empty">Belum ada analisa, atau berkas <b>analisa.json</b> '+
         'belum di-upload ke server.</div>';
       $('an-stamp').textContent='';
@@ -2743,13 +2796,16 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   async function checkAnalisaGate(){
     if(tier!=='eks'){
       $('analisa-lock').hidden=true; $('analisa-body').hidden=false;
+      const n=mulaiProses('analisa-list');
       $('analisa-list').innerHTML=skeletonFeed(1);
       $('an-stamp').textContent='';
       try{
         const d=await fetchJSON(ANALISA_URL);
-        $('analisa-list').innerHTML=daftarTerkunci(d.teaser,'Belum ada analisa.');
+        if(prosesUsang('analisa-list',n))return;
+        gambarTerkunci('analisa-list',d.teaser,'Belum ada analisa.');
       }catch(e){
-        $('analisa-list').innerHTML='<div class="feed-empty">Belum ada analisa.</div>';
+        if(prosesUsang('analisa-list',n))return;
+        gambarTerkunci('analisa-list',[],'Belum ada analisa.');
       }
       return;
     }
@@ -2826,24 +2882,30 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   }
   async function showRekap(force){
     const eks = rkKind==='eks';
+    const n = mulaiProses('rk-list');
+    $('rk-list').innerHTML=skeletonFeed(2);
     /* Tanpa kunci (pengguna percobaan) -> hanya teaser buram. */
     if(!eks && tier==='trial'){
-      $('rk-list').innerHTML=skeletonFeed(2); $('rk-stamp').textContent='';
+      $('rk-stamp').textContent='';
       try{ const d=await fetchJSON(REKAP_URL);
-        $('rk-list').innerHTML=daftarTerkunci(d.teaser,'Belum ada rekap.');
-      }catch(e){ $('rk-list').innerHTML='<div class="feed-empty">Belum ada rekap.</div>'; }
+        if(prosesUsang('rk-list',n))return;
+        gambarTerkunci('rk-list',d.teaser,'Belum ada rekap.');
+      }catch(e){ if(prosesUsang('rk-list',n))return;
+        gambarTerkunci('rk-list',[],'Belum ada rekap.'); }
       return;
     }
     if(eks && tier!=='eks'){
-      $('rk-list').innerHTML=skeletonFeed(2); $('rk-stamp').textContent='';
+      $('rk-stamp').textContent='';
       try{ const d=await fetchJSON(REKAP_EX_URL);
-        $('rk-list').innerHTML=daftarTerkunci(d.teaser,'Belum ada rekap eksklusif.');
-      }catch(e){ $('rk-list').innerHTML='<div class="feed-empty">Belum ada rekap eksklusif.</div>'; }
+        if(prosesUsang('rk-list',n))return;
+        gambarTerkunci('rk-list',d.teaser,'Belum ada rekap eksklusif.');
+      }catch(e){ if(prosesUsang('rk-list',n))return;
+        gambarTerkunci('rk-list',[],'Belum ada rekap eksklusif.'); }
       return;
     }
-    $('rk-list').innerHTML=skeletonFeed(2);
     try{
       const c=await loadRekap(force);
+      if(prosesUsang('rk-list',n))return;
       daftarPenuh['rk-list']=c.items||[];
       pembuatKartu['rk-list']={buat:kartuRekap,
         kosong:'Belum ada rekap yang diposting.<br>Cek lagi nanti ya.'};
@@ -2853,6 +2915,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       $('rk-stamp').textContent=c.updated?'Diperbarui '+tanggalID(c.updated):'';
     }catch(e){
       if(e&&e.message==='KODESALAH'){ await kunciGerbang(); return; }
+      kunciSaring('rk-list',false);
       $('rk-list').innerHTML='<div class="feed-empty">Belum ada rekap, atau berkasnya belum di-upload.</div>';
       $('rk-stamp').textContent='';
     }
@@ -2901,23 +2964,29 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   }
   async function showMateri(force){
     const eks = mtKind==='eks';
+    const n = mulaiProses('mt-list');
+    $('mt-list').innerHTML=skeletonFeed(2);
     if(!eks && tier==='trial'){
-      $('mt-list').innerHTML=skeletonFeed(2); $('mt-stamp').textContent='';
+      $('mt-stamp').textContent='';
       try{ const d=await fetchJSON(MATERI_URL);
-        $('mt-list').innerHTML=daftarTerkunci(d.teaser,'Belum ada materi.');
-      }catch(e){ $('mt-list').innerHTML='<div class="feed-empty">Belum ada materi.</div>'; }
+        if(prosesUsang('mt-list',n))return;
+        gambarTerkunci('mt-list',d.teaser,'Belum ada materi.');
+      }catch(e){ if(prosesUsang('mt-list',n))return;
+        gambarTerkunci('mt-list',[],'Belum ada materi.'); }
       return;
     }
     if(eks && tier!=='eks'){
-      $('mt-list').innerHTML=skeletonFeed(2); $('mt-stamp').textContent='';
+      $('mt-stamp').textContent='';
       try{ const d=await fetchJSON(MATERI_EX_URL);
-        $('mt-list').innerHTML=daftarTerkunci(d.teaser,'Belum ada materi eksklusif.');
-      }catch(e){ $('mt-list').innerHTML='<div class="feed-empty">Belum ada materi eksklusif.</div>'; }
+        if(prosesUsang('mt-list',n))return;
+        gambarTerkunci('mt-list',d.teaser,'Belum ada materi eksklusif.');
+      }catch(e){ if(prosesUsang('mt-list',n))return;
+        gambarTerkunci('mt-list',[],'Belum ada materi eksklusif.'); }
       return;
     }
-    $('mt-list').innerHTML=skeletonFeed(2);
     try{
       const c=await loadMateri(force);
+      if(prosesUsang('mt-list',n))return;
       daftarPenuh['mt-list']=c.items||[];
       pembuatKartu['mt-list']={buat:kartuMateri,
         kosong:'Belum ada materi yang diposting.<br>Cek lagi nanti ya.'};
@@ -2927,6 +2996,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       $('mt-stamp').textContent=c.updated?'Diperbarui '+tanggalID(c.updated):'';
     }catch(e){
       if(e&&e.message==='KODESALAH'){ await kunciGerbang(); return; }
+      kunciSaring('mt-list',false);
       $('mt-list').innerHTML='<div class="feed-empty">Belum ada materi, atau berkasnya belum di-upload.</div>';
       $('mt-stamp').textContent='';
     }
@@ -2958,13 +3028,21 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     pasangPencarian();
     $('rk-reload').onclick=()=>showRekap(true);
     $('mt-reload').onclick=()=>showMateri(true);
+    /* Penyaring & pencarian dikosongkan saat berpindah segmen —
+       daftarnya berbeda, jadi penyaring lama tidak lagi relevan. */
+    function resetSaring(id){
+      kataCari[id]=''; saringAktif[id]=''; saringTgl[id]=''; tampil[id]=PER_HAL;
+      const kotak={'rk-list':'cari-rk','mt-list':'cari-mt','news-list':'cari-news'}[id];
+      if(kotak && $(kotak)){ $(kotak).value=''; $(kotak+'-box').classList.remove('isi'); }
+    }
+    window.__resetSaring=resetSaring;
     document.querySelectorAll('#rk-seg .seg-btn').forEach(b=>{
       b.onclick=()=>{ document.querySelectorAll('#rk-seg .seg-btn').forEach(x=>x.classList.remove('active'));
-        b.classList.add('active'); rkKind=b.dataset.rk; showRekap(); };
+        b.classList.add('active'); rkKind=b.dataset.rk; resetSaring('rk-list'); showRekap(); };
     });
     document.querySelectorAll('#mt-seg .seg-btn').forEach(b=>{
       b.onclick=()=>{ document.querySelectorAll('#mt-seg .seg-btn').forEach(x=>x.classList.remove('active'));
-        b.classList.add('active'); mtKind=b.dataset.mt; showMateri(); };
+        b.classList.add('active'); mtKind=b.dataset.mt; resetSaring('mt-list'); showMateri(); };
     });
     $('news-reload').onclick=()=>showNews(true);
     $('an-reload').onclick=()=>loadAnalisa(true);
@@ -2973,7 +3051,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     document.querySelectorAll('#news-seg .seg-btn').forEach(b=>{
       b.onclick=()=>{
         document.querySelectorAll('#news-seg .seg-btn').forEach(x=>x.classList.remove('active'));
-        b.classList.add('active'); newsKind=b.dataset.nk; showNews();
+        b.classList.add('active'); newsKind=b.dataset.nk;
+        if(window.__resetSaring)window.__resetSaring('news-list');
+        showNews();
       };
     });
 
