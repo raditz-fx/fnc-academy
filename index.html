@@ -354,6 +354,35 @@
   .feed-empty{text-align:center;padding:38px 20px;color:var(--gray);font-size:13px;line-height:1.7;}
 
 
+  /* ===== KALENDER EKONOMI ===== */
+  .kal-hari{display:flex;align-items:center;gap:8px;margin:17px 0 8px;}
+  .kal-hari b{font-size:13px;color:var(--slate);font-weight:700;text-shadow:var(--glow);}
+  .kal-hari .kini{font-size:10px;font-weight:700;background:var(--orange);color:#fff;
+    padding:2px 9px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase;}
+  .kal-grup:first-child .kal-hari{margin-top:0;}
+  .kal-tbl{border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    background:var(--kartu);box-shadow:var(--bayang-1);}
+  .kal-baris{display:grid;grid-template-columns:46px 38px 22px minmax(0,1fr);gap:9px;
+    padding:10px 11px;border-bottom:1px solid var(--line-2);align-items:start;}
+  .kal-baris:last-child{border-bottom:none;}
+  .kal-baris.tinggi{background:var(--aksen-halus);}
+  .kal-jam{font-family:var(--mono);font-size:11.5px;color:var(--gray);padding-top:2px;}
+  .kal-neg{font-size:11px;font-weight:700;color:var(--slate-2);padding-top:2px;letter-spacing:.02em;}
+  .kal-dmp{display:flex;gap:2px;padding-top:4px;}
+  .kal-dmp i{width:4px;height:12px;border-radius:1px;background:var(--line);display:block;}
+  .kal-dmp.d1 i:nth-child(1){background:var(--gray);}
+  .kal-dmp.d2 i:nth-child(-n+2){background:#EAB308;}
+  .kal-dmp.d3 i{background:var(--loss);}
+  .kal-nama{font-size:13px;color:var(--teks-isi);line-height:1.5;word-break:break-word;}
+  .kal-ang{font-size:11.5px;color:var(--gray);margin-top:3px;}
+  .kal-ang b{font-weight:700;color:var(--slate-2);}
+  .kal-ang b.naik{color:var(--win);}
+  .kal-ang b.turun{color:var(--loss);}
+  .kal-cat{font-size:11.5px;color:var(--orange-deep);margin-top:5px;line-height:1.5;}
+  .kal-bar{height:11px;border-radius:4px;background:var(--line);filter:blur(2.5px);}
+  .kal-cta{margin-top:15px;text-align:center;}
+  .kal-cta p{font-size:12.5px;color:var(--gray);margin:0 0 10px;line-height:1.6;}
+
   .seg{display:flex;width:100%;background:var(--cream);border-radius:10px;padding:4px;
     gap:4px;margin-bottom:15px;border:1px solid var(--orange-light);}
   .seg-btn{flex:1;background:none;border:none;font-family:inherit;font-size:12.5px;font-weight:600;
@@ -1075,6 +1104,7 @@
     <button class="tab active" data-view="beranda">Beranda</button>
     <button class="tab" data-view="news">Berita</button>
     <button class="tab" data-view="analisa">Analisa<span class="lockdot" id="an-lockdot">&#128274;</span></button>
+    <button class="tab" data-view="calendar">Kalender</button>
     <button class="tab" data-view="rekap">Rekap Live</button>
     <button class="tab" data-view="materi">Materi</button>
     <button class="tab" data-view="journal">Jurnal</button>
@@ -1298,6 +1328,25 @@
         <div class="cari-info" id="cari-an-info" hidden></div>
         <div class="saring" id="saring-an"></div>
         <div id="analisa-list"></div>
+      </div>
+    </div>
+
+    <!-- KALENDER EKONOMI -->
+    <div class="view" id="v-calendar">
+      <div class="panel">
+        <div class="feed-head">
+          <h3>KALENDER EKONOMI</h3>
+          <div style="display:flex;align-items:center;gap:9px;">
+            <span class="feed-stamp" id="kal-stamp"></span>
+            <button class="btn ghost sm" id="kal-reload">Muat Ulang</button>
+          </div>
+        </div>
+        <div class="seg" id="kal-seg" style="margin-bottom:14px;">
+          <button class="seg-btn active" type="button" data-kal="semua">Semua</button>
+          <button class="seg-btn" type="button" data-kal="tinggi">Dampak Tinggi</button>
+          <button class="seg-btn" type="button" data-kal="hari">Hari Ini</button>
+        </div>
+        <div id="kal-list"></div>
       </div>
     </div>
 
@@ -2850,6 +2899,161 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     },30000);
   }
 
+  /* ================= KALENDER EKONOMI =================
+     Berkas kalender.json dikunci dengan DUA kode (private + eksklusif),
+     jadi member Private maupun Eksklusif sama-sama bisa membukanya.
+     Pengguna percobaan hanya dapat teaser: tanggal + dampak, tanpa
+     jam, negara, maupun nama rilis. */
+  const KAL_URL='kalender.json';
+  let kalCache=null, kalSeg='semua';
+
+  function kalPad(n){ return String(n).length<2?'0'+n:String(n); }
+  function kalHariIni(){
+    const d=new Date();
+    return d.getFullYear()+'-'+kalPad(d.getMonth()+1)+'-'+kalPad(d.getDate());
+  }
+  function kalTglID(t){
+    const p=String(t||'').split('-');
+    if(p.length!==3)return esc(t||'');
+    const d=new Date(+p[0],+p[1]-1,+p[2]);
+    if(isNaN(d))return esc(t||'');
+    return d.toLocaleDateString('id-ID',
+      {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  }
+  /* Angka dari teks bebas: "142K", "-1,1%", "3.5" -> Number.
+     Dipakai hanya untuk mewarnai aktual vs perkiraan. */
+  function kalAngka(v){
+    if(v===null||v===undefined)return null;
+    let t=String(v).trim().replace(/\s|%/g,'');
+    if(!t)return null;
+    if(t.indexOf(',')>=0 && t.indexOf('.')<0)t=t.replace(',','.');
+    else t=t.replace(/,/g,'');
+    const m=t.match(/^(-?\d+(?:\.\d+)?)([KkMmBb])?$/);
+    if(!m)return null;
+    let n=parseFloat(m[1]);
+    if(isNaN(n))return null;
+    const p=(m[2]||'').toLowerCase();
+    if(p==='k')n*=1e3; else if(p==='m')n*=1e6; else if(p==='b')n*=1e9;
+    return n;
+  }
+  function kalDmpBar(d){
+    const n=Math.max(1,Math.min(3,+d||1));
+    return '<span class="kal-dmp d'+n+'"><i></i><i></i><i></i></span>';
+  }
+  function kalUrut(a){
+    return (a||[]).slice().sort((x,y)=>
+      x.tgl===y.tgl ? String(x.jam||'').localeCompare(String(y.jam||''))
+                    : String(x.tgl||'').localeCompare(String(y.tgl||'')));
+  }
+  function kalSaring(a){
+    const hari=kalHariIni();
+    let isi=(a||[]).filter(x=>x&&x.tgl);
+    if(kalSeg==='tinggi')isi=isi.filter(x=>(+x.dmp||1)>=3);
+    else if(kalSeg==='hari')isi=isi.filter(x=>x.tgl===hari);
+    return kalUrut(isi);
+  }
+  function kalKelompok(isi){
+    const urut=[], peta={};
+    isi.forEach(x=>{ if(!peta[x.tgl]){ peta[x.tgl]=[]; urut.push(x.tgl); } peta[x.tgl].push(x); });
+    return urut.map(t=>({tgl:t,isi:peta[t]}));
+  }
+  function kalKepala(tgl,hari){
+    return '<div class="kal-hari"><b>'+kalTglID(tgl)+'</b>'+
+      (tgl===hari?'<span class="kini">Hari Ini</span>':'')+'</div>';
+  }
+  function kalBaris(x){
+    const akt=kalAngka(x.akt), prk=kalAngka(x.prk);
+    let cls='';
+    if(akt!==null&&prk!==null)cls=akt>prk?' naik':(akt<prk?' turun':'');
+    const adaAngka=!!(x.akt||x.prk||x.sbl);
+    return '<div class="kal-baris'+((+x.dmp||1)>=3?' tinggi':'')+'">'+
+      '<span class="kal-jam">'+esc(x.jam||'--:--')+'</span>'+
+      '<span class="kal-neg">'+esc(x.neg||'')+'</span>'+
+      kalDmpBar(x.dmp)+
+      '<div><div class="kal-nama">'+esc(x.nama||'')+'</div>'+
+      (adaAngka?'<div class="kal-ang">Akt <b class="'+cls.trim()+'">'+esc(x.akt||'—')+
+        '</b> &middot; Perk '+esc(x.prk||'—')+' &middot; Sblm '+esc(x.sbl||'—')+'</div>':'')+
+      (x.cat?'<div class="kal-cat">&#128161; '+esc(x.cat)+'</div>':'')+
+      '</div></div>';
+  }
+  function kalKosong(){
+    if(kalSeg==='hari')return '<div class="feed-empty">Tidak ada rilis terjadwal hari ini.</div>';
+    if(kalSeg==='tinggi')return '<div class="feed-empty">Belum ada rilis berdampak tinggi.</div>';
+    return '<div class="feed-empty">Belum ada jadwal kalender.<br>Cek lagi nanti ya.</div>';
+  }
+  function gambarKalender(items){
+    const isi=kalSaring(items);
+    if(!isi.length){ $('kal-list').innerHTML=kalKosong(); return; }
+    const hari=kalHariIni();
+    $('kal-list').innerHTML=kalKelompok(isi).map(g=>
+      '<div class="kal-grup">'+kalKepala(g.tgl,hari)+
+      '<div class="kal-tbl">'+g.isi.map(kalBaris).join('')+'</div></div>').join('');
+  }
+  /* Pratinjau untuk pengguna percobaan: kerangka buram, BUKAN isi asli.
+     Teaser hanya memuat tanggal & dampak — nama rilis tidak pernah dikirim. */
+  function gambarKalKunci(teaser){
+    const isi=kalSaring(teaser);
+    const cta='<div class="kal-cta"><p>Kalender ekonomi tersedia untuk member '+
+      'Private &amp; Eksklusif.</p>'+
+      '<button class="btn sm" onclick="window.__bukaUpgrade()">Buka Akses</button></div>';
+    if(!isi.length){ $('kal-list').innerHTML=kalKosong()+cta; return; }
+    const hari=kalHariIni();
+    const lebar=[72,58,84,64,78];
+    let n=0;
+    $('kal-list').innerHTML=kalKelompok(isi).map(g=>
+      '<div class="kal-grup">'+kalKepala(g.tgl,hari)+
+      '<div class="kal-tbl">'+g.isi.map(x=>
+        '<div class="kal-baris'+((+x.dmp||1)>=3?' tinggi':'')+'">'+
+        '<span class="kal-jam">--:--</span>'+
+        '<span class="kal-neg">&bull;&bull;&bull;</span>'+
+        kalDmpBar(x.dmp)+
+        '<div><div class="kal-bar" style="width:'+lebar[(n++)%lebar.length]+'%;"></div></div>'+
+        '</div>').join('')+'</div></div>').join('')+cta;
+  }
+  async function loadKalender(force){
+    if(kalCache&&!force)return kalCache;
+    const d=await fetchJSON(KAL_URL);
+    const semua=await bukaIsi(d,await ambilKodeAkses());
+    kalCache={items:Array.isArray(semua)?semua:[],updated:d.updated};
+    return kalCache;
+  }
+  async function showKalender(force){
+    if(!$('kal-list'))return;
+    const n=mulaiProses('kal-list');
+    $('kal-list').innerHTML=skeletonFeed(1);
+    if(tier==='trial'){
+      $('kal-stamp').textContent='';
+      let d=null;
+      try{ d=await fetchJSON(KAL_URL); }catch(e){ d=null; }
+      if(prosesUsang('kal-list',n))return;
+      gambarKalKunci(d&&d.teaser?d.teaser:[]);
+      return;
+    }
+    try{
+      const c=await loadKalender(force);
+      if(prosesUsang('kal-list',n))return;
+      gambarKalender(c.items);
+      $('kal-stamp').textContent=c.updated?'Diperbarui '+tanggalID(c.updated):'';
+    }catch(e){
+      if(prosesUsang('kal-list',n))return;
+      $('kal-stamp').textContent='';
+      $('kal-list').innerHTML = (e&&e.message==='KODESALAH')
+        ? '<div class="feed-empty">Kode akses kamu tidak cocok dengan berkas kalender.<br>'+
+          'Hubungi admin ya.</div>'
+        : '<div class="feed-empty">Belum ada kalender, atau berkas <b>kalender.json</b> '+
+          'belum di-upload ke server.</div>';
+    }
+  }
+  if($('kal-reload'))$('kal-reload').onclick=()=>{ kalCache=null; showKalender(true); };
+  document.querySelectorAll('#kal-seg .seg-btn').forEach(b=>{
+    b.onclick=()=>{
+      document.querySelectorAll('#kal-seg .seg-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      kalSeg=b.dataset.kal;
+      showKalender();
+    };
+  });
+
   /* ---------- REKAP LIVE ---------- */
   function kartuRekap(it,i){
     const wm = it.__eks && profil ? '<div class="wm-tag">'+esc(profil.id)+'</div>' : '';
@@ -3362,6 +3566,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(view==='news')showNews();
     if(view==='analisa')checkAnalisaGate();
     if(view==='rekap')showRekap();
+    if(view==='calendar')showKalender();
     if(view==='materi')showMateri();
     if(view==='dashboard')renderDashboard();
     replayAnim(view);
@@ -3407,6 +3612,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(aktif('v-news'))    await showNews(true);
     if(aktif('v-analisa')) await checkAnalisaGate();
     if(aktif('v-rekap'))   await showRekap(true);
+    if(aktif('v-calendar')){ kalCache=null; await showKalender(true); }
     if(aktif('v-materi'))  await showMateri(true);
     if(aktif('v-beranda')) await renderBeranda();
     if(!aktif('v-analisa')) await checkAnalisaGate();
