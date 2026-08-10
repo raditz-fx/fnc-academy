@@ -1,0 +1,101 @@
+{
+ "updated": "2026-08-10T03:44:45.355Z",
+ "items": [
+  {
+   "id": "kmsmnx7yrj1fhv",
+   "tgl": "2026-08-10",
+   "jam": "21:00",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "CB Employment Trends Index (Jul)",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "106.90",
+   "cat": ""
+  },
+  {
+   "id": "kmsmnzpop2hyiw",
+   "tgl": "2026-08-10",
+   "jam": "22:30",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "U.S 6-Month Bill Auction",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "3.945%",
+   "cat": ""
+  },
+  {
+   "id": "kmsmnykwcf5p43",
+   "tgl": "2026-08-10",
+   "jam": "23:30",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "3-Month Bill Auction",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "3.815%",
+   "cat": ""
+  },
+  {
+   "id": "kmsmo17l3elmth",
+   "tgl": "2026-08-11",
+   "jam": "17:00",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "U.S NFIB Small Business Optimism",
+   "akt": "-",
+   "prk": "95.8",
+   "sbl": "95.3",
+   "cat": ""
+  },
+  {
+   "id": "kmsmo2oz78o97i",
+   "tgl": "2026-08-11",
+   "jam": "19:15",
+   "neg": "USD",
+   "dmp": 2,
+   "nama": "ADP Employment Change Weekly",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "16.25K",
+   "cat": ""
+  },
+  {
+   "id": "kmsmo3r5fmh4mq",
+   "tgl": "2026-08-11",
+   "jam": "19:15",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "Redbook (YoY)",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "8.7%",
+   "cat": ""
+  },
+  {
+   "id": "kmsmo622ssouit",
+   "tgl": "2026-08-11",
+   "jam": "21:00",
+   "neg": "USD",
+   "dmp": 3,
+   "nama": "Existing Home Sales (Juli)",
+   "akt": "-",
+   "prk": "4.05M",
+   "sbl": "4.09M",
+   "cat": ""
+  },
+  {
+   "id": "kmsmo7er76e0yc",
+   "tgl": "2026-08-11",
+   "jam": "23:00",
+   "neg": "USD",
+   "dmp": 2,
+   "nama": "EIA Short-Term Energy Outlook",
+   "akt": "",
+   "prk": "",
+   "sbl": "",
+   "cat": ""
+  }
+ ]
+}
