@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-10T03:44:45.355Z",
+ "updated": "2026-08-10T11:25:57.039Z",
  "items": [
   {
    "id": "kmsmnx7yrj1fhv",
@@ -95,6 +95,174 @@
    "akt": "",
    "prk": "",
    "sbl": "",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0ohilq0bqz",
+   "tgl": "2026-08-12",
+   "jam": "00:00",
+   "neg": "USD",
+   "dmp": 2,
+   "nama": "3-Year Note Auction",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "4.179%",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0pf7631r87",
+   "tgl": "2026-08-12",
+   "jam": "03:30",
+   "neg": "USD",
+   "dmp": 2,
+   "nama": "API Weekly Crude Oil Stock",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "2.690M",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0rmwjkdwf1",
+   "tgl": "2026-08-12",
+   "jam": "16:00",
+   "neg": "USD",
+   "dmp": 2,
+   "nama": "IEA Monthly Report",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "-",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0txmguxiv6",
+   "tgl": "2026-08-12",
+   "jam": "17:00",
+   "neg": "USD",
+   "dmp": 2,
+   "nama": "OPEC Monthly Report",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "-",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0vfypm1kcl",
+   "tgl": "2026-08-12",
+   "jam": "18:00",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "MBA 30-Year Mortgage Rate",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "6.81%",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0wr9j5xugs",
+   "tgl": "2026-08-12",
+   "jam": "18:00",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "MBA Mortgage Applications (WoW)",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "-2.9%",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0xss8npth2",
+   "tgl": "2026-08-12",
+   "jam": "18:00",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "MBA Purchase Index",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "154.0",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0yt02ehjh2",
+   "tgl": "2026-08-12",
+   "jam": "18:00",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "Mortgage Market Index",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "240.0",
+   "cat": ""
+  },
+  {
+   "id": "kmsn0znfxok39y",
+   "tgl": "2026-08-12",
+   "jam": "18:00",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "Mortgage Refinance Index",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "709.0",
+   "cat": ""
+  },
+  {
+   "id": "kmsn10fkuv4gcl",
+   "tgl": "2026-08-12",
+   "jam": "19:30",
+   "neg": "USD",
+   "dmp": 3,
+   "nama": "CPI (YoY) (Jul)",
+   "akt": "-",
+   "prk": "3.4%",
+   "sbl": "3.5%",
+   "cat": ""
+  },
+  {
+   "id": "kmsn11vs3cwyfb",
+   "tgl": "2026-08-12",
+   "jam": "19:30",
+   "neg": "USD",
+   "dmp": 3,
+   "nama": "CPI (MoM) (Jul)",
+   "akt": "-",
+   "prk": "0.1%",
+   "sbl": "-0.4%",
+   "cat": ""
+  },
+  {
+   "id": "kmsn12wbcf36qp",
+   "tgl": "2026-08-12",
+   "jam": "19:30",
+   "neg": "USD",
+   "dmp": 3,
+   "nama": "Core CPI (MoM) (Jul)",
+   "akt": "-",
+   "prk": "0.2%",
+   "sbl": "0.0%",
+   "cat": ""
+  },
+  {
+   "id": "kmsn14gquo5nzg",
+   "tgl": "2026-08-12",
+   "jam": "19:30",
+   "neg": "USD",
+   "dmp": 2,
+   "nama": "Core CPI (YoY) (Jul)",
+   "akt": "-",
+   "prk": "2.5%",
+   "sbl": "2.6%",
+   "cat": ""
+  },
+  {
+   "id": "kmsn16q0r4a0vp",
+   "tgl": "2026-08-12",
+   "jam": "19:30",
+   "neg": "USD",
+   "dmp": 1,
+   "nama": "Real Earnings (MoM) (Jul)",
+   "akt": "-",
+   "prk": "-",
+   "sbl": "0.8%",
    "cat": ""
   }
  ]
