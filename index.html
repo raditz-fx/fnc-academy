@@ -354,6 +354,37 @@
   .feed-empty{text-align:center;padding:38px 20px;color:var(--gray);font-size:13px;line-height:1.7;}
 
 
+  /* ===== konsultasi admin ===== */
+  .konsul{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+  .konsul-kartu{border:1px solid var(--line);border-radius:14px;background:var(--kartu);
+    box-shadow:var(--bayang-1);padding:13px 10px;text-align:center;cursor:pointer;
+    transition:transform .16s ease,box-shadow .2s ease,border-color .2s ease;
+    display:flex;flex-direction:column;align-items:center;gap:7px;}
+  .konsul-kartu:hover{transform:translateY(-2px);box-shadow:var(--bayang-2);
+    border-color:#25D366;}
+  .konsul-ic{width:38px;height:38px;border-radius:12px;display:flex;
+    align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#25D366,#128C7E);
+    box-shadow:0 4px 12px rgba(37,211,102,.3);}
+  .konsul-ic svg{width:20px;height:20px;fill:#fff;display:block;}
+  .konsul-kartu b{font-size:12.5px;color:var(--teks-isi);font-weight:700;
+    white-space:nowrap;}
+
+  /* ===== ajakan gabung grup di beranda ===== */
+  .grup-cta{display:flex;align-items:center;gap:13px;margin-top:15px;
+    border:1px solid #25D366;border-radius:15px;padding:14px 15px;
+    background:linear-gradient(135deg,rgba(37,211,102,.09),rgba(18,140,126,.05));
+    cursor:pointer;transition:transform .16s ease,box-shadow .2s ease;}
+  .grup-cta:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,211,102,.2);}
+  .grup-cta .ic{width:42px;height:42px;border-radius:13px;flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#25D366,#128C7E);
+    box-shadow:0 5px 14px rgba(37,211,102,.32);}
+  .grup-cta .ic svg{width:23px;height:23px;fill:#fff;display:block;}
+  .grup-cta b{display:block;font-size:13.5px;color:var(--teks-isi);margin-bottom:2px;}
+  .grup-cta p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.55;}
+  .grup-cta .go{font-size:12px;font-weight:700;color:#128C7E;white-space:nowrap;}
+
   /* ===== KALENDER EKONOMI ===== */
   /* saringan dampak — tiap level memakai warnanya sendiri supaya
      tombolnya sekaligus jadi keterangan warna, bukan sederet oranye */
@@ -3923,72 +3954,77 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
 
     const kumpul=[]; const jadwal=[];
     const catat=arr=>{ const t=tayangBerikut(arr); if(t)jadwal.push(t); };
-    try{ const c=await loadNewsUmum(); catat(c.semua||c.items);
-      (c.items||[]).slice(0,4).forEach(x=>kumpul.push([x,'Berita','news'])); }catch(e){}
+    /* Semua berkas diambil BERBARENGAN, bukan satu per satu. Tiap berkas
+       terenkripsi butuh PBKDF2 200.000 iterasi — kalau berurutan, waktunya
+       dijumlahkan. Dijalankan paralel, waktunya tinggal sepanjang berkas
+       yang paling lambat. */
+    const tugas=[];
+    const kerja=f=>tugas.push((async()=>{ try{ await f(); }catch(e){} })());
+
+    kerja(async()=>{
+      const c=await loadNewsUmum(); catat(c.semua||c.items);
+      (c.items||[]).slice(0,4).forEach(x=>kumpul.push([x,'Berita','news']));
+    });
     if(tier!=='umum'){
-      try{ const d=await fetchJSON(REKAP_URL); const s=await bukaIsi(d,await ambilKodeAkses()); catat(s);
-        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap'])); }catch(e){}
-      try{ const d=await fetchJSON(MATERI_URL); const s=await bukaIsi(d,await ambilKodeAkses()); catat(s);
-        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi'])); }catch(e){}
+      kerja(async()=>{
+        const d=await fetchJSON(REKAP_URL); const r=await bukaIsi(d,await ambilKodeAkses());
+        catat(r); urutBaru(r).slice(0,2).forEach(x=>kumpul.push([x,'Rekap','rekap']));
+      });
+      kerja(async()=>{
+        const d=await fetchJSON(MATERI_URL); const r=await bukaIsi(d,await ambilKodeAkses());
+        catat(r); urutBaru(r).slice(0,2).forEach(x=>kumpul.push([x,'Materi','materi']));
+      });
     }
     if(tier==='eks'){
-      try{ const c=await loadNewsEks(); if(c.next)jadwal.push(c.next);
-        (c.items||[]).slice(0,3).forEach(x=>kumpul.push([x,'Eksklusif','news'])); }catch(e){}
-      try{
-        const d=await fetchJSON(ANALISA_URL);
-        const semua=await bukaIsi(d,await ambilKode()); catat(semua);
-        urutBaru(semua).slice(0,3).forEach(x=>kumpul.push([x,'Analisa','analisa']));
-      }catch(e){}
-      try{ const d=await fetchJSON(REKAP_EX_URL); const s=await bukaIsi(d,await ambilKode()); catat(s);
-        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'RekapEks','rekap'])); }catch(e){}
-      try{ const d=await fetchJSON(MATERI_EX_URL); const s=await bukaIsi(d,await ambilKode()); catat(s);
-        urutBaru(s).slice(0,2).forEach(x=>kumpul.push([x,'MateriEks','materi'])); }catch(e){}
+      kerja(async()=>{
+        const c=await loadNewsEks(); if(c.next)jadwal.push(c.next);
+        (c.items||[]).slice(0,3).forEach(x=>kumpul.push([x,'Eksklusif','news']));
+      });
+      kerja(async()=>{
+        const d=await fetchJSON(ANALISA_URL); const r=await bukaIsi(d,await ambilKode());
+        catat(r); urutBaru(r).slice(0,3).forEach(x=>kumpul.push([x,'Analisa','analisa']));
+      });
+      kerja(async()=>{
+        const d=await fetchJSON(REKAP_EX_URL); const r=await bukaIsi(d,await ambilKode());
+        catat(r); urutBaru(r).slice(0,2).forEach(x=>kumpul.push([x,'RekapEks','rekap']));
+      });
+      kerja(async()=>{
+        const d=await fetchJSON(MATERI_EX_URL); const r=await bukaIsi(d,await ambilKode());
+        catat(r); urutBaru(r).slice(0,2).forEach(x=>kumpul.push([x,'MateriEks','materi']));
+      });
     }else if(tier==='umum'){
       /* Pengguna percobaan melihat pratinjau buram dari SEMUA yang terkunci —
          hanya bagian teaser yang diambil, isinya tetap terenkripsi. */
       const pratinjau=[[NEWS_EX_URL,'Eksklusif','news'],[ANALISA_URL,'Analisa','analisa'],
                        [REKAP_URL,'Rekap','rekap'],[MATERI_URL,'Materi','materi'],
                        [REKAP_EX_URL,'RekapEks','rekap'],[MATERI_EX_URL,'MateriEks','materi']];
-      for(const [url,label,view] of pratinjau){
-        try{
-          const d=await fetchJSON(url);
-          catat(d.teaser||[]);
-          (d.teaser||[]).filter(fncSudahTayang)
-            .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a))
-            .slice(0,2).forEach(x=>kumpul.push([x,label,view,true]));
-        }catch(e){}
-      }
+      pratinjau.forEach(([url,label,view])=>kerja(async()=>{
+        const d=await fetchJSON(url);
+        catat(d.teaser||[]);
+        (d.teaser||[]).filter(fncSudahTayang)
+          .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a))
+          .slice(0,2).forEach(x=>kumpul.push([x,label,view,true]));
+      }));
     }else{
       /* Member Private tetap melihat kartunya — tapi hanya dari bagian teaser.
          Isi, link, dan gambar asli tidak pernah diambil. */
       const pratinjau=[[NEWS_EX_URL,'Eksklusif','news'],[ANALISA_URL,'Analisa','analisa'],
                        [REKAP_EX_URL,'Rekap','rekap'],[MATERI_EX_URL,'Materi','materi']];
-      for(const [url,label,view] of pratinjau){
-        try{
-          const d=await fetchJSON(url);
-          catat(d.teaser||[]);
-          (d.teaser||[]).filter(fncSudahTayang)
-            .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a))
-            .slice(0,2).forEach(x=>kumpul.push([x,label,view,true]));
-        }catch(e){}
-      }
+      pratinjau.forEach(([url,label,view])=>kerja(async()=>{
+        const d=await fetchJSON(url);
+        catat(d.teaser||[]);
+        (d.teaser||[]).filter(fncSudahTayang)
+          .sort((a,b)=>fncWaktuTerbit(b)-fncWaktuTerbit(a))
+          .slice(0,2).forEach(x=>kumpul.push([x,label,view,true]));
+      }));
     }
+    /* pengumuman ikut diambil berbarengan, bukan menunggu giliran */
+    let ann=[];
+    kerja(async()=>{ ann=await ambilPengumuman(); });
+    await Promise.all(tugas);
     kumpul.sort((a,b)=>fncWaktuTerbit(b[0])-fncWaktuTerbit(a[0]));
 
     let out='';
-    /* Bilah masa percobaan: sisa hari + ajakan lanjut ke member private. */
-    if(tier==='umum'){
-      out+='<div class="trial-bar">'+
-        '<div class="ic">&#128075;</div>'+
-        '<div style="flex:1;min-width:0;">'+
-          '<b>Selamat datang di FNC Academy</b>'+
-          '<p>Berita, Kalender Ekonomi, Jurnal, Statistik, dan Kalkulator '+
-          'terbuka penuh untukmu. Analisa, Rekap Live, dan Materi khusus member.</p>'+
-        '</div>'+
-        '<span class="sisa">Umum</span>'+
-      '</div>';
-    }
-    const ann=await ambilPengumuman();
     if(ann.length){ out+=ann.map(kartuAnn).join(''); }
     /* Sorotan diambil dari kiriman TERBARU yang tidak terkunci.
        Kalau yang teratas kebetulan eksklusif, cari yang berikutnya —
@@ -4038,25 +4074,49 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     }
 
     /* ---------- pintasan cepat ---------- */
+    /* ---------- konsultasi admin ---------- */
+    out+='<div class="home-sec"><div class="home-head"><h3>Konsultasi</h3></div>'+
+      '<div class="konsul">'+
+        ADMIN_LIST.map(a=>
+          '<div class="konsul-kartu" onclick="window.__konsul(\''+a.kunci+'\')">'+
+          '<div class="konsul-ic">'+IKON_WA+'</div>'+
+          '<b>'+a.label+'</b>'+
+          '</div>').join('')+
+      '</div></div>';
+
+    /* ---------- Tanya AI Agent ---------- */
+    out+='<div class="ai-card" onclick="window.__konsul(\'ai\')">'+
+      '<div class="ai-ic">&#129302;</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<b>Tanya AI Agent FNC</b>'+
+        '<p>Butuh jawaban cepat di luar jam admin? Chat AI Agent kami di WhatsApp, '+
+        'balasannya langsung.</p>'+
+        '<span class="go">&#128172; Mulai Chat</span>'+
+      '</div></div>';
+
+    /* ---------- gabung grup publik ----------
+       Jaring pengaman untuk yang melewatkan pop-up saat pertama masuk. */
+    out+='<div class="grup-cta" onclick="window.__bukaGrup()">'+
+      '<div class="ic">'+IKON_WA+'</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<b>Gabung Grup Publik FNC</b>'+
+        '<p>Grup WhatsApp gratis: info sesi live, bahasan market, dan tanya-jawab '+
+        'bareng member lain.</p>'+
+      '</div>'+
+      '<span class="go">Gabung &rarr;</span>'+
+    '</div>';
+
+    /* ---------- pintasan ---------- */
     const daftarPintas = [
       ['&#128200;','Analisa','Pembahasan chart','analisa'],
-      ['&#127909;','Rekap Live','Tonton ulang sesi','rekap'],
-      ['&#128218;','Materi','Modul belajar','materi'],
-      ['&#129518;','Kalkulator','Hitung lot & risiko','calc']];
+      ['&#128240;','Berita','Update market','news'],
+      ['&#128197;','Kalender','Jadwal rilis ekonomi','calendar'],
+      ['&#128221;','Jurnal','Catat trade kamu','journal']];
     out+='<div class="home-sec"><div class="home-head"><h3>Pintasan</h3></div>'+
       '<div class="pintas">'+
         daftarPintas.map(a=>pintasKartu(a[0],a[1],a[2],a[3])).join('')+
       '</div></div>';
 
-    /* ---------- Tanya AI Agent ---------- */
-    out+='<div class="ai-card" onclick="window.__bukaAI()">'+
-      '<div class="ai-ic">&#129302;</div>'+
-      '<div style="flex:1;min-width:0;">'+
-        '<b>Tanya AI Agent FNC</b>'+
-        '<p>Punya pertanyaan seputar trading? Chat AI Agent kami di WhatsApp, '+
-        'balasannya langsung.</p>'+
-        '<span class="go">&#128172; Mulai Chat</span>'+
-      '</div></div>';
 
     /* ---------- penutup ---------- */
     out+='<div class="tutup"><div class="garis"></div>'+
@@ -4371,6 +4431,54 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
      tetap hidup di hari pertama. Yang di berkas selalu menang. */
   const GRUP_BAWAAN='https://chat.whatsapp.com/IoaK3O31T61ABskrHptt6V';
   const K_GRUP='fncjt_grup_seen';
+  /* Nomor cadangan — dipakai kalau pengaturan.json belum di-upload.
+     Yang ada di berkas selalu menang, jadi kalau ada nomor kena ban
+     tinggal ganti dari admin tanpa menyentuh kode. */
+  const WA_BAWAAN={a1:'0895423372080',a2:'087713361586',a3:'0895378218007',ai:'081918688086'};
+  /* Urutan yang tampil di layar: Admin 1, Admin 2, Admin 3.
+     Namanya sengaja tidak ditampilkan — hanya dipakai di template pesan. */
+  const ADMIN_LIST=[
+    {kunci:'a1', label:'Admin 1', peran:'Materi &amp; cara belajar', sapa:'Yudhis'},
+    {kunci:'a2', label:'Admin 2', peran:'Tanya-tanya umum',          sapa:'Radit'},
+    {kunci:'a3', label:'Admin 3', peran:'Pendaftaran &amp; paket',   sapa:'Alief'}
+  ];
+  const PESAN_ADMIN={
+    a1:'Saya lihat FNC Academy dari website, mau tanya soal cara mulai belajar dan materinya.',
+    a2:'Saya baru lihat FNC Academy, mau tanya-tanya dulu sebelum gabung.',
+    a3:'Saya mau tanya soal paket kelas dan cara daftarnya di FNC Academy.'
+  };
+  /* 08xxx -> 628xxx, supaya tautan wa.me selalu benar. */
+  function waNormal(no){
+    let t=String(no||'').replace(/[^0-9]/g,'');
+    if(!t)return '';
+    if(t.indexOf('0')===0)t='62'+t.slice(1);
+    else if(t.indexOf('62')!==0)t='62'+t;
+    return t;
+  }
+  async function nomorAdmin(kunci){
+    const p=await ambilPengaturan();
+    const dari=(p&&p.wa&&typeof p.wa[kunci]==='string'&&p.wa[kunci].trim())
+      ? p.wa[kunci] : WA_BAWAAN[kunci];
+    return waNormal(dari);
+  }
+  function pesanKonsul(kunci){
+    const a=ADMIN_LIST.filter(x=>x.kunci===kunci)[0];
+    const nama=(profil&&profil.nama)?(', saya '+profil.nama):'';
+    if(kunci==='ai')return 'Halo FNC, saya mau tanya seputar kelas dan cara mulai belajar trading.';
+    return 'Halo Admin '+(a?a.sapa:'')+nama+'. '+(PESAN_ADMIN[kunci]||'');
+  }
+  window.__konsul=async(kunci)=>{
+    const no=await nomorAdmin(kunci);
+    if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
+    const url='https://wa.me/'+no+'?text='+encodeURIComponent(pesanKonsul(kunci));
+    try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+  };
+  window.__bukaGrup=async()=>{
+    const url=await tautanGrup();
+    if(!url)return;
+    try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+  };
+  const IKON_WA='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.03-.53-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.38-.27.3-1.04 1.01-1.04 2.47 0 1.45 1.06 2.86 1.21 3.06.15.2 2.09 3.2 5.08 4.48.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5.01c0-5.18 4.22-9.4 9.42-9.4 2.51 0 4.88.98 6.65 2.76a9.34 9.34 0 0 1 2.75 6.65c0 5.19-4.22 9.41-9.41 9.41zM20.52 3.49A11.78 11.78 0 0 0 12.04 0C5.5 0 .18 5.32.18 11.86c0 2.09.55 4.13 1.6 5.93L.08 24l6.35-1.66a11.83 11.83 0 0 0 5.61 1.43h.01c6.53 0 11.85-5.32 11.85-11.86 0-3.17-1.23-6.15-3.38-8.42z"/></svg>';
   let pengaturan=null;
 
   async function ambilPengaturan(){
