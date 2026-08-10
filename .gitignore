@@ -1,0 +1,70 @@
+# ============================================================
+#  FNC Academy — daftar berkas yang TIDAK boleh naik ke GitHub
+#  Repo ini publik. Apa pun yang masuk sini bisa dibuka siapa saja
+#  lewat tradewithfnc.com/<nama-berkas>.
+# ============================================================
+
+# --- PALING PENTING ---
+# Panel admin. Berisi seluruh mesin enkripsi dan alat pembuat berkas.
+# Kalau bocor, orang lain bisa membuat berkas palsu atas nama FNC.
+# Tempatnya hanya di: Downloads\WEBSITE FNC ACADEMY V4\
+admin.html
+admin*.html
+*admin*.html
+
+# Sistem kode percobaan sudah dihapus sejak tingkatan Umum dibuat.
+# Berkas ini tidak dibaca lagi oleh index.html.
+trial.json
+
+# Cadangan kerja dari tombol "Unduh Cadangan" di admin.
+# Berisi SEMUA tulisan dalam bentuk mentah, tanpa enkripsi.
+cadangan-admin-fnc.json
+cadangan*.json
+*backup*.json
+
+# --- salinan tak sengaja ---
+# Browser sering menamai unduhan ulang seperti "index (1).html".
+# Berkas begini tidak pernah dipakai situs, cuma bikin repo berantakan.
+*(1)*
+*(2)*
+*(3)*
+* - Copy*
+*salinan*
+*Salinan*
+
+# --- catatan & berkas kerja pribadi ---
+*.xlsx
+*.xls
+*.docx
+*.zip
+*.rar
+*.7z
+catatan*.txt
+draft*
+coba*
+test*
+tes*
+
+# --- sampah sistem operasi ---
+Thumbs.db
+desktop.ini
+.DS_Store
+$RECYCLE.BIN/
+
+# --- berkas kerja editor ---
+.vscode/
+.idea/
+*.code-workspace
+*.bak
+*.tmp
+*.swp
+*~
+
+# ============================================================
+#  Yang BOLEH naik (untuk pengingat, tidak perlu diubah):
+#  index.html · CNAME · .nojekyll · README.md
+#  berita.json · berita-eksklusif.json · analisa.json
+#  rekap.json · rekap-eksklusif.json
+#  materi.json · materi-eksklusif.json
+#  pengumuman.json · kalender.json · pengaturan.json
+# ============================================================
