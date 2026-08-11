@@ -385,6 +385,102 @@
   .grup-cta p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.55;}
   .grup-cta .go{font-size:12px;font-weight:700;color:#128C7E;white-space:nowrap;}
 
+  /* ===== KELAS: segera dibuka ===== */
+  .soon{position:relative;overflow:hidden;border:1px solid var(--orange);
+    border-radius:18px;padding:30px 20px 26px;text-align:center;
+    background:linear-gradient(160deg,var(--aksen-halus),var(--kartu) 62%);
+    box-shadow:var(--bayang-2);}
+  .soon::before{content:'';position:absolute;inset:-40% -20% auto;height:190px;
+    background:radial-gradient(closest-side,rgba(242,112,29,.20),transparent);
+    pointer-events:none;}
+  .soon-tag{position:relative;display:inline-flex;align-items:center;gap:7px;
+    font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:#fff;background:var(--orange);padding:5px 13px;border-radius:999px;
+    margin-bottom:15px;}
+  .soon-tag i{width:6px;height:6px;border-radius:50%;background:#fff;display:block;
+    animation:soonKedip 1.6s ease-in-out infinite;}
+  @keyframes soonKedip{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .soon h3{position:relative;margin:0 0 9px;font-size:22px;line-height:1.25;
+    letter-spacing:-.02em;color:var(--teks-isi);}
+  .soon>p{position:relative;margin:0 auto 20px;max-width:330px;font-size:13px;
+    line-height:1.7;color:var(--slate-2);}
+  .soon-jam{position:relative;display:flex;justify-content:center;gap:8px;
+    margin-bottom:20px;flex-wrap:wrap;}
+  .soon-sel{min-width:66px;background:var(--kartu);border:1px solid var(--line);
+    border-radius:13px;padding:11px 7px;box-shadow:var(--bayang-1);}
+  .soon-sel b{display:block;font-family:var(--mono);font-size:25px;line-height:1.1;
+    color:var(--orange-deep);font-weight:800;font-variant-numeric:tabular-nums;}
+  .soon-sel span{display:block;margin-top:4px;font-size:9.5px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--gray);font-weight:700;}
+  .soon-tgl{position:relative;font-size:12.5px;color:var(--teks-isi);
+    background:var(--cream);border:1px dashed var(--orange);border-radius:11px;
+    padding:11px 14px;margin:0 auto 17px;max-width:330px;line-height:1.6;}
+  .soon-tgl b{color:var(--orange-deep);}
+  .soon-aksi{position:relative;}
+  .soon-nb{position:relative;margin:15px auto 0;max-width:330px;font-size:11.5px;
+    color:var(--gray);line-height:1.6;}
+
+  /* catatan bantuan grup */
+  .grup-nb{margin:9px 2px 0;font-size:11.5px;line-height:1.6;color:var(--gray);}
+  .grup-nb b{color:var(--orange-deep);}
+
+  /* ===== KELAS ===== */
+  .kls-kartu{border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    background:var(--kartu);box-shadow:var(--bayang-1);margin-bottom:14px;cursor:pointer;
+    transition:transform .18s ease,box-shadow .22s ease,border-color .22s ease;}
+  .kls-kartu:hover{transform:translateY(-2px);box-shadow:var(--bayang-2);
+    border-color:var(--orange);}
+  .kls-gbr{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;
+    background:var(--cream);}
+  .kls-gbr.ph{display:flex;align-items:center;justify-content:center;font-size:30px;}
+  .kls-isi{padding:14px 15px;}
+  .kls-isi h4{margin:0 0 5px;font-size:14.5px;line-height:1.4;color:var(--teks-isi);}
+  .kls-isi p{margin:0 0 11px;font-size:12px;color:var(--gray);line-height:1.55;}
+  .kls-harga{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+  .kls-harga b{font-size:17px;color:var(--orange-deep);font-weight:800;}
+  .kls-harga s{font-size:12px;color:var(--gray);}
+  .kls-hemat{font-size:10.5px;font-weight:700;background:var(--loss);color:#fff;
+    padding:2px 8px;border-radius:999px;}
+  .kls-stok{font-size:11px;color:var(--gray);margin-top:7px;}
+  .kls-stok.tipis{color:var(--loss);font-weight:700;}
+  .kls-stok.habis{color:var(--gray);font-weight:700;}
+
+  .kls-detail .kls-gbr{aspect-ratio:16/10;border-radius:14px;margin-bottom:14px;}
+  .kls-detail h3{margin:0 0 8px;font-size:18px;line-height:1.35;color:var(--teks-isi);
+    letter-spacing:-.01em;}
+  .kls-desk{font-size:13px;line-height:1.75;color:var(--teks-isi);white-space:pre-wrap;
+    margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .kls-beli{position:sticky;bottom:0;padding:13px 0 4px;margin-top:16px;
+    background:linear-gradient(to top,var(--kartu) 72%,transparent);}
+
+  /* pop-up pembayaran */
+  .byr-opsi{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    border:1.5px solid var(--line);border-radius:13px;background:var(--kartu);
+    padding:12px 13px;margin-bottom:9px;cursor:pointer;font-family:inherit;
+    transition:border-color .16s ease,transform .16s ease;}
+  .byr-opsi:hover{border-color:var(--orange);transform:translateY(-1px);}
+  .byr-ic{width:42px;height:30px;border-radius:7px;flex:0 0 auto;display:flex;
+    align-items:center;justify-content:center;font-size:10px;font-weight:800;
+    color:#fff;letter-spacing:.02em;}
+  .byr-ic.bca{background:#0060AF;}
+  .byr-ic.gopay{background:#00AED6;}
+  .byr-ic.dana{background:#118EEA;}
+  .byr-ic.qris{background:#2B2B7A;}
+  .byr-opsi b{display:block;font-size:13.5px;color:var(--teks-isi);}
+  .byr-opsi span{display:block;font-size:11.5px;color:var(--gray);margin-top:1px;}
+  .byr-nomor{display:flex;align-items:center;gap:10px;border:1px dashed var(--orange);
+    border-radius:12px;padding:13px 14px;background:var(--aksen-halus);margin:13px 0;}
+  .byr-nomor .no{flex:1;min-width:0;}
+  .byr-nomor .no b{display:block;font-family:var(--mono);font-size:17px;
+    color:var(--teks-isi);letter-spacing:.02em;word-break:break-all;}
+  .byr-nomor .no span{display:block;font-size:11.5px;color:var(--gray);margin-top:3px;}
+  .byr-ingat{font-size:12px;line-height:1.65;color:var(--slate-2);
+    background:var(--cream);border-radius:11px;padding:11px 13px;margin:12px 0;}
+  .byr-total{display:flex;justify-content:space-between;align-items:baseline;
+    font-size:12.5px;color:var(--gray);border-top:1px solid var(--line);
+    padding-top:11px;margin-top:3px;}
+  .byr-total b{font-size:16px;color:var(--orange-deep);}
+
   /* ===== KALENDER EKONOMI ===== */
   /* saringan dampak — tiap level memakai warnanya sendiri supaya
      tombolnya sekaligus jadi keterangan warna, bukan sederet oranye */
@@ -1095,6 +1191,15 @@
   <span class="wa">&#128172;</span><span class="lbl">Tanya AI</span>
 </button>
 
+<div class="overlay" id="byr-overlay" hidden>
+  <div class="gate-card">
+    <div id="byr-isi"></div>
+    <div class="welcome-actions" style="margin-top:6px;">
+      <button class="btn ghost" id="byr-tutup" type="button">Tutup</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="grup-overlay" hidden>
   <div class="gate-card grup-card">
     <div class="grup-ic" aria-hidden="true">
@@ -1220,6 +1325,7 @@
   <div class="tabs">
     <button class="tab active" data-view="beranda">Beranda</button>
     <button class="tab" data-view="news">Berita</button>
+    <button class="tab" data-view="kelas">Kelas</button>
     <button class="tab" data-view="analisa">Analisa<span class="lockdot" id="an-lockdot">&#128274;</span></button>
     <button class="tab" data-view="rekap">Rekap Live</button>
     <button class="tab" data-view="materi">Materi</button>
@@ -1468,6 +1574,21 @@
           <button class="kdc d1" type="button" data-dmp="1"><i></i><i></i><i></i>Rendah</button>
         </div>
         <div id="kal-list"></div>
+      </div>
+    </div>
+
+    <!-- KELAS -->
+    <div class="view" id="v-kelas">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>KELAS FNC ACADEMY</h3>
+          <button class="btn ghost sm" id="kls-reload">Muat Ulang</button>
+        </div>
+        <div id="kls-list"></div>
+      </div>
+      <div class="panel kls-detail" id="kls-detail" hidden>
+        <button class="btn ghost sm" id="kls-kembali" style="margin-bottom:13px;">&larr; Semua Kelas</button>
+        <div id="kls-detail-isi"></div>
       </div>
     </div>
 
@@ -3025,6 +3146,278 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     },30000);
   }
 
+  /* ================= KELAS =================
+     produk.json sengaja tidak dienkripsi: tab ini harus bisa dibuka
+     pengunjung umum yang belum punya kode apa pun. */
+  const PRD_URL='produk.json';
+  let prdCache=null, prdPilih=null, byrPilih=null;
+
+  function rupiah(n){
+    const v=Math.round(+n||0);
+    return 'Rp'+String(v).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  }
+  function prdUrut(a){
+    return (a||[]).slice().sort((x,y)=>
+      ((+x.urut||999)-(+y.urut||999)) || String(x.nama||'').localeCompare(String(y.nama||'')));
+  }
+  function prdHabis(x){ return x && x.stok!==null && x.stok!==undefined && +x.stok<=0; }
+  function prdStokTeks(x){
+    if(x.stok===null||x.stok===undefined)return '';
+    const n=+x.stok;
+    if(n<=0)return '<div class="kls-stok habis">Stok habis</div>';
+    if(n<=3)return '<div class="kls-stok tipis">Sisa '+n+' slot</div>';
+    return '<div class="kls-stok">Sisa '+n+' slot</div>';
+  }
+  function prdGambar(x,kelas){
+    return x.gambar
+      ? '<img class="kls-gbr'+(kelas?' '+kelas:'')+'" src="'+esc(x.gambar)+'" alt="'+esc(x.nama||'')+'">'
+      : '<div class="kls-gbr ph'+(kelas?' '+kelas:'')+'">&#127891;</div>';
+  }
+  function prdHargaBlok(x){
+    const diskon=(+x.hargaAwal>+x.harga);
+    let hemat='';
+    if(diskon){
+      const p=Math.round((1-(+x.harga)/(+x.hargaAwal))*100);
+      if(p>0)hemat='<span class="kls-hemat">-'+p+'%</span>';
+    }
+    return '<div class="kls-harga"><b>'+rupiah(x.harga)+'</b>'+
+      (diskon?'<s>'+rupiah(x.hargaAwal)+'</s>':'')+hemat+'</div>';
+  }
+
+  /* ---------- mode "segera dibuka" ----------
+     Selama tanggal buka belum lewat, daftar kelas diganti hitung mundur.
+     Tanggalnya diatur dari admin, jadi tidak perlu ubah kode untuk menunda. */
+  let soonJam=null;
+  function soonBerhenti(){ if(soonJam){ clearInterval(soonJam); soonJam=null; } }
+  function soonTarget(t){
+    if(!t)return null;
+    const v=String(t).trim();
+    /* tanggal polos dianggap pukul 00:00 waktu setempat */
+    const d=/^\d{4}-\d{2}-\d{2}$/.test(v) ? new Date(v+'T00:00:00') : new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function soonBelumBuka(t){
+    const d=soonTarget(t);
+    return !!(d && d.getTime()>Date.now());
+  }
+  function soonSel(n,label){
+    return '<div class="soon-sel"><b>'+String(Math.max(0,n)).padStart(2,'0')+'</b>'+
+      '<span>'+label+'</span></div>';
+  }
+  function soonIsiJam(d){
+    const el=$('soon-jam'); if(!el)return;
+    let sisa=Math.max(0,d.getTime()-Date.now());
+    const hari=Math.floor(sisa/86400000); sisa-=hari*86400000;
+    const jam=Math.floor(sisa/3600000);   sisa-=jam*3600000;
+    const men=Math.floor(sisa/60000);     sisa-=men*60000;
+    const det=Math.floor(sisa/1000);
+    el.innerHTML=soonSel(hari,'Hari')+soonSel(jam,'Jam')+
+      soonSel(men,'Menit')+soonSel(det,'Detik');
+  }
+  function gambarSoon(t){
+    soonBerhenti();
+    const d=soonTarget(t);
+    if(!d){ return false; }
+    const tglTeks=d.toLocaleDateString('id-ID',
+      {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    $('kls-list').innerHTML=
+      '<div class="soon">'+
+        '<span class="soon-tag"><i></i>Segera Dibuka</span>'+
+        '<h3>Kelas FNC Academy</h3>'+
+        '<p>Kami sedang menyiapkan kelas berbayar FNC Academy. '+
+        'Pendaftaran dibuka serentak, dengan <b>slot terbatas</b>.</p>'+
+        '<div class="soon-jam" id="soon-jam"></div>'+
+        '<div class="soon-tgl">Pendaftaran dibuka <b>'+esc(tglTeks)+'</b></div>'+
+        '<div class="soon-aksi">'+
+          '<button class="btn" type="button" onclick="window.__konsul(\'a3\')">'+
+          'Tanya Admin Soal Kelasnya</button>'+
+        '</div>'+
+        '<p class="soon-nb">Mau dapat kabar duluan saat dibuka? '+
+        'Gabung grup publik lewat tombol di Beranda.</p>'+
+      '</div>';
+    soonIsiJam(d);
+    soonJam=setInterval(()=>{
+      if(!$('soon-jam')){ soonBerhenti(); return; }
+      if(d.getTime()<=Date.now()){ soonBerhenti(); prdCache=null; showKelas(true); return; }
+      soonIsiJam(d);
+    },1000);
+    return true;
+  }
+
+  async function loadProduk(force){
+    if(prdCache&&!force)return prdCache;
+    const d=await fetchJSON(PRD_URL);
+    prdCache={
+      items:(d&&Array.isArray(d.items))?d.items:[],
+      bayar:(d&&d.bayar)?d.bayar:{},
+      bukaPada:(d&&d.bukaPada)||'',
+      updated:(d&&d.updated)||''
+    };
+    return prdCache;
+  }
+  async function showKelas(force){
+    if(!$('kls-list'))return;
+    const n=mulaiProses('kls-list');
+    $('kls-list').innerHTML=skeletonFeed(1);
+    try{
+      const c=await loadProduk(force);
+      if(prosesUsang('kls-list',n))return;
+      /* Belum waktunya dibuka -> tampilkan hitung mundur, sembunyikan daftar. */
+      if(soonBelumBuka(c.bukaPada)){
+        $('kls-detail').hidden=true;
+        $('kls-list').closest('.panel').hidden=false;
+        gambarSoon(c.bukaPada);
+        return;
+      }
+      soonBerhenti();
+      gambarKelas(c.items);
+    }catch(e){
+      if(prosesUsang('kls-list',n))return;
+      soonBerhenti();
+      $('kls-list').innerHTML='<div class="feed-empty">Belum ada kelas yang dibuka.<br>'+
+        'Cek lagi nanti, atau tanya admin lewat Beranda.</div>';
+    }
+  }
+  function gambarKelas(items){
+    const isi=prdUrut((items||[]).filter(x=>x&&x.aktif!==false));
+    $('kls-detail').hidden=true;
+    if(!isi.length){
+      $('kls-list').innerHTML='<div class="feed-empty">Belum ada kelas yang dibuka.<br>'+
+        'Cek lagi nanti ya.</div>';
+      return;
+    }
+    $('kls-list').innerHTML=isi.map(x=>
+      '<div class="kls-kartu" onclick="window.__kelasBuka(\''+esc(x.id)+'\')">'+
+        prdGambar(x)+
+        '<div class="kls-isi">'+
+          '<h4>'+esc(x.nama||'')+'</h4>'+
+          (x.ringkas?'<p>'+esc(x.ringkas)+'</p>':'')+
+          prdHargaBlok(x)+prdStokTeks(x)+
+        '</div></div>').join('');
+  }
+  window.__kelasBuka=(id)=>{
+    const c=prdCache; if(!c)return;
+    const x=(c.items||[]).find(y=>y.id===id); if(!x)return;
+    prdPilih=x;
+    const habis=prdHabis(x);
+    $('kls-detail-isi').innerHTML=
+      prdGambar(x)+
+      '<h3>'+esc(x.nama||'')+'</h3>'+
+      prdHargaBlok(x)+prdStokTeks(x)+
+      (x.deskripsi?'<div class="kls-desk">'+esc(x.deskripsi)+'</div>':'')+
+      '<div class="kls-beli">'+
+        (habis
+          ? '<button class="btn" disabled style="width:100%;opacity:.55;">Stok Habis</button>'
+          : '<button class="btn" style="width:100%;" onclick="window.__kelasBeli()">Beli Sekarang</button>')+
+      '</div>';
+    $('kls-detail').hidden=false;
+    $('kls-list').closest('.panel').hidden=true;
+    window.scrollTo(0,0);
+  };
+  function kelasKembali(){
+    $('kls-detail').hidden=true;
+    $('kls-list').closest('.panel').hidden=false;
+    prdPilih=null;
+    window.scrollTo(0,0);
+  }
+  if($('kls-kembali'))$('kls-kembali').onclick=kelasKembali;
+  if($('kls-reload'))$('kls-reload').onclick=()=>{ prdCache=null; kelasKembali(); showKelas(true); };
+
+  /* ---------- pop-up pembayaran ---------- */
+  const BYR_LABEL={bca:'BCA',gopay:'GoPay',dana:'DANA',qris:'QRIS'};
+  function byrTersedia(){
+    const b=(prdCache&&prdCache.bayar)||{};
+    const out=[];
+    if(b.bca&&b.bca.no)out.push(['bca','Transfer Bank','BCA']);
+    if(b.gopay&&b.gopay.no)out.push(['gopay','E-wallet','GoPay']);
+    if(b.dana&&b.dana.no)out.push(['dana','E-wallet','DANA']);
+    out.push(['qris','Scan QR','QRIS']);
+    return out;
+  }
+  window.__kelasBeli=()=>{
+    if(!prdPilih)return;
+    byrPilih=null;
+    const opsi=byrTersedia();
+    $('byr-isi').innerHTML=
+      '<h3 style="margin:0 0 4px;font-size:17px;">Pilih Metode Pembayaran</h3>'+
+      '<p style="margin:0 0 15px;font-size:12.5px;color:var(--gray);line-height:1.6;">'+
+        esc(prdPilih.nama||'')+'</p>'+
+      opsi.map(o=>
+        '<button class="byr-opsi" type="button" onclick="window.__byrPilih(\''+o[0]+'\')">'+
+          '<span class="byr-ic '+o[0]+'">'+o[2]+'</span>'+
+          '<span style="flex:1;min-width:0;"><b>'+o[2]+'</b><span>'+o[1]+'</span></span>'+
+          '<span style="color:var(--gray);">&rsaquo;</span>'+
+        '</button>').join('')+
+      '<div class="byr-total"><span>Total tagihan</span><b>'+rupiah(prdPilih.harga)+'</b></div>';
+    $('byr-overlay').hidden=false;
+  };
+  window.__byrPilih=(kunci)=>{
+    if(!prdPilih)return;
+    byrPilih=kunci;
+    const b=(prdCache&&prdCache.bayar)||{};
+    const d=b[kunci]||{};
+    let blok='';
+    if(kunci==='qris'){
+      blok='<div class="byr-ingat" style="background:var(--aksen-halus);">'+
+        '<b>QRIS dibuatkan admin sesuai nominal pesananmu.</b><br>'+
+        esc(d.catatan||'Chat admin dulu ya, nanti kode QR-nya dikirim langsung.')+
+      '</div>';
+    }else{
+      blok='<div class="byr-nomor"><div class="no"><b>'+esc(d.no||'-')+'</b>'+
+        '<span>a.n. '+esc(d.nama||'-')+'</span></div>'+
+        '<button class="btn ghost sm" type="button" '+
+        'onclick="window.__byrSalin(\''+esc(String(d.no||''))+'\',this)">Salin</button></div>'+
+        '<div class="byr-ingat"><b>Transfer tepat '+rupiah(prdPilih.harga)+'</b>, '+
+        'lalu <b>screenshot bukti transfernya</b>.<br>'+
+        'Setelah itu tekan tombol di bawah &mdash; jangan lupa <b>lampirkan foto buktinya</b> '+
+        'di chat, supaya admin bisa langsung memproses.</div>';
+    }
+    $('byr-isi').innerHTML=
+      '<button class="btn ghost sm" type="button" onclick="window.__kelasBeli()" '+
+        'style="margin-bottom:13px;">&larr; Ganti Metode</button>'+
+      '<h3 style="margin:0 0 4px;font-size:17px;">Bayar via '+esc(BYR_LABEL[kunci]||'')+'</h3>'+
+      '<p style="margin:0 0 6px;font-size:12.5px;color:var(--gray);line-height:1.6;">'+
+        esc(prdPilih.nama||'')+'</p>'+
+      blok+
+      '<div class="welcome-actions">'+
+        '<button class="btn" type="button" onclick="window.__byrKirim()">'+
+        (kunci==='qris'?'Chat Admin untuk QRIS':'Kirim Bukti Pembayaran')+'</button>'+
+      '</div>'+
+      '<div class="byr-total"><span>Total tagihan</span><b>'+rupiah(prdPilih.harga)+'</b></div>';
+  };
+  window.__byrSalin=(teks,tombol)=>{
+    const selesai=()=>{ if(tombol){ const t=tombol.textContent; tombol.textContent='Tersalin';
+      setTimeout(()=>{ tombol.textContent=t; },1400); } };
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(teks).then(selesai,()=>selesai());
+      }else{ selesai(); }
+    }catch(e){ selesai(); }
+  };
+  window.__byrKirim=async()=>{
+    if(!prdPilih)return;
+    const no=await nomorAdmin('a2');
+    if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
+    const nama=(profil&&profil.nama)?(' Saya '+profil.nama+'.'):'';
+    const metode=BYR_LABEL[byrPilih]||'';
+    let pesan;
+    if(byrPilih==='qris'){
+      pesan='Halo Admin FNC.'+nama+' Saya mau daftar '+(prdPilih.nama||'')+
+        ' ('+rupiah(prdPilih.harga)+') dan mau bayar pakai QRIS. '+
+        'Boleh dibuatkan kode QR-nya?';
+    }else if(prdPilih.wa){
+      pesan=String(prdPilih.wa).replace(/\{nama\}/g,prdPilih.nama||'')
+        .replace(/\{harga\}/g,rupiah(prdPilih.harga));
+    }else{
+      pesan='Halo Admin FNC.'+nama+' Saya sudah transfer untuk '+(prdPilih.nama||'')+
+        ' ('+rupiah(prdPilih.harga)+') via '+metode+'. '+
+        'Bukti transfernya saya lampirkan di chat ini ya.';
+    }
+    const url='https://wa.me/'+no+'?text='+encodeURIComponent(pesan);
+    try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+  };
+  if($('byr-tutup'))$('byr-tutup').onclick=()=>{ $('byr-overlay').hidden=true; };
+
   /* ================= KALENDER EKONOMI =================
      Berkas kalender.json dikunci dengan DUA kode (private + eksklusif),
      jadi member Private maupun Eksklusif sama-sama bisa membukanya.
@@ -3729,6 +4122,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(view==='analisa')checkAnalisaGate();
     if(view==='rekap')showRekap();
     if(view==='calendar')showKalender();
+    if(view==='kelas')showKelas();
     if(view==='materi')showMateri();
     if(view==='dashboard')renderDashboard();
     replayAnim(view);
@@ -3775,6 +4169,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(aktif('v-analisa')) await checkAnalisaGate();
     if(aktif('v-rekap'))   await showRekap(true);
     if(aktif('v-calendar')){ kalCache=null; await showKalender(true); }
+    if(aktif('v-kelas')){ prdCache=null; await showKelas(true); }
     if(aktif('v-materi'))  await showMateri(true);
     if(aktif('v-beranda')) await renderBeranda();
     if(!aktif('v-analisa')) await checkAnalisaGate();
@@ -4104,7 +4499,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         'bareng member lain.</p>'+
       '</div>'+
       '<span class="go">Gabung &rarr;</span>'+
-    '</div>';
+    '</div>'+
+    '<p class="grup-nb">Tautan grupnya tidak bisa dibuka atau sudah penuh? '+
+    'Chat salah satu <b>Admin</b> di atas, nanti diundang manual.</p>';
 
     /* ---------- pintasan ---------- */
     const daftarPintas = [
@@ -4344,7 +4741,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   /* Tab yang terbuka penuh untuk pengunjung UMUM (tanpa kode).
      Kalender ikut di sini karena jadwal rilis ekonomi sengaja dibuka
      untuk semua orang sebagai pintu masuk. */
-  const TAB_UMUM=['beranda','news','calendar','journal','dashboard','calc','accounts','help'];
+  const TAB_UMUM=['beranda','news','kelas','calendar','journal','dashboard','calc','accounts','help'];
 
   function setTier(t){
     tier=t;

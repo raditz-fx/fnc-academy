@@ -1,0 +1,49 @@
+{
+ "updated": "2026-08-11T17:05:38.754Z",
+ "bukaPada": "2026-08-15T18:45",
+ "bayar": {
+  "bca": {
+   "no": "",
+   "nama": ""
+  },
+  "gopay": {
+   "no": "",
+   "nama": ""
+  },
+  "dana": {
+   "no": "",
+   "nama": ""
+  },
+  "qris": {
+   "catatan": ""
+  }
+ },
+ "items": [
+  {
+   "id": "pmsoimx4oaas3",
+   "urut": 1,
+   "aktif": true,
+   "nama": "EXCLUSIVE CLASS FNC — Ultimate Trading Mastery",
+   "gambar": "",
+   "hargaAwal": 15000000,
+   "harga": 12000000,
+   "stok": 2,
+   "ringkas": "Kelas lengkap sampai bisa membaca market sendiri",
+   "deskripsi": "Kelas premium FNC Academy untuk kamu yang serius mendalami trading.\n\nYang dipelajari:\nMacro Analyst — memahami gambaran besar pasar\nData Fundamental — membaca berita dan dampaknya\nTechnical Analysis — entry presisi dan exit yang terukur\nKorelasi Index — membaca arah pasar dari pergerakan global\n\nFasilitas:\nAkses materi selamanya\nSesi live bersama mentor\nGrup diskusi khusus peserta\nPendampingan evaluasi jurnal trading\n\nCatatan: ini kelas edukasi. Semua materi adalah bahan belajar, bukan sinyal atau jaminan hasil.",
+   "wa": ""
+  },
+  {
+   "id": "pmsoimx4ove2u",
+   "urut": 2,
+   "aktif": true,
+   "nama": "PRIVATE CLASS FNC — Fondasi Trading",
+   "gambar": "",
+   "hargaAwal": 2500000,
+   "harga": 1750000,
+   "stok": 10,
+   "ringkas": "Untuk yang baru mulai dan ingin fondasi yang benar",
+   "deskripsi": "Kelas dasar untuk kamu yang baru masuk dunia trading.\n\nYang dipelajari:\nCara kerja market dan istilah dasar\nMembaca struktur harga\nManajemen risiko dan ukuran posisi\nMembangun kebiasaan mencatat jurnal\n\nFasilitas:\nAkses materi kelas dasar\nRekap sesi live\nGrup diskusi member\n\nCatatan: ini kelas edukasi. Semua materi adalah bahan belajar, bukan sinyal atau jaminan hasil.",
+   "wa": ""
+  }
+ ]
+}
