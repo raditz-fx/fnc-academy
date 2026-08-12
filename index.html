@@ -476,8 +476,15 @@
   .kls-detail .kls-gbr{aspect-ratio:16/10;border-radius:14px;margin-bottom:14px;}
   .kls-detail h3{margin:0 0 8px;font-size:18px;line-height:1.35;color:var(--teks-isi);
     letter-spacing:-.01em;}
-  .kls-desk{font-size:13px;line-height:1.75;color:var(--teks-isi);white-space:pre-wrap;
+  .kls-desk{font-size:13px;line-height:1.75;color:var(--teks-isi);
     margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .kls-desk b{font-weight:800;color:var(--slate);}
+  .kls-desk ul,.kls-desk ol{margin:8px 0;padding-left:21px;}
+  .kls-desk li{margin:3px 0;}
+  .kls-desk blockquote{margin:8px 0;padding-left:11px;
+    border-left:3px solid var(--orange-light);color:var(--gray);}
+  .kls-desk code{background:var(--cream);padding:1px 5px;border-radius:4px;font-size:12px;}
+  .kls-desk a{color:var(--orange-deep);}
   .kls-beli{position:sticky;bottom:0;padding:13px 0 4px;margin-top:16px;
     background:linear-gradient(to top,var(--kartu) 72%,transparent);}
 
@@ -3348,7 +3355,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         prdGambar(x)+
         '<div class="kls-isi">'+
           '<h4>'+esc(x.nama||'')+'</h4>'+
-          (x.ringkas?'<p>'+esc(x.ringkas)+'</p>':'')+
+          (x.ringkas?'<p>'+waFormat(x.ringkas)+'</p>':'')+
           prdHargaBlok(x)+prdStokTeks(x)+
         '</div></div>').join('');
   }
@@ -3361,7 +3368,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       prdGambar(x)+
       '<h3>'+esc(x.nama||'')+'</h3>'+
       prdHargaBlok(x)+prdStokTeks(x)+
-      (x.deskripsi?'<div class="kls-desk">'+esc(x.deskripsi)+'</div>':'')+
+      (x.deskripsi?'<div class="kls-desk">'+waFormat(x.deskripsi)+'</div>':'')+
       '<div class="kls-beli">'+
         (habis
           ? '<button class="btn" disabled style="width:100%;opacity:.55;">Stok Habis</button>'
