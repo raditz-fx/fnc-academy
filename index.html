@@ -385,6 +385,30 @@
   .grup-cta p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.55;}
   .grup-cta .go{font-size:12px;font-weight:700;color:#128C7E;white-space:nowrap;}
 
+  /* ===== KELAS: segera dibuka (latar buram) ===== */
+  .soon-wrap{position:relative;border-radius:18px;overflow:hidden;
+    border:1px solid var(--orange);box-shadow:var(--bayang-2);}
+  .soon-bg{filter:blur(7px) saturate(.75);opacity:.5;pointer-events:none;
+    user-select:none;padding:14px 13px 4px;transform:scale(1.03);}
+  .soon-bg .kls-kartu{cursor:default;box-shadow:none;}
+  .soon-bg .kls-kartu:hover{transform:none;border-color:var(--line);}
+  .soon-bar{height:12px;border-radius:5px;background:var(--line);margin-bottom:8px;}
+  .soon-bar.w1{width:82%;} .soon-bar.w2{width:54%;}
+  .soon-bar.tebal{height:19px;width:42%;margin-bottom:0;background:var(--orange-light);}
+  .soon-depan{position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;padding:22px 16px;text-align:center;
+    background:radial-gradient(120% 90% at 50% 45%,
+      rgba(255,255,255,.30),var(--kartu) 78%);}
+  [data-tema="gelap"] .soon-depan{background:radial-gradient(120% 90% at 50% 45%,
+      rgba(20,22,28,.42),var(--kartu) 78%);}
+  .soon-dalam{max-width:340px;width:100%;}
+  .soon-sel{animation:soonNyala 2.8s ease-in-out infinite;}
+  .soon-sel b{text-shadow:0 0 16px rgba(242,112,29,.55);}
+  @keyframes soonNyala{
+    0%,100%{box-shadow:0 0 0 rgba(242,112,29,0),var(--bayang-1);}
+    50%{box-shadow:0 0 20px rgba(242,112,29,.34),var(--bayang-1);}}
+  .soon-tag{box-shadow:0 0 18px rgba(242,112,29,.5);}
+
   /* ===== KELAS: segera dibuka ===== */
   .soon{position:relative;overflow:hidden;border:1px solid var(--orange);
     border-radius:18px;padding:30px 20px 26px;text-align:center;
@@ -404,13 +428,17 @@
     letter-spacing:-.02em;color:var(--teks-isi);}
   .soon>p{position:relative;margin:0 auto 20px;max-width:330px;font-size:13px;
     line-height:1.7;color:var(--slate-2);}
-  .soon-jam{position:relative;display:flex;justify-content:center;gap:8px;
-    margin-bottom:20px;flex-wrap:wrap;}
-  .soon-sel{min-width:66px;background:var(--kartu);border:1px solid var(--line);
-    border-radius:13px;padding:11px 7px;box-shadow:var(--bayang-1);}
-  .soon-sel b{display:block;font-family:var(--mono);font-size:25px;line-height:1.1;
+  /* Empat kolom sama lebar, TIDAK boleh turun baris — di layar sempit
+     ukurannya yang mengecil, bukan "Detik" yang menggantung sendirian. */
+  .soon-jam{position:relative;display:grid;grid-template-columns:repeat(4,1fr);
+    gap:7px;margin-bottom:20px;}
+  .soon-sel{min-width:0;background:var(--kartu);border:1px solid var(--line);
+    border-radius:13px;padding:11px 3px;box-shadow:var(--bayang-1);}
+  .soon-sel b{display:block;font-family:var(--mono);line-height:1.1;
+    font-size:clamp(19px,6.2vw,25px);
     color:var(--orange-deep);font-weight:800;font-variant-numeric:tabular-nums;}
-  .soon-sel span{display:block;margin-top:4px;font-size:9.5px;letter-spacing:.09em;
+  .soon-sel span{display:block;margin-top:4px;letter-spacing:.05em;
+    font-size:clamp(8px,2.3vw,9.5px);
     text-transform:uppercase;color:var(--gray);font-weight:700;}
   .soon-tgl{position:relative;font-size:12.5px;color:var(--teks-isi);
     background:var(--cream);border:1px dashed var(--orange);border-radius:11px;
@@ -3214,27 +3242,33 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     el.innerHTML=soonSel(hari,'Hari')+soonSel(jam,'Jam')+
       soonSel(men,'Menit')+soonSel(det,'Detik');
   }
-  function gambarSoon(t){
+  /* Kartu latar sengaja TANPA teks nama & harga. Buram itu efek tampilan
+     saja — teksnya tetap terbaca lewat inspect element kalau ditulis.
+     Jadi yang ditampilkan cuma gambar + bilah abu. */
+  function soonLatar(items){
+    const isi=prdUrut((items||[]).filter(x=>x&&x.aktif!==false)).slice(0,3);
+    if(!isi.length)return '';
+    return '<div class="soon-bg" aria-hidden="true">'+
+      isi.map(x=>
+        '<div class="kls-kartu">'+prdGambar(x)+
+        '<div class="kls-isi">'+
+          '<div class="soon-bar w1"></div>'+
+          '<div class="soon-bar w2"></div>'+
+          '<div class="soon-bar tebal"></div>'+
+        '</div></div>').join('')+
+    '</div>';
+  }
+  function gambarSoon(t,items){
     soonBerhenti();
     const d=soonTarget(t);
     if(!d){ return false; }
     const tglTeks=d.toLocaleDateString('id-ID',
       {weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    $('kls-list').innerHTML=
-      '<div class="soon">'+
-        '<span class="soon-tag"><i></i>Segera Dibuka</span>'+
-        '<h3>Kelas FNC Academy</h3>'+
-        '<p>Kami sedang menyiapkan kelas berbayar FNC Academy. '+
-        'Pendaftaran dibuka serentak, dengan <b>slot terbatas</b>.</p>'+
-        '<div class="soon-jam" id="soon-jam"></div>'+
-        '<div class="soon-tgl">Pendaftaran dibuka <b>'+esc(tglTeks)+'</b></div>'+
-        '<div class="soon-aksi">'+
-          '<button class="btn" type="button" onclick="window.__konsul(\'a3\')">'+
-          'Tanya Admin Soal Kelasnya</button>'+
-        '</div>'+
-        '<p class="soon-nb">Mau dapat kabar duluan saat dibuka? '+
-        'Gabung grup publik lewat tombol di Beranda.</p>'+
-      '</div>';
+    const latar=soonLatar(items);
+    $('kls-list').innerHTML= latar
+      ? ('<div class="soon-wrap">'+latar+'<div class="soon-depan"><div class="soon-dalam">'+
+          soonPanel(tglTeks)+'</div></div></div>')
+      : ('<div class="soon">'+soonPanel(tglTeks)+'</div>');
     soonIsiJam(d);
     soonJam=setInterval(()=>{
       if(!$('soon-jam')){ soonBerhenti(); return; }
@@ -3242,6 +3276,21 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       soonIsiJam(d);
     },1000);
     return true;
+  }
+  function soonPanel(tglTeks){
+    return ''+
+      '<span class="soon-tag"><i></i>Segera Dibuka</span>'+
+      '<h3>Kelas FNC Academy</h3>'+
+      '<p>Kami sedang menyiapkan kelas berbayar FNC Academy. '+
+      'Pendaftaran dibuka serentak, dengan <b>slot terbatas</b>.</p>'+
+      '<div class="soon-jam" id="soon-jam"></div>'+
+      '<div class="soon-tgl">Pendaftaran dibuka <b>'+esc(tglTeks)+'</b></div>'+
+      '<div class="soon-aksi">'+
+        '<button class="btn" type="button" onclick="window.__konsul(\'a3\')">'+
+        'Tanya Admin Soal Kelasnya</button>'+
+      '</div>'+
+      '<p class="soon-nb">Mau dapat kabar duluan saat dibuka? '+
+      'Gabung grup publik lewat tombol di Beranda.</p>';
   }
 
   async function loadProduk(force){
@@ -3266,7 +3315,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       if(soonBelumBuka(c.bukaPada)){
         $('kls-detail').hidden=true;
         $('kls-list').closest('.panel').hidden=false;
-        gambarSoon(c.bukaPada);
+        gambarSoon(c.bukaPada,c.items);
         return;
       }
       soonBerhenti();
