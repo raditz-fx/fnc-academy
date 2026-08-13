@@ -3450,11 +3450,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(m){
       const jenis=m[1], id=decodeURIComponent(m[2]);
       go(jenis==='analisa'?'analisa':'news');
-      /* Isinya diunduh dulu, jadi kartunya baru ada beberapa saat kemudian. */
-      let sisa=24;
-      const coba=setInterval(()=>{
-        if(sorotKiriman(id)||--sisa<=0)clearInterval(coba);
-      },260);
+      buruKiriman(jenis,id);
       return true;
     }
     return false;
@@ -3500,6 +3496,33 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     try{ kartu.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
     setTimeout(()=>kartu.classList.remove('disorot'),2600);
     return true;
+  }
+  /* Kirimannya belum tentu langsung ada di layar. Tiga sebab, dan
+     ketiganya ditangani di sini:
+       1. berkasnya masih diunduh — jadi ditunggu berulang
+       2. kirimannya eksklusif — segmen Eksklusif dibuka sendiri
+       3. kirimannya sudah terdorong ke bawah — daftar dimuat lebih banyak
+     Untuk isi eksklusif tanpa kode yang benar, kartunya memang tidak akan
+     pernah ada, jadi pencarian berhenti sendiri tanpa membocorkan apa pun. */
+  function buruKiriman(jenis,id){
+    const elId = (jenis==='analisa') ? 'analisa-list' : 'news-list';
+    const segId = (jenis==='analisa') ? null : 'news-seg';
+    let sisa=30, sudahSegmen=false, muat=0;
+    const coba=setInterval(()=>{
+      if(sorotKiriman(id)){ clearInterval(coba); return; }
+      if(--sisa<=0){ clearInterval(coba); return; }
+      const daftar=$(elId);
+      if(!daftar)return;
+      /* sesudah beberapa kali gagal, coba segmen Eksklusif */
+      if(!sudahSegmen && sisa<26 && segId){
+        const eks=document.querySelector('#'+segId+' [data-nk="eks"]');
+        if(eks && !eks.classList.contains('active')){ sudahSegmen=true; eks.click(); return; }
+        sudahSegmen=true;
+      }
+      /* lalu muat sisa daftarnya, siapa tahu kirimannya sudah jauh ke bawah */
+      const lagi=daftar.querySelector('[data-lagi]');
+      if(lagi && muat<6){ muat++; lagi.click(); }
+    },240);
   }
   function kelasKembali(){
     $('kls-detail').hidden=true;
