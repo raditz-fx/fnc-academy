@@ -395,10 +395,15 @@
   .soon-bar{height:12px;border-radius:5px;background:var(--line);margin-bottom:8px;}
   .soon-bar.w1{width:82%;} .soon-bar.w2{width:54%;}
   .soon-bar.tebal{height:19px;width:42%;margin-bottom:0;background:var(--orange-light);}
-  .soon-depan{position:absolute;inset:0;display:flex;align-items:center;
-    justify-content:center;padding:22px 16px;text-align:center;
-    background:radial-gradient(120% 90% at 50% 45%,
-      rgba(255,255,255,.30),var(--kartu) 78%);}
+  /* Dulu lapisan depan dipaksa setinggi latar buramnya, jadi isinya
+     mengambang di tengah dengan ruang kosong menganga di atas dan bawah.
+     Sekarang tingginya mengikuti isi, latar buram yang menyesuaikan. */
+  .soon-wrap{display:grid;}
+  .soon-wrap>.soon-bg{grid-area:1/1;max-height:100%;overflow:hidden;}
+  .soon-depan{grid-area:1/1;display:flex;align-items:center;
+    justify-content:center;padding:26px 18px;text-align:center;
+    background:radial-gradient(120% 90% at 50% 50%,
+      rgba(255,255,255,.34),var(--kartu) 74%);}
   [data-tema="gelap"] .soon-depan{background:radial-gradient(120% 90% at 50% 45%,
       rgba(20,22,28,.42),var(--kartu) 78%);}
   .soon-dalam{max-width:340px;width:100%;}
@@ -424,8 +429,17 @@
   .soon-tag i{width:6px;height:6px;border-radius:50%;background:#fff;display:block;
     animation:soonKedip 1.6s ease-in-out infinite;}
   @keyframes soonKedip{0%,100%{opacity:1;}50%{opacity:.25;}}
-  .soon h3{position:relative;margin:0 0 9px;font-size:22px;line-height:1.25;
-    letter-spacing:-.02em;color:var(--teks-isi);}
+  .soon h3,.soon-dalam h3{position:relative;margin:0 0 10px;
+    font-family:var(--font-judul,var(--font-ui,inherit));
+    font-size:clamp(19px,5.6vw,24px);line-height:1.2;font-weight:800;
+    letter-spacing:-.02em;color:var(--teks-isi);text-align:center;
+    text-shadow:0 0 26px rgba(242,112,29,.22);}
+  /* Judul di sini memakai gaya sendiri, bukan gaya judul panel yang
+     punya garis oranye di kiri — garis itu bikin teksnya tidak center. */
+  .soon-dalam h3::before,.soon h3::before{content:none;}
+  .soon-dalam{text-align:center;}
+  .soon-dalam>p{margin:0 auto 20px;max-width:330px;font-size:13px;
+    line-height:1.7;color:var(--slate-2);text-align:center;}
   .soon>p{position:relative;margin:0 auto 20px;max-width:330px;font-size:13px;
     line-height:1.7;color:var(--slate-2);}
   /* Empat kolom sama lebar, TIDAK boleh turun baris — di layar sempit
@@ -485,8 +499,19 @@
     border-left:3px solid var(--orange-light);color:var(--gray);}
   .kls-desk code{background:var(--cream);padding:1px 5px;border-radius:4px;font-size:12px;}
   .kls-desk a{color:var(--orange-deep);}
+  .fi-bagi{display:flex;justify-content:flex-end;margin-top:11px;padding-top:10px;
+    border-top:1px solid var(--line-2);}
+  .fi-bagi button{display:inline-flex;align-items:center;gap:6px;background:none;
+    border:1px solid var(--line);border-radius:20px;padding:5px 13px;cursor:pointer;
+    font-family:inherit;font-size:11.5px;font-weight:600;color:var(--gray);
+    transition:border-color .15s,color .15s;}
+  .fi-bagi button:hover{border-color:var(--orange);color:var(--orange-deep);}
+  .feed-item.disorot{border-color:var(--orange);box-shadow:0 0 0 3px var(--aksen-halus),var(--bayang-2);}
   .kls-beli{position:sticky;bottom:0;padding:13px 0 4px;margin-top:16px;
-    background:linear-gradient(to top,var(--kartu) 72%,transparent);}
+    background:linear-gradient(to top,var(--kartu) 72%,transparent);
+    display:flex;gap:9px;align-items:stretch;}
+  .kls-beli .btn{flex:1;}
+  .kls-beli .bagi{flex:0 0 auto;width:46px;padding:0;font-size:17px;}
 
   /* pop-up pembayaran */
   .byr-opsi{display:flex;align-items:center;gap:13px;width:100%;text-align:left;
@@ -2998,6 +3023,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
           (it.url?'<div class="ext-btn" onclick="event.stopPropagation();window.__buka(\''+
             esc(it.url).replace(/'/g,"\\'")+'\')">&#9654; Tonton di Google Drive</div>':'')+
           (rest.length?'<div class="feed-gal">'+rest.map(s=>'<img src="'+esc(s)+'" alt="" loading="lazy">').join('')+'</div>':'')+
+          (it.id?'<div class="fi-bagi"><button type="button" title="Bagikan kiriman ini" '+
+            'onclick="event.stopPropagation();window.__feedBagi(\''+esc(it.id)+'\',\''+
+            (kind==='an'?'analisa':'berita')+'\',this)">&#128279; Bagikan</button></div>':'')+
           '</div></div></div>';
     };
     const kosong='Belum ada '+(kind==='an'?'analisa':'berita')+
@@ -3321,6 +3349,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   }
   async function showKelas(force){
     if(!$('kls-list'))return;
+    /* Diambil di depan supaya saat tombol WhatsApp ditekan datanya sudah
+       ada, dan tab barunya tidak diblokir browser. */
+    ambilPengaturan();
     const n=mulaiProses('kls-list');
     $('kls-list').innerHTML=skeletonFeed(1);
     try{
@@ -3371,13 +3402,104 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       (x.deskripsi?'<div class="kls-desk">'+waFormat(x.deskripsi)+'</div>':'')+
       '<div class="kls-beli">'+
         (habis
-          ? '<button class="btn" disabled style="width:100%;opacity:.55;">Stok Habis</button>'
-          : '<button class="btn" style="width:100%;" onclick="window.__kelasBeli()">Beli Sekarang</button>')+
+          ? '<button class="btn" disabled style="opacity:.55;">Stok Habis</button>'
+          : '<button class="btn" onclick="window.__kelasBeli()">Beli Sekarang</button>')+
+        '<button class="btn ghost bagi" type="button" title="Bagikan kelas ini" '+
+          'aria-label="Bagikan kelas ini" onclick="window.__kelasBagi(this)">&#128279;</button>'+
       '</div>';
     $('kls-detail').hidden=false;
     $('kls-list').closest('.panel').hidden=true;
     window.scrollTo(0,0);
   };
+  /* Tautan langsung ke satu kelas: dibuka lagi, halaman langsung
+     menampilkan kelas itu — berguna untuk dikirim ke calon member. */
+  window.__kelasBagi=async(tombol)=>{
+    if(!prdPilih)return;
+    const url=location.origin+location.pathname+'#kelas='+encodeURIComponent(prdPilih.id);
+    const judul=prdPilih.nama||'Kelas FNC Academy';
+    if(navigator.share){
+      try{ await navigator.share({title:judul,text:judul,url:url}); return; }catch(e){}
+    }
+    const beres=()=>{ if(!tombol)return;
+      const t=tombol.innerHTML; tombol.innerHTML='&#10003;';
+      setTimeout(()=>{ tombol.innerHTML=t; },1500); };
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(beres,()=>prompt('Salin tautannya:',url));
+        return;
+      }
+    }catch(e){}
+    prompt('Salin tautannya:',url);
+  };
+  /* Kalau halaman dibuka dengan #kelas=..., langsung ke kelas itu. */
+  async function kelasDariTautan(){
+    const h=String(location.hash||'');
+    let m=h.match(/^#kelas=(.+)$/);
+    if(m){
+      const id=decodeURIComponent(m[1]);
+      try{
+        const c=await loadProduk();
+        if(soonBelumBuka(c.bukaPada))return false;
+        if(!(c.items||[]).some(x=>x.id===id))return false;
+        go('kelas');
+        setTimeout(()=>window.__kelasBuka(id),260);
+        return true;
+      }catch(e){ return false; }
+    }
+    m=h.match(/^#(berita|analisa)=(.+)$/);
+    if(m){
+      const jenis=m[1], id=decodeURIComponent(m[2]);
+      go(jenis==='analisa'?'analisa':'news');
+      /* Isinya diunduh dulu, jadi kartunya baru ada beberapa saat kemudian. */
+      let sisa=24;
+      const coba=setInterval(()=>{
+        if(sorotKiriman(id)||--sisa<=0)clearInterval(coba);
+      },260);
+      return true;
+    }
+    return false;
+  }
+  /* ---------- bagikan kiriman ----------
+     Tautannya memakai id kiriman. Untuk isi eksklusif, penerima tetap
+     harus punya kodenya — tautan cuma mengantar ke kirimannya. */
+  async function bagikanTautan(url,judul,tombol){
+    if(navigator.share){
+      try{ await navigator.share({title:judul,text:judul,url:url}); return; }catch(e){}
+    }
+    const beres=()=>{ if(!tombol)return;
+      const t=tombol.innerHTML; tombol.innerHTML='&#10003; Tersalin';
+      setTimeout(()=>{ tombol.innerHTML=t; },1600); };
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(beres,()=>prompt('Salin tautannya:',url));
+        return;
+      }
+    }catch(e){}
+    prompt('Salin tautannya:',url);
+  }
+  function tautanKe(jenis,id){
+    return location.origin+location.pathname+'#'+jenis+'='+encodeURIComponent(id);
+  }
+  window.__feedBagi=(id,jenis,tombol)=>{
+    const kartu=document.querySelector('[data-kid="'+CSS.escape(id)+'"]');
+    const judul=(kartu&&kartu.querySelector('.fi-judul,h4,h3'))
+      ? kartu.querySelector('.fi-judul,h4,h3').textContent.trim()
+      : (jenis==='analisa'?'Analisa FNC Academy':'Berita FNC Academy');
+    bagikanTautan(tautanKe(jenis,id),judul,tombol);
+  };
+  /* Membuka kiriman tertentu: pindah tab, bentangkan kartunya, lalu
+     digulir ke sana dan disorot sebentar supaya ketemu. */
+  function sorotKiriman(id){
+    const kartu=document.querySelector('[data-kid="'+CSS.escape(id)+'"]');
+    if(!kartu)return false;
+    document.querySelectorAll('.feed-item.buka').forEach(x=>{
+      if(x!==kartu)x.classList.remove('buka');
+    });
+    kartu.classList.add('buka','disorot');
+    try{ kartu.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+    setTimeout(()=>kartu.classList.remove('disorot'),2600);
+    return true;
+  }
   function kelasKembali(){
     $('kls-detail').hidden=true;
     $('kls-list').closest('.panel').hidden=false;
@@ -3482,6 +3604,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   };
   window.__byrKirim=async()=>{
     if(!prdPilih)return;
+    const siap=pengaturanSiap();
     const no=await nomorAdmin('a2');
     if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
     const nama=(profil&&profil.nama)?(' Saya '+profil.nama+'.'):'';
@@ -3499,8 +3622,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         ' ('+rupiah(prdPilih.harga)+') via '+metode+'. '+
         'Bukti transfernya saya lampirkan di chat ini ya.';
     }
-    const url='https://wa.me/'+no+'?text='+encodeURIComponent(pesan);
-    try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+    bukaWA('https://wa.me/'+no+'?text='+encodeURIComponent(pesan),siap);
   };
   if($('byr-tutup'))$('byr-tutup').onclick=()=>{ $('byr-overlay').hidden=true; };
 
@@ -4775,6 +4897,13 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         '</div>'+
         (isiPenuh?'<div class="utama-full"><div class="feed-body">'+
           waFormat(it.body)+'</div></div>':'')+
+        /* Kiriman teratas dipajang sebagai kartu sorotan, bukan kartu biasa,
+           jadi tombol bagikannya dipasang di sini juga. */
+        (it.id&&(view==='news'||view==='analisa')
+          ? '<div class="fi-bagi"><button type="button" title="Bagikan kiriman ini" '+
+            'onclick="event.stopPropagation();window.__feedBagi(\''+esc(it.id)+'\',\''+
+            (view==='analisa'?'analisa':'berita')+'\',this)">&#128279; Bagikan</button></div>'
+          : '')+
       '</div></div>';
   }
 
@@ -4950,16 +5079,27 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(kunci==='ai')return 'Halo FNC, saya mau tanya seputar kelas dan cara mulai belajar trading.';
     return 'Halo Admin '+(a?a.sapa:'')+nama+'. '+(PESAN_ADMIN[kunci]||'');
   }
+  /* Membuka tab baru hanya diizinkan browser selama "izin sentuh" dari
+     klik masih hidup. Menunggu unduhan berkas lebih dulu akan menghanguskan
+     izin itu, dan tab barunya diblokir — itu sebabnya dulu harus diklik dua
+     kali. Sekarang: kalau datanya belum siap, halaman ini yang dialihkan
+     (tidak pernah diblokir); kalau sudah siap, tab baru seperti biasa. */
+  function bukaWA(url,siap){
+    if(siap){ try{ window.open(url,'_blank','noopener'); return; }catch(e){} }
+    location.href=url;
+  }
+  function pengaturanSiap(){ return !!pengaturan; }
   window.__konsul=async(kunci)=>{
+    const siap=pengaturanSiap();
     const no=await nomorAdmin(kunci);
     if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
-    const url='https://wa.me/'+no+'?text='+encodeURIComponent(pesanKonsul(kunci));
-    try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+    bukaWA('https://wa.me/'+no+'?text='+encodeURIComponent(pesanKonsul(kunci)),siap);
   };
   window.__bukaGrup=async()=>{
+    const siap=pengaturanSiap();
     const url=await tautanGrup();
     if(!url)return;
-    try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+    bukaWA(url,siap);
   };
   const IKON_WA='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.03-.53-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.38-.27.3-1.04 1.01-1.04 2.47 0 1.45 1.06 2.86 1.21 3.06.15.2 2.09 3.2 5.08 4.48.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5.01c0-5.18 4.22-9.4 9.42-9.4 2.51 0 4.88.98 6.65 2.76a9.34 9.34 0 0 1 2.75 6.65c0 5.19-4.22 9.41-9.41 9.41zM20.52 3.49A11.78 11.78 0 0 0 12.04 0C5.5 0 .18 5.32.18 11.86c0 2.09.55 4.13 1.6 5.93L.08 24l6.35-1.66a11.83 11.83 0 0 0 5.61 1.43h.01c6.53 0 11.85-5.32 11.85-11.86 0-3.17-1.23-6.15-3.38-8.42z"/></svg>';
   let pengaturan=null;
@@ -5087,7 +5227,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       if($('ai-fab'))$('ai-fab').hidden=false;
       const seen=await store.get(K_SEEN);
       if(!seen) $('welcome-overlay').hidden=false;
-      else { renderBeranda(); replayAnim('beranda'); }
+      else if(!(await kelasDariTautan())){ renderBeranda(); replayAnim('beranda'); }
     }else{
       $('gate-overlay').hidden=false;
       setTimeout(()=>$('gate-code').focus(),120);
