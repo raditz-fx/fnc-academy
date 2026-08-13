@@ -385,6 +385,78 @@
   .grup-cta p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.55;}
   .grup-cta .go{font-size:12px;font-weight:700;color:#128C7E;white-space:nowrap;}
 
+  /* ===== pop-up pengumuman ===== */
+  .peng-kotak{max-width:430px;width:100%;max-height:82vh;display:flex;flex-direction:column;}
+  .peng-atas{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .peng-ic{width:42px;height:42px;border-radius:13px;flex:0 0 auto;display:flex;
+    align-items:center;justify-content:center;font-size:20px;
+    background:var(--aksen-halus);border:1px solid var(--orange-light);}
+  .peng-atas b{display:block;font-size:16px;color:var(--teks-isi);letter-spacing:-.01em;}
+  .peng-atas span{display:block;font-size:11.5px;color:var(--gray);margin-top:1px;}
+  .peng-isi{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:0;
+    margin:0 -4px;padding:0 4px;}
+  .peng-item{border:1px solid var(--line);border-radius:14px;padding:13px 14px;
+    margin-bottom:11px;background:var(--kartu);text-align:left;}
+  .peng-item:last-child{margin-bottom:0;}
+  .peng-pill{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.07em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-bottom:8px;}
+  .peng-pill.info{background:var(--aksen-halus);color:var(--orange-deep);}
+  .peng-pill.penting{background:#FEE2E2;color:#B91C1C;}
+  .peng-pill.live{background:#DCFCE7;color:#15803D;}
+  .peng-item h4{margin:0 0 6px;font-size:14.5px;line-height:1.4;color:var(--teks-isi);}
+  .peng-item .teks{font-size:12.5px;line-height:1.7;color:var(--slate-2);}
+  .peng-item img{width:100%;border-radius:10px;margin-bottom:10px;display:block;}
+  .peng-item .tgl{display:block;margin-top:9px;font-size:11px;color:var(--gray);}
+  .peng-kotak .welcome-actions{margin-top:15px;}
+
+  /* ===== tab Informasi ===== */
+  .inf-grup{margin-bottom:20px;}
+  .inf-grup:last-child{margin-bottom:0;}
+  .inf-lbl{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--gray);margin:0 0 10px;}
+  .inf-baris{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    border:1px solid var(--line);border-radius:14px;background:var(--kartu);
+    padding:11px 13px;margin-bottom:9px;cursor:pointer;font-family:inherit;
+    box-shadow:var(--bayang-1);
+    transition:transform .16s ease,box-shadow .2s ease,border-color .18s ease;}
+  .inf-baris:hover{transform:translateY(-2px);box-shadow:var(--bayang-2);}
+  /* Lambang merek sudah membawa latarnya sendiri, jadi kotaknya dibiarkan
+     polos dan gambarnya mengisi penuh. Discord berbentuk lingkaran, jadi
+     kotaknya diberi warna yang sama supaya menyatu dengan yang lain. */
+  .inf-ic{width:40px;height:40px;border-radius:12px;flex:0 0 auto;
+    overflow:hidden;display:block;}
+  .inf-ic img{width:100%;height:100%;object-fit:cover;display:block;}
+  .inf-ic.dc{background:#5865F2;}
+  .inf-baris b{display:block;font-size:13.5px;color:var(--teks-isi);}
+  .inf-baris span{display:block;font-size:11.5px;color:var(--gray);margin-top:1px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .inf-baris .pan{color:var(--gray);font-size:17px;flex:0 0 auto;}
+  .inf-baris.ig:hover{border-color:#E1306C;}
+  .inf-baris.tt:hover{border-color:#111;}
+  .inf-baris.wa:hover{border-color:#25D366;}
+  .inf-baris.dc:hover{border-color:#5865F2;}
+  .inf-cp{border:1.5px solid var(--orange);border-radius:16px;padding:17px;
+    background:linear-gradient(150deg,var(--aksen-halus),var(--kartu) 70%);}
+  .inf-cp h4{margin:0 0 6px;font-size:16px;color:var(--teks-isi);letter-spacing:-.01em;}
+  .inf-cp>p{margin:0 0 13px;font-size:12.5px;line-height:1.65;color:var(--slate-2);}
+  .inf-jenis{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+  .inf-jenis span{font-size:11px;font-weight:600;padding:4px 11px;border-radius:999px;
+    background:var(--cream);border:1px solid var(--line);color:var(--slate-2);}
+
+  /* ===== ajakan Discord ===== */
+  .dc-cta{display:flex;align-items:center;gap:13px;margin-top:11px;
+    border:1px solid #5865F2;border-radius:15px;padding:14px 15px;
+    background:linear-gradient(135deg,rgba(88,101,242,.10),rgba(88,101,242,.03));
+    cursor:pointer;transition:transform .16s ease,box-shadow .2s ease;}
+  .dc-cta:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(88,101,242,.22);}
+  .dc-cta .ic{width:42px;height:42px;border-radius:13px;flex:0 0 auto;
+    overflow:hidden;background:#5865F2;
+    box-shadow:0 5px 14px rgba(88,101,242,.34);}
+  .dc-cta .ic img{width:100%;height:100%;object-fit:cover;display:block;}
+  .dc-cta b{display:block;font-size:13.5px;color:var(--teks-isi);margin-bottom:2px;}
+  .dc-cta p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.55;}
+  .dc-cta .go{font-size:12px;font-weight:700;color:#5865F2;white-space:nowrap;}
+
   /* ===== KELAS: segera dibuka (latar buram) ===== */
   .soon-wrap{position:relative;border-radius:18px;overflow:hidden;
     border:1px solid var(--orange);box-shadow:var(--bayang-2);}
@@ -1268,6 +1340,21 @@
   </div>
 </div>
 
+<div class="overlay" id="peng-overlay" hidden>
+  <div class="gate-card peng-kotak">
+    <div class="peng-atas">
+      <div class="peng-ic" aria-hidden="true">&#128226;</div>
+      <div style="flex:1;min-width:0;">
+        <b>Pengumuman</b>
+        <span>Dari tim FNC Academy</span>
+      </div>
+    </div>
+    <div class="peng-isi" id="peng-isi"></div>
+    <div class="welcome-actions">
+      <button class="btn" id="peng-lanjut" type="button">Lanjut ke Website</button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="grup-overlay" hidden>
   <div class="gate-card grup-card">
     <div class="grup-ic" aria-hidden="true">
@@ -1403,6 +1490,7 @@
     <button class="tab" data-view="calc">Kalkulator</button>
     <button class="tab" data-view="accounts">Profil</button>
     <button class="tab" data-view="help">Bantuan</button>
+    <button class="tab" data-view="info">Informasi</button>
   </div>
 
   <div class="body">
@@ -1657,6 +1745,14 @@
       <div class="panel kls-detail" id="kls-detail" hidden>
         <button class="btn ghost sm" id="kls-kembali" style="margin-bottom:13px;">&larr; Semua Kelas</button>
         <div id="kls-detail-isi"></div>
+      </div>
+    </div>
+
+    <!-- INFORMASI -->
+    <div class="view" id="v-info">
+      <div class="panel">
+        <div class="panel-head"><h3>INFORMASI &amp; KONTAK</h3></div>
+        <div id="info-isi"></div>
       </div>
     </div>
 
@@ -3217,6 +3313,137 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     },30000);
   }
 
+  /* ================= INFORMASI & PENGUMUMAN ================= */
+  const IK_IG='<img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMzM2NC43IDMzNjQuNyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9IjAiIGN4PSIyMTcuNzYiIGN5PSIzMjkwLjk5IiByPSI0MjcxLjkyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIuMDkiIHN0b3AtY29sb3I9IiNmYThmMjEiLz48c3RvcCBvZmZzZXQ9Ii43OCIgc3RvcC1jb2xvcj0iI2Q4MmQ3ZSIvPjwvcmFkaWFsR3JhZGllbnQ+PHJhZGlhbEdyYWRpZW50IGlkPSIxIiBjeD0iMjMzMC42MSIgY3k9IjMxODIuOTUiIHI9IjM3NTkuMzMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9Ii42NCIgc3RvcC1jb2xvcj0iIzhjM2FhYSIgc3RvcC1vcGFjaXR5PSIwIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGMzYWFhIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHBhdGggZD0iTTg1My4yLDMzNTIuOGMtMjAwLjEtOS4xLTMwOC44LTQyLjQtMzgxLjEtNzAuNi05NS44LTM3LjMtMTY0LjEtODEuNy0yMzYtMTUzLjVTMTE5LjcsMjk4OC42LDgyLjYsMjg5Mi44Yy0yOC4yLTcyLjMtNjEuNS0xODEtNzAuNi0zODEuMUMyLDIyOTUuNCwwLDIyMzAuNSwwLDE2ODIuNXMyLjItNjEyLjgsMTEuOS04MjkuM0MyMSw2NTMuMSw1NC41LDU0NC42LDgyLjUsNDcyLjEsMTE5LjgsMzc2LjMsMTY0LjMsMzA4LDIzNiwyMzZjNzEuOC03MS44LDE0MC4xLTExNi40LDIzNi0xNTMuNUM1NDQuMyw1NC4zLDY1MywyMSw4NTMuMSwxMS45LDEwNjkuNSwyLDExMzQuNSwwLDE2ODIuMywwYzU0OCwwLDYxMi44LDIuMiw4MjkuMywxMS45LDIwMC4xLDkuMSwzMDguNiw0Mi42LDM4MS4xLDcwLjYsOTUuOCwzNy4xLDE2NC4xLDgxLjcsMjM2LDE1My41czExNi4yLDE0MC4yLDE1My41LDIzNmMyOC4yLDcyLjMsNjEuNSwxODEsNzAuNiwzODEuMSw5LjksMjE2LjUsMTEuOSwyODEuMywxMS45LDgyOS4zLDAsNTQ3LjgtMiw2MTIuOC0xMS45LDgyOS4zLTkuMSwyMDAuMS00Mi42LDMwOC44LTcwLjYsMzgxLjEtMzcuMyw5NS44LTgxLjcsMTY0LjEtMTUzLjUsMjM1LjlzLTE0MC4yLDExNi4yLTIzNiwxNTMuNWMtNzIuMywyOC4yLTE4MSw2MS41LTM4MS4xLDcwLjYtMjE2LjMsOS45LTI4MS4zLDExLjktODI5LjMsMTEuOS01NDcuOCwwLTYxMi44LTEuOS04MjkuMS0xMS45IiBmaWxsPSJ1cmwoIzApIi8+PHBhdGggZD0iTTg1My4yLDMzNTIuOGMtMjAwLjEtOS4xLTMwOC44LTQyLjQtMzgxLjEtNzAuNi05NS44LTM3LjMtMTY0LjEtODEuNy0yMzYtMTUzLjVTMTE5LjcsMjk4OC42LDgyLjYsMjg5Mi44Yy0yOC4yLTcyLjMtNjEuNS0xODEtNzAuNi0zODEuMUMyLDIyOTUuNCwwLDIyMzAuNSwwLDE2ODIuNXMyLjItNjEyLjgsMTEuOS04MjkuM0MyMSw2NTMuMSw1NC41LDU0NC42LDgyLjUsNDcyLjEsMTE5LjgsMzc2LjMsMTY0LjMsMzA4LDIzNiwyMzZjNzEuOC03MS44LDE0MC4xLTExNi40LDIzNi0xNTMuNUM1NDQuMyw1NC4zLDY1MywyMSw4NTMuMSwxMS45LDEwNjkuNSwyLDExMzQuNSwwLDE2ODIuMywwYzU0OCwwLDYxMi44LDIuMiw4MjkuMywxMS45LDIwMC4xLDkuMSwzMDguNiw0Mi42LDM4MS4xLDcwLjYsOTUuOCwzNy4xLDE2NC4xLDgxLjcsMjM2LDE1My41czExNi4yLDE0MC4yLDE1My41LDIzNmMyOC4yLDcyLjMsNjEuNSwxODEsNzAuNiwzODEuMSw5LjksMjE2LjUsMTEuOSwyODEuMywxMS45LDgyOS4zLDAsNTQ3LjgtMiw2MTIuOC0xMS45LDgyOS4zLTkuMSwyMDAuMS00Mi42LDMwOC44LTcwLjYsMzgxLjEtMzcuMyw5NS44LTgxLjcsMTY0LjEtMTUzLjUsMjM1LjlzLTE0MC4yLDExNi4yLTIzNiwxNTMuNWMtNzIuMywyOC4yLTE4MSw2MS41LTM4MS4xLDcwLjYtMjE2LjMsOS45LTI4MS4zLDExLjktODI5LjMsMTEuOS01NDcuOCwwLTYxMi44LTEuOS04MjkuMS0xMS45IiBmaWxsPSJ1cmwoIzEpIi8+PHBhdGggZD0iTTEyNjkuMjUsMTY4OS41MmMwLTIzMC4xMSwxODYuNDktNDE2LjcsNDE2LjYtNDE2LjdzNDE2LjcsMTg2LjU5LDQxNi43LDQxNi43LTE4Ni41OSw0MTYuNy00MTYuNyw0MTYuNy00MTYuNi0xODYuNTktNDE2LjYtNDE2LjdtLTIyNS4yNiwwYzAsMzU0LjUsMjg3LjM2LDY0MS44Niw2NDEuODYsNjQxLjg2czY0MS44Ni0yODcuMzYsNjQxLjg2LTY0MS44Ni0yODcuMzYtNjQxLjg2LTY0MS44Ni02NDEuODZTMTA0NCwxMzM1LDEwNDQsMTY4OS41Mm0xMTU5LjEzLTY2Ny4zMWExNTAsMTUwLDAsMSwwLDE1MC4wNi0xNDkuOTRoLTAuMDZhMTUwLjA3LDE1MC4wNywwLDAsMC0xNTAsMTQ5Ljk0TTExODAuODUsMjcwN2MtMTIxLjg3LTUuNTUtMTg4LjExLTI1Ljg1LTIzMi4xMy00My01OC4zNi0yMi43Mi0xMDAtNDkuNzgtMTQzLjc4LTkzLjVzLTcwLjg4LTg1LjMyLTkzLjUtMTQzLjY4Yy0xNy4xNi00NC0zNy40Ni0xMTAuMjYtNDMtMjMyLjEzLTYuMDYtMTMxLjc2LTcuMjctMTcxLjM0LTcuMjctNTA1LjE1czEuMzEtMzczLjI4LDcuMjctNTA1LjE1YzUuNTUtMTIxLjg3LDI2LTE4OCw0My0yMzIuMTMsMjIuNzItNTguMzYsNDkuNzgtMTAwLDkzLjUtMTQzLjc4czg1LjMyLTcwLjg4LDE0My43OC05My41YzQ0LTE3LjE2LDExMC4yNi0zNy40NiwyMzIuMTMtNDMsMTMxLjc2LTYuMDYsMTcxLjM0LTcuMjcsNTA1LTcuMjdTMjA1OS4xMyw2NjYsMjE5MSw2NzJjMTIxLjg3LDUuNTUsMTg4LDI2LDIzMi4xMyw0Myw1OC4zNiwyMi42MiwxMDAsNDkuNzgsMTQzLjc4LDkzLjVzNzAuNzgsODUuNDIsOTMuNSwxNDMuNzhjMTcuMTYsNDQsMzcuNDYsMTEwLjI2LDQzLDIzMi4xMyw2LjA2LDEzMS44Nyw3LjI3LDE3MS4zNCw3LjI3LDUwNS4xNXMtMS4yMSwzNzMuMjgtNy4yNyw1MDUuMTVjLTUuNTUsMTIxLjg3LTI1Ljk1LDE4OC4xMS00MywyMzIuMTMtMjIuNzIsNTguMzYtNDkuNzgsMTAwLTkzLjUsMTQzLjY4cy04NS40Miw3MC43OC0xNDMuNzgsOTMuNWMtNDQsMTcuMTYtMTEwLjI2LDM3LjQ2LTIzMi4xMyw0My0xMzEuNzYsNi4wNi0xNzEuMzQsNy4yNy01MDUuMTUsNy4yN3MtMzczLjI4LTEuMjEtNTA1LTcuMjdNMTE3MC41LDQ0Ny4wOWMtMTMzLjA3LDYuMDYtMjI0LDI3LjE2LTMwMy40MSw1OC4wNi04Mi4xOSwzMS45MS0xNTEuODYsNzQuNzItMjIxLjQzLDE0NC4xOFM1MzMuMzksNzg4LjQ3LDUwMS40OCw4NzAuNzZjLTMwLjksNzkuNDYtNTIsMTcwLjM0LTU4LjA2LDMwMy40MS02LjE2LDEzMy4yOC03LjU3LDE3NS44OS03LjU3LDUxNS4zNXMxLjQxLDM4Mi4wNyw3LjU3LDUxNS4zNWM2LjA2LDEzMy4wOCwyNy4xNiwyMjMuOTUsNTguMDYsMzAzLjQxLDMxLjkxLDgyLjE5LDc0LjYyLDE1MiwxNDQuMTgsMjIxLjQzczEzOS4xNCwxMTIuMTgsMjIxLjQzLDE0NC4xOGM3OS41NiwzMC45LDE3MC4zNCw1MiwzMDMuNDEsNTguMDYsMTMzLjM1LDYuMDYsMTc1Ljg5LDcuNTcsNTE1LjM1LDcuNTdzMzgyLjA3LTEuNDEsNTE1LjM1LTcuNTdjMTMzLjA4LTYuMDYsMjIzLjk1LTI3LjE2LDMwMy40MS01OC4wNiw4Mi4xOS0zMiwxNTEuODYtNzQuNzIsMjIxLjQzLTE0NC4xOHMxMTIuMTgtMTM5LjI0LDE0NC4xOC0yMjEuNDNjMzAuOS03OS40Niw1Mi4xLTE3MC4zNCw1OC4wNi0zMDMuNDEsNi4wNi0xMzMuMzgsNy40Ny0xNzUuODksNy40Ny01MTUuMzVzLTEuNDEtMzgyLjA3LTcuNDctNTE1LjM1Yy02LjA2LTEzMy4wOC0yNy4xNi0yMjQtNTguMDYtMzAzLjQxLTMyLTgyLjE5LTc0LjcyLTE1MS44Ni0xNDQuMTgtMjIxLjQzUzI1ODYuOCw1MzcuMDYsMjUwNC43MSw1MDUuMTVjLTc5LjU2LTMwLjktMTcwLjQ0LTUyLjEtMzAzLjQxLTU4LjA2QzIwNjgsNDQxLDIwMjUuNDEsNDM5LjUyLDE2ODYsNDM5LjUycy0zODIuMSwxLjQxLTUxNS40NSw3LjU3IiBmaWxsPSIjZmZmZmZmIi8+PC9zdmc+" alt="">';
+  const IK_TT='<img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjUwIDI1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4gPGcgY2xpcC1ydWxlPSJldmVub2RkIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPiA8cGF0aCBkPSJNMjUgMGgyMDBjMTMuODA4IDAgMjUgMTEuMTkyIDI1IDI1djIwMGMwIDEzLjgwOC0xMS4xOTIgMjUtMjUgMjVIMjVjLTEzLjgwOCAwLTI1LTExLjE5Mi0yNS0yNVYyNUMwIDExLjE5MiAxMS4xOTIgMCAyNSAweiIgZmlsbD0iIzAxMDEwMSIvPiA8cGF0aCBkPSJNMTU2Ljk4IDIzMGM3LjYwNyAwIDEzLjc3NC02LjExNyAxMy43NzQtMTMuNjYycy02LjE2Ny0xMy42NjMtMTMuNzc0LTEzLjY2M2gtMi4wNzVjNy42MDcgMCAxMy43NzQgNi4xMTggMTMuNzc0IDEzLjY2M1MxNjIuNTEyIDIzMCAxNTQuOTA1IDIzMHoiIGZpbGw9IiNlZTFkNTEiLz4gPHBhdGggZD0iTTE1NC43MTcgMjAyLjY3NWgtMi4wNzVjLTcuNjA3IDAtMTMuNzc1IDYuMTE4LTEzLjc3NSAxMy42NjNTMTQ1LjAzNSAyMzAgMTUyLjY0MiAyMzBoMi4wNzVjLTcuNjA4IDAtMTMuNzc1LTYuMTE3LTEzLjc3NS0xMy42NjJzNi4xNjctMTMuNjYzIDEzLjc3NS0xMy42NjN6IiBmaWxsPSIjNjZjOGNmIi8+IDxlbGxpcHNlIGN4PSIxNTQuODExIiBjeT0iMjE2LjMzOCIgZmlsbD0iIzAxMDEwMSIgcng9IjYuNjk5IiByeT0iNi42NDMiLz4gPHBhdGggZD0iTTUwIDE5Ni41djYuOTI1aDguMTEydjI2LjM4OGg4LjExNXYtMjYuMjAxaDYuNjAzbDIuMjY0LTcuMTEyem02Ni40MTUgMHY2LjkyNWg4LjExMnYyNi4zODhoOC4xMTV2LTI2LjIwMWg2LjYwM2wyLjI2NC03LjExMnptLTM5LjgxIDMuOTNjMC0yLjE3IDEuNzcxLTMuOTMgMy45NTktMy45MyAyLjE5IDAgMy45NjMgMS43NiAzLjk2MyAzLjkzcy0xLjc3MiAzLjkzLTMuOTYzIDMuOTNjLTIuMTg4LS4wMDEtMy45NTktMS43Ni0zLjk1OS0zLjkzem0wIDYuNzM4aDcuOTIydjIyLjY0NWgtNy45MjJ6TTg3LjkyNCAxOTYuNXYzMy4zMTNoNy45MjV2LTguNjA4bDIuNDUzLTIuMjQ4TDEwNi4wMzcgMjMwaDguNDlsLTExLjEzMy0xNi4wOTUgMTAtOS43MzNoLTkuNjIybC03LjkyMyA3Ljg2VjE5Ni41em04NS40NyAwdjMzLjMxM2g3LjkyNnYtOC42MDhsMi40NTItMi4yNDhMMTkxLjUwOSAyMzBIMjAwbC0xMS4xMzMtMTYuMDk1IDEwLTkuNzMzaC05LjYyMmwtNy45MjUgNy44NlYxOTYuNXoiIGZpbGw9IiNmZmZmZmYiLz4gPHBhdGggZD0iTTE2MS4xNjcgODEuMTg2YzEwLjk0NCA3LjgxOSAyNC4zNTIgMTIuNDIgMzguODMyIDEyLjQyVjY1Ljc1NWEzOS4yNiAzOS4yNiAwIDAgMS04LjE1NS0uODUzdjIxLjkyM2MtMTQuNDc5IDAtMjcuODg1LTQuNjAxLTM4LjgzMi0xMi40MnY1Ni44MzVjMCAyOC40MzItMjMuMDYgNTEuNDc5LTUxLjUwNSA1MS40NzktMTAuNjEzIDAtMjAuNDc4LTMuMjA3LTI4LjY3My04LjcwN0M4Mi4xODcgMTgzLjU3IDk1LjIzIDE4OS41IDEwOS42NiAxODkuNWMyOC40NDcgMCA1MS41MDgtMjMuMDQ3IDUxLjUwOC01MS40OFY4MS4xODZ6bTEwLjA2LTI4LjA5OGMtNS41OTMtNi4xMDctOS4yNjUtMTQtMTAuMDYtMjIuNzI2VjI2Ljc4aC03LjcyOGMxLjk0NSAxMS4wOSA4LjU4IDIwLjU2NSAxNy43ODggMjYuMzA4em0tODAuNDAyIDk5LjEwN2EyMy40NDUgMjMuNDQ1IDAgMCAxLTQuODA2LTE0LjI1NmMwLTEzLjAwNCAxMC41NDgtMjMuNTQ3IDIzLjU2MS0yMy41NDdhMjMuNiAyMy42IDAgMCAxIDcuMTQ3IDEuMTAzVjg3LjAyMmE1MS45NyA1MS45NyAwIDAgMC04LjE1Mi0uNDY5djIyLjE2MmEyMy42MTkgMjMuNjE5IDAgMCAwLTcuMTUtMS4xMDNjLTEzLjAxMyAwLTIzLjU2IDEwLjU0My0yMy41NiAyMy41NDggMCA5LjE5NSA1LjI3MiAxNy4xNTcgMTIuOTYgMjEuMDM1eiIgZmlsbD0iI2VlMWQ1MiIvPiA8cGF0aCBkPSJNMTUzLjAxMiA3NC40MDVjMTAuOTQ3IDcuODE5IDI0LjM1MyAxMi40MiAzOC44MzIgMTIuNDJWNjQuOTAyYy04LjA4Mi0xLjcyLTE1LjIzNy01Ljk0Mi0yMC42MTctMTEuODE0LTkuMjA4LTUuNzQzLTE1Ljg0My0xNS4yMTgtMTcuNzg4LTI2LjMwOEgxMzMuMTR2MTExLjIzOWMtLjA0NiAxMi45NjgtMTAuNTc2IDIzLjQ2OC0yMy41NjEgMjMuNDY4LTcuNjUyIDAtMTQuNDUtMy42NDUtMTguNzU1LTkuMjkyLTcuNjg4LTMuODc4LTEyLjk2LTExLjg0LTEyLjk2LTIxLjAzNSAwLTEzLjAwNSAxMC41NDctMjMuNTQ4IDIzLjU2LTIzLjU0OCAyLjQ5MyAwIDQuODk2LjM4OCA3LjE1IDEuMTAzVjg2LjU1M2MtMjcuOTQ1LjU3Ny01MC40MiAyMy4zOTktNTAuNDIgNTEuNDY3IDAgMTQuMDExIDUuNTk3IDI2LjcxMyAxNC42OCAzNS45OTMgOC4xOTUgNS41IDE4LjA2IDguNzA3IDI4LjY3MyA4LjcwNyAyOC40NDUgMCA1MS41MDUtMjMuMDQ4IDUxLjUwNS01MS40Nzl6IiBmaWxsPSIjZmZmZmZmIi8+IDxwYXRoIGQ9Ik0xOTEuODQ0IDY0LjkwMnYtNS45MjhhMzguODQgMzguODQgMCAwIDEtMjAuNjE3LTUuODg3IDM4Ljk0OCAzOC45NDggMCAwIDAgMjAuNjE3IDExLjgxNXpNMTUzLjQzOSAyNi43OGEzOS41MjQgMzkuNTI0IDAgMCAxLS40MjctMy4xOThWMjBoLTI4LjAyOHYxMTEuMjRjLS4wNDUgMTIuOTY3LTEwLjU3NCAyMy40NjctMjMuNTYgMjMuNDY3LTMuODEzIDAtNy40MTItLjkwNC0xMC42LTIuNTEyIDQuMzA1IDUuNjQ3IDExLjEwMyA5LjI5MiAxOC43NTUgOS4yOTIgMTIuOTg0IDAgMjMuNTE1LTEwLjUgMjMuNTYxLTIzLjQ2OFYyNi43OHptLTQ0Ljg2NCA1OS43NzN2LTYuMzExYTUxLjk3IDUxLjk3IDAgMCAwLTcuMDY3LS40NzlDNzMuMDYgNzkuNzYzIDUwIDEwMi44MTEgNTAgMTMxLjI0YzAgMTcuODI0IDkuMDYzIDMzLjUzMiAyMi44MzUgNDIuNzcyLTkuMDgzLTkuMjgtMTQuNjgtMjEuOTgyLTE0LjY4LTM1Ljk5MyAwLTI4LjA2NyAyMi40NzQtNTAuODg5IDUwLjQyLTUxLjQ2NnoiIGZpbGw9IiM2OWM5ZDAiLz4gPHBhdGggZD0iTTE1NC45MDQgMjMwYzcuNjA3IDAgMTMuNzc1LTYuMTE3IDEzLjc3NS0xMy42NjJzLTYuMTY4LTEzLjY2My0xMy43NzUtMTMuNjYzaC0uMTg4Yy03LjYwNyAwLTEzLjc3NCA2LjExOC0xMy43NzQgMTMuNjYzUzE0Ny4xMDkgMjMwIDE1NC43MTYgMjMwem0tNi43OTItMTMuNjYyYzAtMy42NyAzLTYuNjQzIDYuNy02LjY0MyAzLjY5NyAwIDYuNjk3IDIuOTczIDYuNjk3IDYuNjQzcy0zIDYuNjQ1LTYuNjk3IDYuNjQ1Yy0zLjctLjAwMS02LjctMi45NzUtNi43LTYuNjQ1eiIgZmlsbD0iI2ZmZmZmZiIvPiA8L2c+IDwvc3ZnPg==" alt="">';
+  const IK_WA='<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGFyaWEtbGFiZWw9IldoYXRzQXBwIiByb2xlPSJpbWciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjE1JSIgZmlsbD0iIzI1ZDM2NiIvPjxwYXRoIGZpbGw9IiMyNWQzNjYiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSIyNiIgZD0iTTEyMyAzOTNsMTQtNjVhMTM4IDEzOCAwIDExNTAgNDd6Ii8+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTMwOCAyNzNjLTMtMi02LTMtOSAxbC0xMiAxNmMtMyAyLTUgMy05IDEtMTUtOC0zNi0xNy01NC00Ny0xLTQgMS02IDMtOGw5LTE0YzItMiAxLTQgMC02bC0xMi0yOWMtMy04LTYtNy05LTdoLThjLTIgMC02IDEtMTAgNS0yMiAyMi0xMyA1MyAzIDczIDMgNCAyMyA0MCA2NiA1OSAzMiAxNCAzOSAxMiA0OCAxMCAxMS0xIDIyLTEwIDI3LTE5IDEtMyA2LTE2IDItMTgiLz48L3N2Zz4=" alt="">';
+  const IK_DC='<img src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPiA8Y2lyY2xlIGN4PSI1MTIiIGN5PSI1MTIiIHI9IjUxMiIgc3R5bGU9ImZpbGw6IzU4NjVmMiIvPiA8cGF0aCBkPSJNNjg5LjQzIDM0OWE0MjIuMjEgNDIyLjIxIDAgMCAwLTEwNC4yMi0zMi4zMiAxLjU4IDEuNTggMCAwIDAtMS42OC43OSAyOTQuMTEgMjk0LjExIDAgMCAwLTEzIDI2LjY2IDM4OS43OCAzODkuNzggMCAwIDAtMTE3LjA1IDAgMjY5Ljc1IDI2OS43NSAwIDAgMC0xMy4xOC0yNi42NiAxLjY0IDEuNjQgMCAwIDAtMS42OC0uNzlBNDIxIDQyMSAwIDAgMCAzMzQuNDQgMzQ5YTEuNDkgMS40OSAwIDAgMC0uNjkuNTljLTY2LjM3IDk5LjE3LTg0LjU1IDE5NS45LTc1LjYzIDI5MS40MWExLjc2IDEuNzYgMCAwIDAgLjY3IDEuMiA0MjQuNTggNDI0LjU4IDAgMCAwIDEyNy44NSA2NC42MyAxLjY2IDEuNjYgMCAwIDAgMS44LS41OSAzMDMuNDUgMzAzLjQ1IDAgMCAwIDI2LjE1LTQyLjU0IDEuNjIgMS42MiAwIDAgMC0uODktMi4yNSAyNzkuNiAyNzkuNiAwIDAgMS0zOS45NC0xOSAxLjY0IDEuNjQgMCAwIDEtLjE2LTIuNzJjMi42OC0yIDUuMzctNC4xIDcuOTMtNi4yMmExLjU4IDEuNTggMCAwIDEgMS42NS0uMjJjODMuNzkgMzguMjYgMTc0LjUxIDM4LjI2IDI1Ny4zMSAwYTEuNTggMS41OCAwIDAgMSAxLjY4LjJjMi41NiAyLjExIDUuMjUgNC4yMyA4IDYuMjRhMS42NCAxLjY0IDAgMCAxLS4xNCAyLjcyIDI2Mi4zNyAyNjIuMzcgMCAwIDEtNDAgMTkgMS42MyAxLjYzIDAgMCAwLS44NyAyLjI4IDM0MC43MiAzNDAuNzIgMCAwIDAgMjYuMTMgNDIuNTIgMS42MiAxLjYyIDAgMCAwIDEuOC42MSA0MjMuMTcgNDIzLjE3IDAgMCAwIDEyOC02NC42MyAxLjY0IDEuNjQgMCAwIDAgLjY3LTEuMThjMTAuNjgtMTEwLjQ0LTE3Ljg4LTIwNi4zOC03NS43LTI5MS40MmExLjMgMS4zIDAgMCAwLS42My0uNjN6TTQyNy4wOSA1ODIuODVjLTI1LjIzIDAtNDYtMjMuMTYtNDYtNTEuNnMyMC4zOC01MS42IDQ2LTUxLjZjMjUuODMgMCA0Ni40MiAyMy4zNiA0NiA1MS42LjAyIDI4LjQ0LTIwLjM3IDUxLjYtNDYgNTEuNnptMTcwLjEzIDBjLTI1LjIzIDAtNDYtMjMuMTYtNDYtNTEuNnMyMC4zOC01MS42IDQ2LTUxLjZjMjUuODMgMCA0Ni40MiAyMy4zNiA0NiA1MS42LjAxIDI4LjQ0LTIwLjE3IDUxLjYtNDYgNTEuNnoiIHN0eWxlPSJmaWxsOiNmZmYiLz4gPC9zdmc+" alt="">';
+
+  const SOS_BAWAAN={
+    ig_fnc:'https://www.instagram.com/tradewithfnc',
+    tt_fnc:'https://www.tiktok.com/@fncacademy',
+    tt_radit:'https://www.tiktok.com/@raditzfx',
+    discord:'https://discord.gg/Hst9s4jX3',
+    ig_mfx:'https://www.instagram.com/momentum_fxindo',
+    ig_pk:'https://www.instagram.com/psikologidankeuangan',
+    tt_pk:'https://www.tiktok.com/@psikologidankeuangan'
+  };
+  function sosLink(kunci){
+    const p=pengaturan||{};
+    const v=(p.sos&&typeof p.sos[kunci]==='string')?p.sos[kunci].trim():'';
+    return v || SOS_BAWAAN[kunci] || '';
+  }
+  window.__bukaLuar=(url)=>{
+    if(!url)return;
+    try{ window.open(url,'_blank','noopener'); }catch(e){ location.href=url; }
+  };
+  window.__bukaDiscord=async()=>{
+    const siap=pengaturanSiap();
+    if(!siap)await ambilPengaturan();
+    const url=sosLink('discord');
+    if(!url)return;
+    bukaWA(url,siap);
+  };
+  window.__cpBisnis=async()=>{
+    const siap=pengaturanSiap();
+    const p=siap?pengaturan:(await ambilPengaturan());
+    const no=waNormal((p&&p.cp&&p.cp.no)||'087713361586');
+    const bawaan='Halo Kak Radit, saya mau menghubungi FNC Academy untuk kerja sama. '+
+      'Boleh minta informasi lebih lanjut?';
+    const teks=((p&&p.cp&&p.cp.teks)||'').trim()||bawaan;
+    bukaWA('https://wa.me/'+no+'?text='+encodeURIComponent(teks),siap);
+  };
+
+  function infBaris(jenis,ikon,judul,ket,aksi){
+    return '<button class="inf-baris '+jenis+'" type="button" onclick="'+aksi+'">'+
+      '<span class="inf-ic '+jenis+'">'+ikon+'</span>'+
+      '<span style="flex:1;min-width:0;"><b>'+esc(judul)+'</b><span>'+esc(ket)+'</span></span>'+
+      '<span class="pan">&rsaquo;</span></button>';
+  }
+  function bukaLuarAksi(kunci){
+    return "window.__bukaLuar(window.__sos('"+kunci+"'))";
+  }
+  window.__sos=(k)=>sosLink(k);
+
+  async function showInfo(){
+    if(!$('info-isi'))return;
+    await ambilPengaturan();
+    const p=pengaturan||{};
+    const jenisCP=((p.cp&&p.cp.jenis)||'Media Berita, Kerja Sama')
+      .split(',').map(x=>x.trim()).filter(Boolean);
+    $('info-isi').innerHTML=
+      '<div class="inf-grup">'+
+        '<p class="inf-lbl">Sosial Media FNC Academy</p>'+
+        infBaris('ig',IK_IG,'Instagram FNC Academy','@tradewithfnc',bukaLuarAksi('ig_fnc'))+
+        infBaris('tt',IK_TT,'TikTok FNC Academy','@fncacademy',bukaLuarAksi('tt_fnc'))+
+        infBaris('tt',IK_TT,'TikTok Raditz','@raditzfx \u00b7 Founder FNC Academy',bukaLuarAksi('tt_radit'))+
+        infBaris('wa',IK_WA,'Grup Publik WhatsApp','Gratis, tempat ngobrol & tanya-jawab','window.__bukaGrup()')+
+        infBaris('dc',IK_DC,'Server Discord FNC','Tempat sesi live & diskusi member','window.__bukaDiscord()')+
+      '</div>'+
+      '<div class="inf-grup">'+
+        '<p class="inf-lbl">Partner</p>'+
+        infBaris('ig',IK_IG,'Instagram MomentumFX','@momentum_fxindo',bukaLuarAksi('ig_mfx'))+
+        infBaris('ig',IK_IG,'Instagram Psikologi dan Keuangan','@psikologidankeuangan',bukaLuarAksi('ig_pk'))+
+        infBaris('tt',IK_TT,'TikTok Psikologi dan Keuangan','@psikologidankeuangan',bukaLuarAksi('tt_pk'))+
+      '</div>'+
+      '<div class="inf-grup">'+
+        '<p class="inf-lbl">Kontak Kerja Sama</p>'+
+        '<div class="inf-cp">'+
+          '<h4>Business Inquiry</h4>'+
+          '<p>Untuk urusan kerja sama dan peliputan, hubungi langsung. '+
+          'Pertanyaan seputar kelas dan membership lebih cepat lewat menu '+
+          'Konsultasi di Beranda.</p>'+
+          '<div class="inf-jenis">'+jenisCP.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+
+          '<button class="btn" type="button" style="width:100%;" '+
+            'onclick="window.__cpBisnis()">'+IKON_WA_KECIL+' Contact Now</button>'+
+        '</div>'+
+      '</div>';
+  }
+
+  /* ---------- pop-up pengumuman ----------
+     Muncul sekali sehari, dan langsung muncul lagi begitu ada pengumuman
+     baru. Kalau muncul tiap kali dibuka, member yang membuka lima kali
+     sehari akan cepat terganggu dan berhenti membacanya. */
+  const K_PENG='fncjt_peng_seen';
+  function pengSidik(list){
+    return (list||[]).map(a=>String(a.id||a.title||'')+'|'+String(a.pub||a.date||'')).join(';');
+  }
+  function pengHariIni(){
+    const d=new Date();
+    return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  }
+  function pengKartu(a){
+    const j=String(a.jenis||'info').toLowerCase();
+    const lbl = j==='live' ? 'Live Sekarang' : (j==='penting' ? 'Penting' : 'Info');
+    return '<div class="peng-item">'+
+      (a.image?'<img src="'+esc(a.image)+'" alt="" loading="lazy">':'')+
+      '<span class="peng-pill '+esc(j)+'">'+lbl+'</span>'+
+      (a.title?'<h4>'+esc(a.title)+'</h4>':'')+
+      (a.body?'<div class="teks">'+waFormat(a.body)+'</div>':'')+
+      (a.url?'<div class="ann-btn" style="margin-top:11px;" onclick="window.__buka(\''+
+        esc(a.url).replace(/'/g,"\\'")+'\')">'+esc(a.cta||'Buka Link')+'</div>':'')+
+      '<span class="tgl">'+stempelWaktu(a)+'</span>'+
+    '</div>';
+  }
+  window.__ujiPeng=()=>tampilPengumuman();
+  async function tampilPengumuman(){
+    let list=[];
+    try{ list=await ambilPengumuman(); }catch(e){ return false; }
+    if(!list.length)return false;
+    const sidik=pengSidik(list);
+    let simpan=null;
+    try{ simpan=await store.get(K_PENG); }catch(e){}
+    if(simpan && simpan.sidik===sidik && simpan.hari===pengHariIni())return false;
+    $('peng-isi').innerHTML=list.map(pengKartu).join('');
+    $('peng-lanjut').onclick=async()=>{
+      $('peng-overlay').hidden=true;
+      try{ await store.set(K_PENG,{sidik:sidik,hari:pengHariIni()}); }catch(e){}
+      go('beranda');
+    };
+    $('peng-overlay').hidden=false;
+    return true;
+  }
+
   /* ================= KELAS =================
      produk.json sengaja tidak dienkripsi: tab ini harus bisa dibuka
      pengunjung umum yang belum punya kode apa pun. */
@@ -4355,6 +4582,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(view==='rekap')showRekap();
     if(view==='calendar')showKalender();
     if(view==='kelas')showKelas();
+    if(view==='info')showInfo();
     if(view==='materi')showMateri();
     if(view==='dashboard')renderDashboard();
     replayAnim(view);
@@ -4734,7 +4962,16 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       '<span class="go">Gabung &rarr;</span>'+
     '</div>'+
     '<p class="grup-nb">Tautan grupnya tidak bisa dibuka atau sudah penuh? '+
-    'Chat salah satu <b>Admin</b> di atas, nanti diundang manual.</p>';
+    'Chat salah satu <b>Admin</b> di atas, nanti diundang manual.</p>'+
+    '<div class="dc-cta" onclick="window.__bukaDiscord()">'+
+      '<div class="ic">'+IK_DC+'</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<b>Gabung Server Discord FNC</b>'+
+        '<p>Tempat sesi live berlangsung, plus ruang diskusi dan tanya-jawab '+
+        'yang lebih rapi per topik.</p>'+
+      '</div>'+
+      '<span class="go">Gabung &rarr;</span>'+
+    '</div>';
 
     /* ---------- pintasan ---------- */
     const daftarPintas = [
@@ -4981,7 +5218,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   /* Tab yang terbuka penuh untuk pengunjung UMUM (tanpa kode).
      Kalender ikut di sini karena jadwal rilis ekonomi sengaja dibuka
      untuk semua orang sebagai pintu masuk. */
-  const TAB_UMUM=['beranda','news','kelas','calendar','journal','dashboard','calc','accounts','help'];
+  const TAB_UMUM=['beranda','news','kelas','calendar','journal','dashboard','calc','accounts','help','info'];
 
   function setTier(t){
     tier=t;
@@ -5126,6 +5363,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(!url)return;
     bukaWA(url,siap);
   };
+  const IKON_WA_KECIL='<span style="font-size:15px;vertical-align:-2px;">&#128172;</span>';
   const IKON_WA='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.67.15-.2.3-.77.96-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.75-1.65-2.05-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.03-.53-.07-.15-.67-1.6-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.38-.27.3-1.04 1.01-1.04 2.47 0 1.45 1.06 2.86 1.21 3.06.15.2 2.09 3.2 5.08 4.48.71.31 1.26.49 1.69.63.71.23 1.36.19 1.87.12.57-.09 1.75-.72 2-1.41.25-.69.25-1.28.17-1.41-.07-.13-.27-.2-.57-.35zM12.04 21.5h-.01a9.4 9.4 0 0 1-4.79-1.31l-.34-.2-3.56.93.95-3.47-.22-.36a9.38 9.38 0 0 1-1.44-5.01c0-5.18 4.22-9.4 9.42-9.4 2.51 0 4.88.98 6.65 2.76a9.34 9.34 0 0 1 2.75 6.65c0 5.19-4.22 9.41-9.41 9.41zM20.52 3.49A11.78 11.78 0 0 0 12.04 0C5.5 0 .18 5.32.18 11.86c0 2.09.55 4.13 1.6 5.93L.08 24l6.35-1.66a11.83 11.83 0 0 0 5.61 1.43h.01c6.53 0 11.85-5.32 11.85-11.86 0-3.17-1.23-6.15-3.38-8.42z"/></svg>';
   let pengaturan=null;
 
@@ -5164,6 +5402,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
      hangus di tengah jalan dan dia mendarat di Beranda tanpa tahu kenapa. */
   async function lanjutMasuk(){
     try{ if(await kelasDariTautan())return; }catch(e){}
+    /* Pengumuman ditampilkan setelah tautan berbagi, supaya orang yang
+       datang lewat tautan tetap sampai ke tujuannya lebih dulu. */
+    try{ if(await tampilPengumuman())return; }catch(e){}
     go('beranda');
   }
   async function tutupGrup(){
@@ -5260,7 +5501,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       if($('ai-fab'))$('ai-fab').hidden=false;
       const seen=await store.get(K_SEEN);
       if(!seen) $('welcome-overlay').hidden=false;
-      else if(!(await kelasDariTautan())){ renderBeranda(); replayAnim('beranda'); }
+      else if(!(await kelasDariTautan())){
+        if(!(await tampilPengumuman())){ renderBeranda(); replayAnim('beranda'); }
+      }
     }else{
       $('gate-overlay').hidden=false;
       setTimeout(()=>$('gate-code').focus(),120);
