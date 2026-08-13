@@ -385,6 +385,20 @@
   .grup-cta p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.55;}
   .grup-cta .go{font-size:12px;font-weight:700;color:#128C7E;white-space:nowrap;}
 
+  /* bilah ringkas pengumuman di Beranda */
+  .ann-bar{display:flex;align-items:center;gap:12px;margin-bottom:15px;
+    border:1px solid var(--orange-light);border-radius:14px;padding:12px 14px;
+    background:var(--aksen-halus);cursor:pointer;
+    transition:transform .16s ease,box-shadow .2s ease;}
+  .ann-bar:hover{transform:translateY(-2px);box-shadow:var(--bayang-2);}
+  .ann-bar .ic{width:36px;height:36px;border-radius:11px;flex:0 0 auto;display:flex;
+    align-items:center;justify-content:center;font-size:17px;background:var(--kartu);
+    border:1px solid var(--orange-light);}
+  .ann-bar b{display:block;font-size:13px;color:var(--teks-isi);}
+  .ann-bar p{margin:2px 0 0;font-size:11.5px;color:var(--gray);line-height:1.5;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ann-bar .go{font-size:12px;font-weight:700;color:var(--orange-deep);white-space:nowrap;}
+
   /* ===== pop-up pengumuman ===== */
   .peng-kotak{max-width:430px;width:100%;max-height:82vh;display:flex;flex-direction:column;}
   .peng-atas{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
@@ -3426,19 +3440,23 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     '</div>';
   }
   window.__ujiPeng=()=>tampilPengumuman();
-  async function tampilPengumuman(){
+  window.__bukaPengumuman=()=>tampilPengumuman(true);
+  async function tampilPengumuman(paksa){
     let list=[];
     try{ list=await ambilPengumuman(); }catch(e){ return false; }
     if(!list.length)return false;
     const sidik=pengSidik(list);
-    let simpan=null;
-    try{ simpan=await store.get(K_PENG); }catch(e){}
-    if(simpan && simpan.sidik===sidik && simpan.hari===pengHariIni())return false;
+    if(!paksa){
+      let simpan=null;
+      try{ simpan=await store.get(K_PENG); }catch(e){}
+      if(simpan && simpan.sidik===sidik && simpan.hari===pengHariIni())return false;
+    }
     $('peng-isi').innerHTML=list.map(pengKartu).join('');
+    $('peng-lanjut').textContent = paksa ? 'Tutup' : 'Lanjut ke Website';
     $('peng-lanjut').onclick=async()=>{
       $('peng-overlay').hidden=true;
       try{ await store.set(K_PENG,{sidik:sidik,hari:pengHariIni()}); }catch(e){}
-      go('beranda');
+      if(!paksa)go('beranda');
     };
     $('peng-overlay').hidden=false;
     return true;
@@ -4881,7 +4899,20 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     kumpul.sort((a,b)=>fncWaktuTerbit(b[0])-fncWaktuTerbit(a[0]));
 
     let out='';
-    if(ann.length){ out+=ann.map(kartuAnn).join(''); }
+    /* Isi lengkapnya sudah tampil di pop-up saat masuk. Kalau kartunya
+       ditampilkan penuh di sini juga, beritanya terdorong jauh ke bawah —
+       jadi cukup satu bilah ringkas untuk membukanya kembali. */
+    if(ann.length){
+      const j=ann[0];
+      out+='<div class="ann-bar" onclick="window.__bukaPengumuman()">'+
+        '<div class="ic">&#128226;</div>'+
+        '<div style="flex:1;min-width:0;">'+
+          '<b>'+ann.length+' Pengumuman</b>'+
+          '<p>'+esc(j.title||'Dari tim FNC Academy')+'</p>'+
+        '</div>'+
+        '<span class="go">Baca &rarr;</span>'+
+      '</div>';
+    }
     /* Sorotan diambil dari kiriman TERBARU yang tidak terkunci.
        Kalau yang teratas kebetulan eksklusif, cari yang berikutnya —
        supaya member Private tetap mendapat sorotan, bukan kosong. */
