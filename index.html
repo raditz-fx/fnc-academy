@@ -3480,6 +3480,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function tautanKe(jenis,id){
     return location.origin+location.pathname+'#'+jenis+'='+encodeURIComponent(id);
   }
+  window.__sorotKiriman=(id)=>sorotKiriman(id);
   window.__feedBagi=(id,jenis,tombol)=>{
     const kartu=document.querySelector('[data-kid="'+CSS.escape(id)+'"]');
     const judul=(kartu&&kartu.querySelector('.fi-judul,h4,h3'))
@@ -4450,12 +4451,13 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     profilTujuan='journal'; bukaProfil('Buat profil dulu supaya bisa mulai mencatat jurnal.');
   };
   $('w-skip').onclick=async()=>{
-    $('welcome-overlay').hidden=true; await store.set(K_SEEN,true); go('beranda');
+    $('welcome-overlay').hidden=true; await store.set(K_SEEN,true);
+    await lanjutMasuk();
   };
   $('w-demo').onclick=async()=>{
     const d=demoData(); accounts=[d.acc]; trades=d.tr;
     await persist(); await store.set(K_SEEN,true);
-    $('welcome-overlay').hidden=true; renderAll(); go('beranda');
+    $('welcome-overlay').hidden=true; renderAll(); await lanjutMasuk();
   };
 
   function renderAll(){fillAccountSelects();renderDashboard();renderJournal();renderAccounts();terapkanProfil();}
@@ -5133,12 +5135,20 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     $('grup-overlay').hidden=false;
     return true;
   }
+  /* Dipakai di setiap ujung alur masuk. Tautan berbagi bisa dibuka orang
+     yang belum pernah membuka situs ini sama sekali — dia harus melewati
+     gerbang, ajakan grup, dan layar sambutan dulu. Tanpa ini, tautannya
+     hangus di tengah jalan dan dia mendarat di Beranda tanpa tahu kenapa. */
+  async function lanjutMasuk(){
+    try{ if(await kelasDariTautan())return; }catch(e){}
+    go('beranda');
+  }
   async function tutupGrup(){
     $('grup-overlay').hidden=true;
     try{ await store.set(K_GRUP,true); }catch(e){}
     const seen=await store.get(K_SEEN);
     if(!seen){ $('welcome-overlay').hidden=false; }
-    else { go('beranda'); }
+    else { await lanjutMasuk(); }
   }
 
   async function unlock(){
@@ -5151,7 +5161,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(await tampilGrupPublik())return;
     const seen=await store.get(K_SEEN);
     if(!seen){ $('welcome-overlay').hidden=false; }
-    else { go('beranda'); }
+    else { await lanjutMasuk(); }
   }
   async function trySubmitCode(){
     const val=normCode($('gate-code').value);
