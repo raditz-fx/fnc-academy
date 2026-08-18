@@ -486,8 +486,10 @@
      Sekarang tingginya mengikuti isi, latar buram yang menyesuaikan. */
   .soon-wrap{display:grid;}
   .soon-wrap>.soon-bg{grid-area:1/1;max-height:100%;overflow:hidden;}
-  .soon-depan{grid-area:1/1;display:flex;align-items:center;
-    justify-content:center;padding:26px 18px;text-align:center;
+    /* Isinya diratakan ke ATAS, bukan ditengahkan secara tegak — kalau
+     ditengahkan, judulnya melayang jauh dari tepi kartu. */
+  .soon-depan{grid-area:1/1;display:flex;align-items:flex-start;
+    justify-content:center;padding:30px 18px 26px;text-align:center;
     background:radial-gradient(120% 90% at 50% 50%,
       rgba(255,255,255,.34),var(--kartu) 74%);}
   [data-tema="gelap"] .soon-depan{background:radial-gradient(120% 90% at 50% 45%,
@@ -515,14 +517,19 @@
   .soon-tag i{width:6px;height:6px;border-radius:50%;background:#fff;display:block;
     animation:soonKedip 1.6s ease-in-out infinite;}
   @keyframes soonKedip{0%,100%{opacity:1;}50%{opacity:.25;}}
-  .soon h3,.soon-dalam h3{position:relative;margin:0 0 10px;
+  /* Judul di kartu ini tidak boleh memakai gaya judul panel yang punya
+     garis oranye di kiri — garis itu ikut terhitung lebar, jadi teksnya
+     tampak meleset dari tengah. */
+  .soon h3,.soon-dalam h3{position:relative;margin:0 0 10px;display:block;
+    width:100%;padding:0;
     font-family:var(--font-judul,var(--font-ui,inherit));
     font-size:clamp(19px,5.6vw,24px);line-height:1.2;font-weight:800;
     letter-spacing:-.02em;color:var(--teks-isi);text-align:center;
     text-shadow:0 0 26px rgba(242,112,29,.22);}
   /* Judul di sini memakai gaya sendiri, bukan gaya judul panel yang
      punya garis oranye di kiri — garis itu bikin teksnya tidak center. */
-  .soon-dalam h3::before,.soon h3::before{content:none;}
+  .soon-dalam h3::before,.soon h3::before,
+  .soon-dalam h3::after,.soon h3::after{content:none !important;display:none !important;}
   .soon-dalam{text-align:center;}
   .soon-dalam>p{margin:0 auto 20px;max-width:330px;font-size:13px;
     line-height:1.7;color:var(--slate-2);text-align:center;}
@@ -639,6 +646,17 @@
   /* saringan dampak — tiap level memakai warnanya sendiri supaya
      tombolnya sekaligus jadi keterangan warna, bukan sederet oranye */
   .kal-filter{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:3px 0 14px;}
+  .kal-tgl{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:3px 0 12px;}
+  .kal-tgl .lbl{font-size:10px;font-weight:700;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--gray);margin-right:1px;}
+  .kal-tgl select{padding:6px 10px;font-size:12px;border-radius:9px;
+    border:1.5px solid var(--line);background:var(--kartu);color:var(--teks-isi);
+    font-family:inherit;cursor:pointer;}
+  .kal-tgl select:focus{border-color:var(--orange);outline:none;}
+  .kal-lalu{display:flex;align-items:center;gap:9px;margin:0 0 12px;
+    border:1px dashed var(--line);border-radius:11px;padding:9px 12px;
+    font-size:11.5px;color:var(--gray);line-height:1.55;}
+  .kal-lalu button{margin-left:auto;flex:0 0 auto;}
   .kal-filter .lbl{font-size:10px;font-weight:700;letter-spacing:.09em;
     text-transform:uppercase;color:var(--gray);margin-right:1px;}
   .kdc{display:inline-flex;align-items:center;gap:2px;border:1.5px solid var(--line);
@@ -1736,6 +1754,13 @@
         </div>
         <div class="cari" id="cari-kal-box"><span class="ic">&#128269;</span><input type="search" id="cari-kal" placeholder="Cari nama rilis atau negara..." autocomplete="off"><button class="hapus" type="button" aria-label="Hapus pencarian">&times;</button></div>
         <div class="cari-info" id="cari-kal-info" hidden></div>
+        <div class="kal-tgl" id="kal-tgl-pilih">
+          <span class="lbl">Tanggal</span>
+          <select id="kal-th" aria-label="Tahun"></select>
+          <select id="kal-bl" aria-label="Bulan"></select>
+          <select id="kal-tg" aria-label="Tanggal"></select>
+          <button class="btn ghost sm" type="button" id="kal-tgl-clr">Semua</button>
+        </div>
         <div class="kal-filter" id="kal-dmp-chips">
           <span class="lbl">Dampak</span>
           <button class="kdc all on" type="button" data-dmp="0">Semua</button>
@@ -2018,7 +2043,9 @@
   "use strict";
   /* ============================================================
      KODE AKSES MEMBER PRIVATE (gerbang aplikasi jurnal)
-     Kode aktif saat ini:  CBZ3-EMLQ-L6ZE
+     Kodenya SENGAJA tidak ditulis di sini. Berkas ini publik di GitHub —
+     siapa pun bisa membacanya. Yang disimpan hanya sidik SHA-256 di bawah,
+     dan sidik tidak bisa dibalik menjadi kode.
      (tanda strip & spasi diabaikan saat member mengetik)
 
      Cara ganti kode:
@@ -2039,8 +2066,18 @@
      ============================================================ */
   /* Hash SHA-256 dari kode jurnal — kode aslinya TIDAK tersimpan di berkas ini.
      Ganti kode: hitung SHA-256 dari kode baru (huruf besar, tanpa tanda hubung),
-     tempel hex-nya di sini. Kode aktif sekarang: CBZ3-EMLQ-L6ZE */
-  const ACCESS_CODE_HASH='aa23574e2794b4f8f776e98ac6e28224793e013ed1dc086a1f410b26bd67e25b';
+     tempel hex-nya di sini. */
+  const ACCESS_CODE_HASH='c1dd83f96b78adc013a54064353e5023a566748f37585a4eb05172ffedf14915';
+  /* Sidik kode eksklusif. Dulu kode ini HANYA diuji dengan mencoba membuka
+     berkas di server — jadi begitu salah satu berkas eksklusif basi, gagal
+     diunduh, atau terlalu besar untuk dibuka di HP, kode yang BENAR pun
+     ditolak dengan pesan "kode salah". Sidik ini dipakai sebagai cadangan.
+     Aman: sidik tidak bisa dibalik jadi kode, dan isinya tetap butuh
+     dekripsi sungguhan untuk terbaca. */
+  const EKS_CODE_HASH='8b14cdc5ab58d02cbd3a7b9d5799f5158cda619752844ca73f52861339734c04';
+  async function kodeEksCocok(kode){
+    try{ return (await fncHash(fncNormKode(kode)))===EKS_CODE_HASH; }catch(e){ return false; }
+  }
 
   /* ------------------------------------------------------------
      KODE EKSKLUSIF (berita eksklusif + analisa).
@@ -3165,13 +3202,35 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     kodeAkses=(typeof k==='string'&&k)?k:null;
     return kodeAkses;
   }
-  const sudahBuka=async()=>!!(await ambilKode());
+  const sudahBuka=async()=>{
+    if(await ambilKode())return true;
+    /* Tingkatan sudah eksklusif berarti kodenya PERNAH terbukti benar di
+       perangkat ini. Jadi tab Analisa dibuka langsung tanpa mengetik lagi,
+       dengan kode yang sama yang dipakai masuk lewat gerbang depan. */
+    /* Tingkatan sudah eksklusif tapi kode gerbangnya kosong — biasanya sisa
+       dari bug lama yang mencabutnya diam-diam. Kode aksesnya masih tersimpan
+       sejak masuk lewat gerbang depan, jadi dipulihkan saja: member tidak
+       perlu mengetik kode yang sama dua kali. */
+    if(tier==='eks'){
+      const k=await ambilKodeAkses();
+      if(k){
+        kodeEks=k;
+        try{ await store.set(K_ANGATE,k); }catch(e){}
+        return true;
+      }
+    }
+    return false;
+  };
   /* Uji kode ke berkas sungguhan. true kalau ada berkas yang berhasil dibuka. */
   async function ujiKode(kode){
-    for(const url of [ANALISA_URL,NEWS_EX_URL]){
+    if(await kodeEksCocok(kode))return true;
+    /* Semua format terenkripsi diuji, bukan cuma v2. Dulu hanya v2 yang
+       diakui, sementara berkas asli sudah v4 — akibatnya kode yang BENAR
+       pun ditolak dengan pesan "kode salah". */
+    for(const url of [ANALISA_URL,NEWS_EX_URL,REKAP_EX_URL,MATERI_EX_URL]){
       try{
         const d=await fetchJSON(url);
-        if(d&&d.v===2&&d.ct){ await fncDekripsi(kode,d); return true; }
+        if(d&&(d.v===2||d.v===3||d.v===4)&&d.ct){ await fncDekripsi(kode,d); return true; }
         if(d&&(d.enc||d.items)) return true;   /* berkas lama belum dienkripsi */
       }catch(e){ /* berkas tidak ada / kode salah -> coba berkas berikutnya */ }
     }
@@ -3904,6 +3963,8 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   let kalCache=null;
   let kalCari='';        /* kata kunci pencarian */
   let kalDmp=[];         /* dampak yang dipilih; kosong = semua */
+  let kalTh='', kalBl='', kalTg='';   /* saringan tahun / bulan / tanggal */
+  let kalLihatLalu=false;             /* tampilkan hari yang sudah lewat? */
 
   function kalPad(n){ return String(n).length<2?'0'+n:String(n); }
   function kalHariIni(){
@@ -3947,6 +4008,13 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function kalSaring(a){
     const hari=kalHariIni();
     let isi=(a||[]).filter(x=>x&&x.tgl);
+    /* Hari yang sudah lewat disembunyikan supaya jadwal terdekat ada di
+       paling atas — kalau ikut ditampilkan, member harus menggulir jauh
+       melewati puluhan rilis lama sebelum sampai ke hari ini. */
+    if(!kalLihatLalu && !kalTh && !kalBl && !kalTg)isi=isi.filter(x=>x.tgl>=hari);
+    if(kalTh)isi=isi.filter(x=>String(x.tgl).slice(0,4)===kalTh);
+    if(kalBl)isi=isi.filter(x=>String(x.tgl).slice(5,7)===kalBl);
+    if(kalTg)isi=isi.filter(x=>String(x.tgl).slice(8,10)===kalTg);
     if(kalDmp.length)isi=isi.filter(x=>kalDmp.indexOf(kalDmpNorm(x.dmp))>=0);
     const q=kalCari.trim().toLowerCase();
     if(q){
@@ -3956,7 +4024,32 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     return kalUrut(isi);
   }
   function kalAdaSaringan(){
-    return !!(kalCari.trim() || kalDmp.length);
+    return !!(kalCari.trim() || kalDmp.length || kalTh || kalBl || kalTg);
+  }
+  const KAL_BULAN=['Januari','Februari','Maret','April','Mei','Juni',
+    'Juli','Agustus','September','Oktober','November','Desember'];
+  /* Pilihan tanggal dibangun dari jadwal yang benar-benar ada, jadi tidak
+     ada bulan atau tanggal kosong yang bisa dipilih. */
+  function renderKalTgl(items){
+    if(!$('kal-th'))return;
+    const semua=(items||[]).filter(x=>x&&x.tgl);
+    const th=[], bl=[], tg=[];
+    semua.forEach(x=>{
+      const t=String(x.tgl);
+      const a=t.slice(0,4), b=t.slice(5,7), c=t.slice(8,10);
+      if(th.indexOf(a)<0)th.push(a);
+      if((!kalTh||a===kalTh) && bl.indexOf(b)<0)bl.push(b);
+      if((!kalTh||a===kalTh) && (!kalBl||b===kalBl) && tg.indexOf(c)<0)tg.push(c);
+    });
+    th.sort(); bl.sort(); tg.sort();
+    const isi=(el,daftar,nilai,semuaLbl,label)=>{
+      el.innerHTML='<option value="">'+semuaLbl+'</option>'+
+        daftar.map(v=>'<option value="'+esc(v)+'"'+(v===nilai?' selected':'')+'>'+
+          esc(label?label(v):v)+'</option>').join('');
+    };
+    isi($('kal-th'),th,kalTh,'Semua tahun');
+    isi($('kal-bl'),bl,kalBl,'Semua bulan',v=>KAL_BULAN[parseInt(v,10)-1]||v);
+    isi($('kal-tg'),tg,kalTg,'Semua tgl',v=>String(parseInt(v,10)));
   }
   function renderKalChipDmp(){
     document.querySelectorAll('#kal-dmp-chips [data-dmp]').forEach(b=>{
@@ -3999,6 +4092,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   }
   function gambarKalender(items){
     const semua=items||[];
+    renderKalTgl(semua);
     renderKalChipDmp();
     const isi=kalSaring(semua);
     const info=$('cari-kal-info');
@@ -4010,10 +4104,26 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
           : 'Tidak ada yang cocok';
       }else{ info.hidden=true; info.textContent=''; }
     }
-    if(!isi.length){ $('kal-list').innerHTML=kalKosong(); return; }
     const hari=kalHariIni();
+    /* Kalau ada jadwal lama yang sedang disembunyikan, beri tahu — jangan
+       biarkan member mengira datanya hilang. */
+    let bilah='';
+    if(!kalLihatLalu && !kalTh && !kalBl && !kalTg){
+      const lalu=semua.filter(x=>x&&x.tgl&&x.tgl<hari).length;
+      if(lalu){
+        bilah='<div class="kal-lalu"><span>'+lalu+' jadwal yang sudah lewat '+
+          'disembunyikan.</span>'+
+          '<button class="btn ghost sm" type="button" onclick="window.__kalLalu(true)">'+
+          'Tampilkan</button></div>';
+      }
+    }else if(kalLihatLalu && !kalTh && !kalBl && !kalTg){
+      bilah='<div class="kal-lalu"><span>Jadwal lama ikut ditampilkan.</span>'+
+        '<button class="btn ghost sm" type="button" onclick="window.__kalLalu(false)">'+
+        'Sembunyikan</button></div>';
+    }
+    if(!isi.length){ $('kal-list').innerHTML=bilah+kalKosong(); return; }
     /* Satu tabel utuh; tanggal disisipkan sebagai baris pemisah di antaranya. */
-    $('kal-list').innerHTML='<div class="kal-tbl">'+
+    $('kal-list').innerHTML=bilah+'<div class="kal-tbl">'+
       kalKelompok(isi).map(g=>
         kalBand(g.tgl,hari)+g.isi.map(kalBaris).join('')).join('')+
       '</div>';
@@ -4074,8 +4184,19 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     const hapus=kotak.querySelector('.hapus');
     if(hapus)hapus.onclick=()=>{ $('cari-kal').value=''; jalan(); $('cari-kal').focus(); };
   }
+  window.__kalLalu=(v)=>{ kalLihatLalu=!!v; gambarKalUlang(); };
+  if($('kal-th')){
+    const ubah=()=>{
+      kalTh=$('kal-th').value; kalBl=$('kal-bl').value; kalTg=$('kal-tg').value;
+      gambarKalUlang();
+    };
+    $('kal-th').onchange=()=>{ kalTh=$('kal-th').value; kalBl=''; kalTg=''; gambarKalUlang(); };
+    $('kal-bl').onchange=()=>{ kalBl=$('kal-bl').value; kalTg=''; gambarKalUlang(); };
+    $('kal-tg').onchange=ubah;
+    $('kal-tgl-clr').onclick=()=>{ kalTh=''; kalBl=''; kalTg=''; gambarKalUlang(); };
+  }
   window.__kalReset=()=>{
-    kalCari=''; kalDmp=[];
+    kalCari=''; kalDmp=[]; kalTh=''; kalBl=''; kalTg='';
     if($('cari-kal')){ $('cari-kal').value=''; $('cari-kal-box').classList.remove('isi'); }
     gambarKalUlang();
   };
@@ -5292,6 +5413,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   }
   /* Uji kode ke berkas terenkripsi. true HANYA kalau dekripsi v2 berhasil. */
   async function kodeEksValid(kode){
+    if(await kodeEksCocok(kode))return true;
     for(const url of [ANALISA_URL,NEWS_EX_URL,REKAP_EX_URL,MATERI_EX_URL]){
       try{
         const d=await fetchJSON(url);

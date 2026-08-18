@@ -1,11 +1,17 @@
 {
- "v": 3,
+ "v": 4,
  "alg": "AES-256-GCM",
  "kdf": "PBKDF2-SHA256",
  "iter": 200000,
- "salt": "BN1h7a8p3rL0urv9XY9bgw==",
- "iv": "JyFS+aa2Bq4X+QXN",
- "ct": "3SM3PG/9LmgzsPDaJifCXnRe1YmcvucaUper8WmSOAWFZ3jAEgbHfg697Blf7bojRXK+FAbiTIl8FusJbAcfxISWqCUNMsQBCFwyvN4CaseI9t8pvX1F/L1SZLQx4xY65XYIJxYcWnsjUVeNufrt1Z3jueUQlfys1qHQH9xnU+8wtk4zfKaHFFwqQma4xbJ7/Ml94qEyajgkyc1lK/0BnZV81kC4ds2nuvpnnBgTvfmJkPl7yDA8iFpEUeBuUjpxtcqzFQGF/DbQ/iOi8Lc4Tv/dD7xWjUE+z6iNZtCRgCy1uWxS4OYqU/IBayGTHfPa4haLkFfpFVsswaTBsWXE11dGGQba",
+ "iv": "ljpD8Ce5Vux/Vbog",
+ "ct": "FmvGONo9g0ppUxLwdmwGyWlq305S4F43zgWOq7EWjOxhzmpi+HH897atI+7Hzk2LtQ35rGH4MbmFDiep723tcanwC9S46b+5lFIDhmS0XWPGTAiPw0ksPdxao2MfkIav7FrD36WCKYhHKad7YrsgBtsNQOO+E3RAQMx4rK9ZoU+7ADVrpC4QeBeHxzo2SFnTUsyeBIkZPW1ou4ild0YoB88/bVhTWlkc+CtqYtEp9vzq8bubaERsTumiJEb5qKyzxUv0wPQyhJMT5WaJISCgJUj3daM3JJDg7dpPXGMHCQtUKBogKqKsKTKHIQDQ7fBGxBlMB97D93IFy8QYdBvVTYgsUww1KnBri+v/Qzd0",
+ "kunci": [
+  {
+   "salt": "3/lBVy1pbPSYgVnWJgFyAw==",
+   "iv": "/3hL1C/+o+xV6ue/",
+   "wrap": "yzJamOHhWZ743W+ZpYhszCc5GCmBAsUPv9pyhk8USWivnK+sTF6UfRlqHWNDBH0b"
+  }
+ ],
  "teaser": [
   {
    "id": "re1",
@@ -17,5 +23,5 @@
    "vid": true
   }
  ],
- "updated": "2026-07-30T16:55:21.678Z"
+ "updated": "2026-08-18T23:35:47.770Z"
 }
