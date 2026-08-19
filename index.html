@@ -5701,9 +5701,38 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     trades=(await store.get(K_TR))||[];
     settings=(await store.get(K_SET))||{kurs:17000};
     profil=(await store.get(K_PROFIL))||null;
-    const tSimpan=await store.get(K_TIER);
+    let tSimpan=await store.get(K_TIER);
     /* 'trial' adalah sisa sistem lama — pemakainya dinaikkan jadi UMUM,
        yang aksesnya justru lebih luas (dapat Kalender juga). */
+
+    /* Kode yang tersimpan diperiksa ulang di sini. Tanpa ini, member yang
+       kodenya sudah diganti admin tetap terlihat "Eksklusif" di Profil,
+       padahal isinya tidak bisa dibuka lagi — bingung, dan tidak ada
+       petunjuk apa pun bahwa dia harus memasukkan kode baru. */
+    let kodeKadaluarsa=false;
+    if(tSimpan==='eks' || tSimpan==='private'){
+      let simpanan=null;
+      try{ simpanan=await store.get(K_KODE); }catch(e){}
+      let sah=false;
+      if(typeof simpanan==='string' && simpanan){
+        try{
+          const sidik=await fncHash(fncNormKode(simpanan));
+          sah = (tSimpan==='eks') ? (sidik===EKS_CODE_HASH)
+                                  : (sidik===ACCESS_CODE_HASH || sidik===EKS_CODE_HASH);
+        }catch(e){ sah=false; }
+      }
+      if(!sah){
+        kodeKadaluarsa=true;
+        tSimpan='umum';
+        kodeEks=null; kodeAkses=null;
+        try{
+          await store.set(K_TIER,'umum');
+          await store.set(K_KODE,'');
+          await store.set(K_ANGATE,'');
+          await store.set(K_GATE,false);
+        }catch(e){}
+      }
+    }
     setTier(tSimpan==='eks' ? 'eks' : (tSimpan==='private' ? 'private' : 'umum'));
     /* Pemulihan gerbang Analisa: kalau tingkatannya eksklusif dan kode
        aksesnya masih tersimpan, kode gerbang dipulihkan otomatis. Member
@@ -5725,7 +5754,18 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     renderAll();
     updateStorageNotice();
     const unlocked=await store.get(K_GATE);
-    if(unlocked===true){
+    if(kodeKadaluarsa){
+      /* Sesinya diakhiri, tapi jangan sampai member merasa dikeluarkan
+         tanpa sebab — alasannya dijelaskan langsung di gerbang. */
+      $('shell').classList.add('locked');
+      if($('ai-fab'))$('ai-fab').hidden=true;
+      $('gate-err').innerHTML='<b>Kode akses sudah diperbarui.</b><br>'+
+        'Kode lamamu tidak berlaku lagi. Masukkan kode baru yang dikirim admin, '+
+        'atau pilih <b>Lihat-lihat dulu</b> untuk masuk sebagai pengunjung umum.';
+      $('gate-err').hidden=false;
+      $('gate-overlay').hidden=false;
+      setTimeout(()=>$('gate-code').focus(),120);
+    }else if(unlocked===true){
       $('shell').classList.remove('locked');
       if($('ai-fab'))$('ai-fab').hidden=false;
       const seen=await store.get(K_SEEN);
