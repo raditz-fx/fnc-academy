@@ -589,6 +589,41 @@
   .lk-aksi{display:flex;flex-direction:column;gap:8px;}
   .lk-nb{margin:14px 0 0;font-size:11.5px;line-height:1.6;color:var(--gray);}
 
+  /* ===== FNC CHALLENGE ===== */
+  .ch-hero{position:relative;overflow:hidden;border:1px solid var(--orange);
+    border-radius:18px;padding:30px 20px 26px;text-align:center;
+    background:linear-gradient(160deg,var(--aksen-halus),var(--kartu) 62%);
+    box-shadow:var(--bayang-2);}
+  .ch-hero::before{content:'';position:absolute;inset:-40% -20% auto;height:200px;
+    background:radial-gradient(closest-side,rgba(242,112,29,.22),transparent);
+    pointer-events:none;}
+  .ch-tag{position:relative;display:inline-flex;align-items:center;gap:7px;
+    font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:#fff;background:var(--orange);padding:5px 13px;border-radius:999px;
+    margin-bottom:15px;box-shadow:0 0 18px rgba(242,112,29,.5);}
+  .ch-tag i{width:6px;height:6px;border-radius:50%;background:#fff;display:block;
+    animation:soonKedip 1.6s ease-in-out infinite;}
+  .ch-hero h3{position:relative;margin:0 0 10px;display:block;width:100%;padding:0;
+    font-size:clamp(21px,6.2vw,27px);line-height:1.15;font-weight:800;
+    letter-spacing:-.02em;color:var(--teks-isi);text-align:center;
+    text-shadow:0 0 26px rgba(242,112,29,.24);}
+  .ch-hero h3::before{content:none;}
+  .ch-hero>p{position:relative;margin:0 auto;max-width:340px;font-size:13px;
+    line-height:1.7;color:var(--slate-2);}
+  .ch-lbl{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--gray);margin:22px 0 11px;}
+  .ch-list{display:grid;gap:10px;}
+  .ch-item{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);
+    border-radius:14px;background:var(--kartu);padding:13px 14px;
+    box-shadow:var(--bayang-1);}
+  .ch-ic{width:38px;height:38px;border-radius:12px;flex:0 0 auto;display:flex;
+    align-items:center;justify-content:center;font-size:18px;
+    background:var(--aksen-halus);border:1px solid var(--orange-light);}
+  .ch-item b{display:block;font-size:13.5px;color:var(--teks-isi);margin-bottom:3px;}
+  .ch-item p{margin:0;font-size:12px;color:var(--gray);line-height:1.6;}
+  .ch-nb{margin-top:16px;font-size:11.5px;line-height:1.7;color:var(--gray);
+    background:var(--cream);border-radius:12px;padding:12px 14px;}
+
   /* ===== KELAS ===== */
   .kls-kartu{border:1px solid var(--line);border-radius:16px;overflow:hidden;
     background:var(--kartu);box-shadow:var(--bayang-1);margin-bottom:14px;cursor:pointer;
@@ -1543,6 +1578,7 @@
     <button class="tab active" data-view="beranda">Beranda</button>
     <button class="tab" data-view="news">Berita</button>
     <button class="tab" data-view="kelas">Kelas</button>
+    <button class="tab" data-view="challenge">Challenge</button>
     <button class="tab" data-view="analisa">Analisa<span class="lockdot" id="an-lockdot">&#128274;</span></button>
     <button class="tab" data-view="rekap">Rekap Live</button>
     <button class="tab" data-view="materi">Materi</button>
@@ -1799,6 +1835,14 @@
           <button class="kdc d1" type="button" data-dmp="1"><i></i><i></i><i></i>Rendah</button>
         </div>
         <div id="kal-list"></div>
+      </div>
+    </div>
+
+    <!-- FNC CHALLENGE -->
+    <div class="view" id="v-challenge">
+      <div class="panel">
+        <div class="panel-head"><h3>FNC CHALLENGE</h3></div>
+        <div id="ch-isi"></div>
       </div>
     </div>
 
@@ -3597,6 +3641,64 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     return true;
   }
 
+  /* ================= FNC CHALLENGE =================
+     Isinya diatur dari admin lewat produk.json bagian "challenge",
+     jadi teks dan manfaatnya bisa diganti tanpa menyentuh kode. */
+  const CH_BAWAAN={
+    judul:'FNC Challenge',
+    teks:'Program tantangan trading dari FNC Academy. Uji konsistensi '+
+      'strategimu dengan aturan yang jelas dan pendampingan dari mentor.',
+    manfaat:[
+      ['&#127942;','Uji Konsistensi Nyata','Bukan sekadar profit sekali dua kali — '+
+        'yang dinilai kedisiplinanmu mengikuti rencana.'],
+      ['&#128200;','Evaluasi Jurnal','Setiap peserta dapat pembacaan jurnal: '+
+        'mana yang sudah benar, mana yang perlu diperbaiki.'],
+      ['&#127891;','Pendampingan Mentor','Sesi bahas bareng selama masa tantangan '+
+        'berlangsung.'],
+      ['&#128172;','Grup Peserta','Ruang diskusi khusus antar peserta challenge.'],
+      ['&#128220;','Sertifikat Penyelesaian','Tanda kamu menuntaskan tantangan '+
+        'sesuai aturannya.']
+    ]
+  };
+  function chData(){
+    const c=(prdCache&&prdCache.challenge)||{};
+    return {
+      judul:(c.judul||'').trim()||CH_BAWAAN.judul,
+      teks:(c.teks||'').trim()||CH_BAWAAN.teks,
+      manfaat:(Array.isArray(c.manfaat)&&c.manfaat.length)
+        ? c.manfaat.map(x=>[x.ikon||'&#10003;',x.judul||'',x.teks||''])
+        : CH_BAWAAN.manfaat,
+      nb:(c.nb||'').trim()
+    };
+  }
+  async function showChallenge(){
+    if(!$('ch-isi'))return;
+    try{ await loadProduk(); }catch(e){}
+    const d=chData();
+    $('ch-isi').innerHTML=
+      '<div class="ch-hero">'+
+        '<span class="ch-tag"><i></i>Segera Hadir</span>'+
+        '<h3>'+esc(d.judul)+'</h3>'+
+        '<p>'+waFormat(d.teks)+'</p>'+
+      '</div>'+
+      '<p class="ch-lbl">Yang Kamu Dapat</p>'+
+      '<div class="ch-list">'+
+        d.manfaat.map(m=>
+          '<div class="ch-item"><div class="ch-ic">'+m[0]+'</div>'+
+          '<div style="flex:1;min-width:0;"><b>'+esc(m[1])+'</b>'+
+          '<p>'+esc(m[2])+'</p></div></div>').join('')+
+      '</div>'+
+      '<div class="ch-nb">'+
+        (d.nb ? waFormat(d.nb)
+              : 'Syarat dan cara ikutnya masih disusun. Mau dapat kabar duluan '+
+                'saat dibuka? Gabung Grup Publik lewat tombol di Beranda.')+
+      '</div>'+
+      '<div class="welcome-actions" style="margin-top:15px;">'+
+        '<button class="btn" type="button" onclick="window.__konsul(\'a3\')">'+
+        'Tanya Admin Soal Challenge</button>'+
+      '</div>';
+  }
+
   /* ================= KELAS =================
      produk.json sengaja tidak dienkripsi: tab ini harus bisa dibuka
      pengunjung umum yang belum punya kode apa pun. */
@@ -3720,6 +3822,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(prdCache&&!force)return prdCache;
     const d=await fetchJSON(PRD_URL);
     prdCache={
+      challenge:(d&&d.challenge)?d.challenge:null,
       items:(d&&Array.isArray(d.items))?d.items:[],
       bayar:(d&&d.bayar)?d.bayar:{},
       bukaPada:(d&&d.bukaPada)||'',
@@ -4797,6 +4900,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(view==='rekap')showRekap();
     if(view==='calendar')showKalender();
     if(view==='kelas')showKelas();
+    if(view==='challenge')showChallenge();
     if(view==='info')showInfo();
     if(view==='materi')showMateri();
     if(view==='dashboard')renderDashboard();
@@ -5446,7 +5550,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   /* Tab yang terbuka penuh untuk pengunjung UMUM (tanpa kode).
      Kalender ikut di sini karena jadwal rilis ekonomi sengaja dibuka
      untuk semua orang sebagai pintu masuk. */
-  const TAB_UMUM=['beranda','news','kelas','calendar','journal','dashboard','calc','accounts','help','info'];
+  const TAB_UMUM=['beranda','news','kelas','challenge','calendar','journal','dashboard','calc','accounts','help','info'];
 
   function setTier(t){
     tier=t;
