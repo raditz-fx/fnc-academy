@@ -589,6 +589,48 @@
   .lk-aksi{display:flex;flex-direction:column;gap:8px;}
   .lk-nb{margin:14px 0 0;font-size:11.5px;line-height:1.6;color:var(--gray);}
 
+  /* ===== KONSULTASI ===== */
+  .ks-hari{display:flex;align-items:center;gap:9px;margin:18px 0 9px;}
+  .ks-hari b{font-size:13px;color:var(--slate);font-weight:700;}
+  .ks-hari .kini{font-size:9.5px;font-weight:800;background:var(--orange);color:#fff;
+    padding:2px 9px;border-radius:999px;letter-spacing:.04em;text-transform:uppercase;}
+  .ks-grup:first-child .ks-hari{margin-top:0;}
+  .ks-slot{display:flex;align-items:center;gap:13px;width:100%;text-align:left;
+    border:1px solid var(--line);border-radius:14px;background:var(--kartu);
+    padding:13px 14px;margin-bottom:10px;cursor:pointer;font-family:inherit;
+    box-shadow:var(--bayang-1);
+    transition:transform .16s ease,box-shadow .2s ease,border-color .18s ease;}
+  .ks-slot:hover:not(.mati){transform:translateY(-2px);box-shadow:var(--bayang-2);
+    border-color:var(--orange);}
+  .ks-slot.mati{opacity:.5;cursor:default;}
+  .ks-jam{flex:0 0 auto;text-align:center;min-width:62px;}
+  .ks-jam b{display:block;font-family:var(--mono);font-size:15.5px;color:var(--teks-isi);
+    font-weight:800;letter-spacing:-.01em;}
+  .ks-jam span{display:block;font-size:10.5px;color:var(--gray);margin-top:2px;}
+  .ks-isi{flex:1;min-width:0;}
+  .ks-isi b{display:block;font-size:13.5px;color:var(--teks-isi);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ks-isi p{margin:2px 0 0;font-size:11.5px;color:var(--gray);line-height:1.5;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ks-pita{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.05em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+  .ks-pita.ada{background:#DCFCE7;color:#15803D;}
+  .ks-pita.penuh{background:var(--cream);color:var(--gray);}
+  .ks-pita.ajukan{background:var(--aksen-halus);color:var(--orange-deep);}
+  .ks-pita.eks{background:#FEF3C7;color:#92400E;margin-left:6px;}
+  .ks-beta{display:flex;gap:11px;align-items:flex-start;border:1px dashed var(--orange);
+    border-radius:12px;padding:12px 14px;background:var(--aksen-halus);margin-bottom:15px;}
+  .ks-beta .ic{font-size:17px;flex:0 0 auto;}
+  .ks-beta p{margin:0;font-size:11.5px;line-height:1.65;color:var(--slate-2);}
+  .ks-detail{border:1.5px solid var(--orange);border-radius:16px;padding:17px;
+    background:linear-gradient(150deg,var(--aksen-halus),var(--kartu) 70%);}
+  .ks-detail h4{margin:0 0 4px;font-size:17px;color:var(--teks-isi);}
+  .ks-detail .wkt{font-size:12.5px;color:var(--slate-2);margin-bottom:13px;}
+  .ks-baris{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;
+    padding:8px 0;border-top:1px solid var(--line);}
+  .ks-baris span{color:var(--gray);}
+  .ks-baris b{color:var(--teks-isi);text-align:right;}
+
   /* ===== FNC CHALLENGE ===== */
   .ch-hero{position:relative;overflow:hidden;border:1px solid var(--orange);
     border-radius:18px;padding:30px 20px 26px;text-align:center;
@@ -1579,6 +1621,7 @@
     <button class="tab" data-view="news">Berita</button>
     <button class="tab" data-view="kelas">Kelas</button>
     <button class="tab" data-view="challenge">Challenge</button>
+    <button class="tab" data-view="konsul">Konsultasi<span class="lockdot" id="ks-lockdot">&#128274;</span></button>
     <button class="tab" data-view="analisa">Analisa<span class="lockdot" id="an-lockdot">&#128274;</span></button>
     <button class="tab" data-view="rekap">Rekap Live</button>
     <button class="tab" data-view="materi">Materi</button>
@@ -1835,6 +1878,26 @@
           <button class="kdc d1" type="button" data-dmp="1"><i></i><i></i><i></i>Rendah</button>
         </div>
         <div id="kal-list"></div>
+      </div>
+    </div>
+
+    <!-- KONSULTASI -->
+    <div class="view" id="v-konsul">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>KONSULTASI 1-ON-1</h3>
+          <button class="btn ghost sm" id="ks-reload">Muat Ulang</button>
+        </div>
+        <div class="seg" id="ks-seg" style="margin-bottom:14px;">
+          <button class="seg-btn active" type="button" data-ks="ada">Tersedia</button>
+          <button class="seg-btn" type="button" data-ks="semua">Semua Jadwal</button>
+          <button class="seg-btn" type="button" data-ks="saya">Ajuan Saya</button>
+        </div>
+        <div id="ks-list"></div>
+      </div>
+      <div class="panel" id="ks-panel-detail" hidden>
+        <button class="btn ghost sm" id="ks-kembali" style="margin-bottom:13px;">&larr; Semua Jadwal</button>
+        <div id="ks-detail"></div>
       </div>
     </div>
 
@@ -3641,6 +3704,183 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     return true;
   }
 
+  /* ================= KONSULTASI 1-ON-1 (beta) =================
+     Situs ini statis, tanpa server maupun basis data. Jadi ini BUKAN
+     booking langsung: slot yang dipilih dikirim sebagai ajuan lewat
+     WhatsApp, lalu admin yang menandainya penuh di panel admin.
+     Konsekuensinya, dua orang bisa mengajukan slot yang sama sebelum
+     admin sempat memperbaruinya — makanya statusnya ditulis "ajuan",
+     bukan "terpesan". */
+  const KS_URL='jadwal.json';
+  const K_KSAYA='fncjt_konsul_ajuan';
+  let ksCache=null, ksSeg='ada', ksPilih=null, ksAjuan=[];
+
+  async function ksMuatAjuan(){
+    try{ const v=await store.get(K_KSAYA); ksAjuan=Array.isArray(v)?v:[]; }
+    catch(e){ ksAjuan=[]; }
+  }
+  function ksSudahAjukan(id){ return ksAjuan.indexOf(id)>=0; }
+  function ksJamKe(t){
+    const m=String(t||'').match(/^(\d{1,2}):(\d{2})$/);
+    return m ? (+m[1])*60+(+m[2]) : 0;
+  }
+  function ksLewat(x){
+    const hari=kalHariIni();
+    if(String(x.tgl||'')<hari)return true;
+    if(String(x.tgl||'')>hari)return false;
+    const d=new Date();
+    return ksJamKe(x.jam)+(+x.durasi||60) < d.getHours()*60+d.getMinutes();
+  }
+  function ksBoleh(x){
+    /* Slot bertanda eksklusif hanya untuk tingkat eksklusif. */
+    return (String(x.tingkat||'')!=='eks') || tier==='eks';
+  }
+  function ksUrut(a){
+    return (a||[]).slice().sort((x,y)=>
+      x.tgl===y.tgl ? ksJamKe(x.jam)-ksJamKe(y.jam)
+                    : String(x.tgl||'').localeCompare(String(y.tgl||'')));
+  }
+  function ksSaring(a){
+    let isi=ksUrut((a||[]).filter(x=>x&&x.tgl&&x.jam));
+    if(ksSeg==='saya')return isi.filter(x=>ksSudahAjukan(x.id));
+    isi=isi.filter(x=>!ksLewat(x));
+    if(ksSeg==='ada')isi=isi.filter(x=>!x.penuh && ksBoleh(x));
+    return isi;
+  }
+  function ksAkhir(x){
+    const t=ksJamKe(x.jam)+(+x.durasi||60);
+    return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+  }
+  function ksPita(x){
+    if(ksSudahAjukan(x.id))return '<span class="ks-pita ajukan">Sudah Diajukan</span>';
+    if(x.penuh)return '<span class="ks-pita penuh">Penuh</span>';
+    if(!ksBoleh(x))return '<span class="ks-pita penuh">Eksklusif</span>';
+    return '<span class="ks-pita ada">Tersedia</span>';
+  }
+  function ksSlot(x){
+    const mati = x.penuh || !ksBoleh(x) || ksLewat(x);
+    return '<button class="ks-slot'+(mati?' mati':'')+'" type="button"'+
+      (mati?' disabled':' onclick="window.__ksBuka(\''+esc(x.id)+'\')"')+'>'+
+      '<span class="ks-jam"><b>'+esc(x.jam)+'</b><span>'+(+x.durasi||60)+' mnt</span></span>'+
+      '<span class="ks-isi"><b>'+esc(x.topik||'Sesi Konsultasi')+'</b>'+
+        '<p>Bersama '+esc(x.mentor||'Mentor FNC')+'</p></span>'+
+      ksPita(x)+
+      (String(x.tingkat||'')==='eks'?'<span class="ks-pita eks">Eks</span>':'')+
+    '</button>';
+  }
+  function ksKosong(){
+    if(ksSeg==='saya')return '<div class="feed-empty">Belum ada slot yang kamu ajukan.<br>'+
+      'Pilih jadwal di tab Tersedia.</div>';
+    if(ksSeg==='ada')return '<div class="feed-empty">Belum ada slot kosong untuk saat ini.<br>'+
+      'Cek lagi nanti, atau tanya admin lewat Beranda.</div>';
+    return '<div class="feed-empty">Jadwal konsultasi belum dibuka.<br>Cek lagi nanti ya.</div>';
+  }
+  function ksGambar(items){
+    $('ks-panel-detail').hidden=true;
+    $('ks-list').closest('.panel').hidden=false;
+    const isi=ksSaring(items);
+    const beta='<div class="ks-beta"><span class="ic">&#8505;&#65039;</span>'+
+      '<p><b>Masih tahap uji coba.</b> Memilih slot berarti mengirim '+
+      '<b>ajuan</b> ke admin lewat WhatsApp — bukan langsung terpesan. '+
+      'Admin yang mengonfirmasi dan mengunci jadwalnya.</p></div>';
+    if(!isi.length){ $('ks-list').innerHTML=beta+ksKosong(); return; }
+    const hari=kalHariIni();
+    $('ks-list').innerHTML=beta+kalKelompok(isi).map(g=>
+      '<div class="ks-grup"><div class="ks-hari"><b>'+kalTglID(g.tgl)+'</b>'+
+      (g.tgl===hari?'<span class="kini">Hari Ini</span>':'')+'</div>'+
+      g.isi.map(ksSlot).join('')+'</div>').join('');
+  }
+  async function ksMuat(force){
+    if(ksCache&&!force)return ksCache;
+    const d=await fetchJSON(KS_URL);
+    ksCache={items:(d&&Array.isArray(d.items))?d.items:[],
+             catatan:(d&&d.catatan)||'', updated:(d&&d.updated)||''};
+    return ksCache;
+  }
+  async function showKonsul(force){
+    if(!$('ks-list'))return;
+    if(tier==='umum'){
+      $('ks-panel-detail').hidden=true;
+      gambarTerkunci('ks-list',[],'Jadwal konsultasi belum dibuka.','priv','Konsultasi 1-on-1');
+      return;
+    }
+    const n=mulaiProses('ks-list');
+    $('ks-list').innerHTML=skeletonFeed(1);
+    await ksMuatAjuan();
+    try{
+      const c=await ksMuat(force);
+      if(prosesUsang('ks-list',n))return;
+      ksGambar(c.items);
+    }catch(e){
+      if(prosesUsang('ks-list',n))return;
+      $('ks-list').innerHTML='<div class="feed-empty">Jadwal konsultasi belum dibuka.<br>'+
+        'Cek lagi nanti, atau tanya admin lewat Beranda.</div>';
+    }
+  }
+  window.__ksBuka=(id)=>{
+    const c=ksCache; if(!c)return;
+    const x=(c.items||[]).find(y=>y.id===id); if(!x)return;
+    ksPilih=x;
+    $('ks-detail').innerHTML=
+      '<div class="ks-detail">'+
+        '<h4>'+esc(x.topik||'Sesi Konsultasi')+'</h4>'+
+        '<div class="wkt">'+kalTglID(x.tgl)+' &middot; '+esc(x.jam)+'&ndash;'+ksAkhir(x)+' WIB</div>'+
+        '<div class="ks-baris"><span>Mentor</span><b>'+esc(x.mentor||'Mentor FNC')+'</b></div>'+
+        '<div class="ks-baris"><span>Durasi</span><b>'+(+x.durasi||60)+' menit</b></div>'+
+        '<div class="ks-baris"><span>Media</span><b>'+esc(x.media||'Google Meet')+'</b></div>'+
+        '<div class="ks-baris"><span>Untuk</span><b>'+
+          (String(x.tingkat||'')==='eks'?'Member Eksklusif':'Private &amp; Eksklusif')+'</b></div>'+
+        (x.catatan?'<p style="margin:13px 0 0;font-size:12px;line-height:1.7;'+
+          'color:var(--slate-2);">'+waFormat(x.catatan)+'</p>':'')+
+        '<div class="welcome-actions" style="margin-top:15px;">'+
+          (ksSudahAjukan(x.id)
+            ? '<button class="btn ghost" type="button" onclick="window.__ksAjukan()">'+
+              'Kirim Ulang Ajuan</button>'
+            : '<button class="btn" type="button" onclick="window.__ksAjukan()">'+
+              'Ajukan Slot Ini</button>')+
+        '</div>'+
+        '<p style="margin:12px 0 0;font-size:11.5px;color:var(--gray);line-height:1.6;">'+
+        'Slot baru terkunci setelah admin membalas. Kalau keduluan orang lain, '+
+        'admin akan menawarkan jadwal terdekat.</p>'+
+      '</div>';
+    $('ks-panel-detail').hidden=false;
+    $('ks-list').closest('.panel').hidden=true;
+    window.scrollTo(0,0);
+  };
+  window.__ksAjukan=async()=>{
+    if(!ksPilih)return;
+    const siap=pengaturanSiap();
+    const no=await nomorAdmin('a3');
+    if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
+    const nama=(profil&&profil.nama)?(' Saya '+profil.nama+'.'):'';
+    const pesan='Halo Admin FNC.'+nama+' Saya mau mengajukan sesi konsultasi:\n\n'+
+      'Topik: '+(ksPilih.topik||'Sesi Konsultasi')+'\n'+
+      'Tanggal: '+kalTglID(ksPilih.tgl)+'\n'+
+      'Jam: '+ksPilih.jam+'-'+ksAkhir(ksPilih)+' WIB\n'+
+      'Mentor: '+(ksPilih.mentor||'Mentor FNC')+'\n\n'+
+      'Mohon dikonfirmasi ya. Terima kasih.';
+    if(!ksSudahAjukan(ksPilih.id)){
+      ksAjuan.push(ksPilih.id);
+      try{ await store.set(K_KSAYA,ksAjuan); }catch(e){}
+    }
+    bukaWA('https://wa.me/'+no+'?text='+encodeURIComponent(pesan),siap);
+    window.__ksBuka(ksPilih.id);
+  };
+  function ksKembali(){
+    $('ks-panel-detail').hidden=true;
+    $('ks-list').closest('.panel').hidden=false;
+    ksPilih=null; window.scrollTo(0,0);
+  }
+  if($('ks-kembali'))$('ks-kembali').onclick=ksKembali;
+  if($('ks-reload'))$('ks-reload').onclick=()=>{ ksCache=null; ksKembali(); showKonsul(true); };
+  document.querySelectorAll('#ks-seg .seg-btn').forEach(b=>{
+    b.onclick=()=>{
+      document.querySelectorAll('#ks-seg .seg-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); ksSeg=b.dataset.ks;
+      if(ksCache)ksGambar(ksCache.items); else showKonsul();
+    };
+  });
+
   /* ================= FNC CHALLENGE =================
      Isinya diatur dari admin lewat produk.json bagian "challenge",
      jadi teks dan manfaatnya bisa diganti tanpa menyentuh kode. */
@@ -4901,6 +5141,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(view==='calendar')showKalender();
     if(view==='kelas')showKelas();
     if(view==='challenge')showChallenge();
+    if(view==='konsul')showKonsul();
     if(view==='info')showInfo();
     if(view==='materi')showMateri();
     if(view==='dashboard')renderDashboard();
@@ -4949,6 +5190,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(aktif('v-rekap'))   await showRekap(true);
     if(aktif('v-calendar')){ kalCache=null; await showKalender(true); }
     if(aktif('v-kelas')){ prdCache=null; await showKelas(true); }
+    if(aktif('v-konsul')){ ksCache=null; await showKonsul(true); }
     if(aktif('v-materi'))  await showMateri(true);
     if(aktif('v-beranda')) await renderBeranda();
     if(!aktif('v-analisa')) await checkAnalisaGate();
