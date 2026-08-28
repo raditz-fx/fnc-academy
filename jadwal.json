@@ -1,5 +1,5 @@
 {
- "updated": "2026-08-28T02:51:46.362Z",
+ "updated": "2026-08-28T02:58:51.291Z",
  "items": [
   {
    "id": "smtccpl2ir2om",
@@ -12,7 +12,8 @@
    "tingkat": "eks",
    "catatan": "Ajukan jadwal maksimal H-1 sebelum dimulai",
    "penuh": false,
-   "pemesan": ""
+   "pemesan": "",
+   "tujuan": "a2"
   },
   {
    "id": "smtccrtjsxg2d",
@@ -25,7 +26,8 @@
    "tingkat": "eks",
    "catatan": "Konfirmasi maksimal H-1 sebelum ajukan jadwal",
    "penuh": false,
-   "pemesan": ""
+   "pemesan": "",
+   "tujuan": "a2"
   },
   {
    "id": "smtccu45m84wq",
@@ -38,7 +40,8 @@
    "tingkat": "eks",
    "catatan": "Konfirmasi maksimal H-1 sebelum jadwal dimulai",
    "penuh": false,
-   "pemesan": ""
+   "pemesan": "",
+   "tujuan": "a2"
   },
   {
    "id": "smtccv5cy4gcv",

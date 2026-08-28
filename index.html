@@ -3835,6 +3835,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         '<h4>'+esc(x.topik||'Sesi Konsultasi')+'</h4>'+
         '<div class="wkt">'+kalTglID(x.tgl)+' &middot; '+esc(x.jam)+'&ndash;'+ksAkhir(x)+' WIB</div>'+
         '<div class="ks-baris"><span>Mentor</span><b>'+esc(x.mentor||'Mentor FNC')+'</b></div>'+
+        '<div class="ks-baris"><span>Ajukan ke</span><b>'+
+          ({a1:'Admin Yudhis',a2:'Admin Radit',a3:'Admin Alief'}[x.tujuan]||'Admin Yudhis')+
+        '</b></div>'+
         '<div class="ks-baris"><span>Durasi</span><b>'+(+x.durasi||60)+' menit</b></div>'+
         '<div class="ks-baris"><span>Media</span><b>'+esc(x.media||'Google Meet')+'</b></div>'+
         '<div class="ks-baris"><span>Status</span><b>'+
@@ -3863,10 +3866,14 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   window.__ksAjukan=async()=>{
     if(!ksPilih)return;
     const siap=pengaturanSiap();
-    const no=await nomorAdmin('a3');
+    /* Tiap slot bisa diarahkan ke admin berbeda. Kalau admin belum memilih,
+       ajuannya masuk ke Yudhis. */
+    const tujuan={a1:1,a2:1,a3:1}[ksPilih.tujuan] ? ksPilih.tujuan : 'a1';
+    const no=await nomorAdmin(tujuan);
     if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
     const nama=(profil&&profil.nama)?(' Saya '+profil.nama+'.'):'';
-    const pesan='Halo Admin FNC.'+nama+' Saya mau mengajukan sesi konsultasi:\n\n'+
+    const sapa={a1:'Yudhis',a2:'Radit',a3:'Alief'}[tujuan]||'';
+    const pesan='Halo Admin '+sapa+'.'+nama+' Saya mau mengajukan sesi konsultasi:\n\n'+
       'Topik: '+(ksPilih.topik||'Sesi Konsultasi')+'\n'+
       'Tanggal: '+kalTglID(ksPilih.tgl)+'\n'+
       'Jam: '+ksPilih.jam+'-'+ksAkhir(ksPilih)+' WIB\n'+
