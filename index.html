@@ -590,6 +590,28 @@
   .lk-nb{margin:14px 0 0;font-size:11.5px;line-height:1.6;color:var(--gray);}
 
   /* ===== KONSULTASI ===== */
+  .ks-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:13px;}
+  .ks-step .n{width:26px;height:26px;border-radius:50%;flex:0 0 auto;display:flex;
+    align-items:center;justify-content:center;font-size:12px;font-weight:800;
+    background:var(--orange);color:#fff;}
+  .ks-step p{margin:0;font-size:12.5px;line-height:1.65;color:var(--teks-isi);}
+  .ks-faq{border-top:1px solid var(--line);margin-top:15px;padding-top:14px;}
+  .ks-faq h5{margin:0 0 10px;font-size:10.5px;font-weight:800;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--gray);}
+  .ks-faq dt{font-size:12.5px;font-weight:700;color:var(--teks-isi);margin-top:11px;}
+  .ks-faq dt:first-child{margin-top:0;}
+  .ks-faq dd{margin:4px 0 0;font-size:12px;line-height:1.65;color:var(--slate-2);}
+  .ks-bebas{display:flex;align-items:center;gap:13px;margin-bottom:15px;
+    border:1px solid var(--orange);border-radius:15px;padding:14px 15px;
+    background:var(--aksen-halus);cursor:pointer;
+    transition:transform .16s ease,box-shadow .2s ease;}
+  .ks-bebas:hover{transform:translateY(-2px);box-shadow:var(--bayang-2);}
+  .ks-bebas .ic{width:40px;height:40px;border-radius:13px;flex:0 0 auto;display:flex;
+    align-items:center;justify-content:center;font-size:19px;background:var(--kartu);
+    border:1px solid var(--orange-light);}
+  .ks-bebas b{display:block;font-size:13.5px;color:var(--teks-isi);margin-bottom:2px;}
+  .ks-bebas p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.55;}
+  .ks-bebas .go{font-size:12px;font-weight:700;color:var(--orange-deep);white-space:nowrap;}
   .ks-hari{display:flex;align-items:center;gap:9px;margin:18px 0 9px;}
   .ks-hari b{font-size:13px;color:var(--slate);font-weight:700;}
   .ks-hari .kini{font-size:9.5px;font-weight:800;background:var(--orange);color:#fff;
@@ -1482,6 +1504,21 @@
   </div>
 </div>
 
+<div class="overlay" id="ks-info-overlay" hidden>
+  <div class="gate-card peng-kotak">
+    <div class="peng-atas">
+      <div class="peng-ic" aria-hidden="true">&#128197;</div>
+      <div style="flex:1;min-width:0;">
+        <b>Cara Mengajukan Konsultasi</b>
+        <span>Baca sebentar sebelum memilih jadwal</span>
+      </div>
+    </div>
+    <div class="peng-isi" id="ks-info-isi"></div>
+    <div class="welcome-actions">
+      <button class="btn" id="ks-info-ok" type="button">Saya Paham, Lihat Jadwal</button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="peng-overlay" hidden>
   <div class="gate-card peng-kotak">
     <div class="peng-atas">
@@ -3746,9 +3783,10 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function ksSaring(a){
     let isi=ksUrut((a||[]).filter(x=>x&&x.tgl&&x.jam));
     if(ksSeg==='saya')return isi.filter(x=>ksSudahAjukan(x.id));
-    isi=isi.filter(x=>!ksLewat(x));
-    if(ksSeg==='ada')isi=isi.filter(x=>!x.penuh && ksBoleh(x));
-    return isi;
+    if(ksSeg==='ada')return isi.filter(x=>!ksLewat(x) && !x.penuh && ksBoleh(x));
+    /* Semua Jadwal sekaligus jadi riwayat: yang sudah terisi maupun sudah
+       lewat tetap ditampilkan, terbaru di atas. */
+    return isi.reverse();
   }
   function ksAkhir(x){
     const t=ksJamKe(x.jam)+(+x.durasi||60);
@@ -3758,6 +3796,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     /* Slot terisi diberi warna merah dan menyebut siapa yang mengambil,
        supaya member lain langsung paham slotnya bukan sekadar "tidak bisa
        diklik" — dan tidak perlu bertanya ke admin. */
+    if(ksLewat(x) && !x.penuh)return '<span class="ks-pita gelap">Sudah Lewat</span>';
     if(x.penuh){
       return '<span class="ks-pita penuh">Terisi'+
         (x.pemesan?'<span class="siapa">'+esc(x.pemesan)+'</span>':'')+'</span>';
@@ -3788,10 +3827,23 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     $('ks-panel-detail').hidden=true;
     $('ks-list').closest('.panel').hidden=false;
     const isi=ksSaring(items);
+    /* Penjelasan panjangnya sudah pindah ke pop-up tata cara. Di sini
+       cukup pengingat singkat plus jalur khusus member eksklusif. */
     const beta='<div class="ks-beta"><span class="ic">&#8505;&#65039;</span>'+
-      '<p><b>Masih tahap uji coba.</b> Memilih slot berarti mengirim '+
-      '<b>ajuan</b> ke admin lewat WhatsApp — bukan langsung terpesan. '+
-      'Admin yang mengonfirmasi dan mengunci jadwalnya.</p></div>';
+      '<p>Memilih slot berarti mengirim <b>ajuan</b>, bukan langsung terpesan. '+
+      'Status jadwal diperbarui admin sekitar <b>15&ndash;30 menit</b> setelah '+
+      'ajuanmu disetujui. '+
+      '<a onclick="window.__ksInfo()" style="color:var(--orange-deep);cursor:pointer;'+
+      'font-weight:700;">Baca tata cara</a></p></div>'+
+      (tier==='eks'
+        ? '<div class="ks-bebas" onclick="window.__ksBebas()">'+
+          '<div class="ic">&#10024;</div>'+
+          '<div style="flex:1;min-width:0;">'+
+            '<b>Ajukan Konsultasi Bebas</b>'+
+            '<p>Khusus member Eksklusif &mdash; ajukan waktu di luar jadwal '+
+            'yang tersedia.</p>'+
+          '</div><span class="go">Ajukan &rarr;</span></div>'
+        : '');
     if(!isi.length){ $('ks-list').innerHTML=beta+ksKosong(); return; }
     const hari=kalHariIni();
     $('ks-list').innerHTML=beta+kalKelompok(isi).map(g=>
@@ -3815,6 +3867,10 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     }
     const n=mulaiProses('ks-list');
     $('ks-list').innerHTML=skeletonFeed(1);
+    /* Sekali per sesi. Kalau muncul tiap kali tab dibuka, member yang
+       bolak-balik mengecek jadwal akan cepat terganggu — sementara isinya
+       sama saja. Tombol "Baca tata cara" tetap tersedia kapan pun. */
+    if(!ksInfoTampil){ ksInfoTampil=true; window.__ksInfo(); }
     await ksMuatAjuan();
     try{
       const c=await ksMuat(force);
@@ -3826,6 +3882,52 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         'Cek lagi nanti, atau tanya admin lewat Beranda.</div>';
     }
   }
+  let ksInfoTampil=false;
+  window.__ksInfo=()=>{
+    $('ks-info-isi').innerHTML=
+      '<div class="peng-item">'+
+        '<div class="ks-step"><div class="n">1</div><p>Pilih slot yang berstatus '+
+        '<b>Kosong</b> di daftar jadwal.</p></div>'+
+        '<div class="ks-step"><div class="n">2</div><p>Tekan <b>Ajukan Slot Ini</b>. '+
+        'Aplikasi menyiapkan pesan berisi tanggal, jam, dan mentornya &mdash; '+
+        'kamu tinggal kirim.</p></div>'+
+        '<div class="ks-step"><div class="n">3</div><p>Tunggu balasan admin. '+
+        'Slot baru benar-benar milikmu setelah admin mengonfirmasi.</p></div>'+
+        '<div class="ks-step"><div class="n">4</div><p>Status di halaman ini '+
+        'diperbarui <b>15&ndash;30 menit</b> setelah ajuanmu disetujui. '+
+        'Jadi jangan panik kalau belum berubah &mdash; yang menentukan '+
+        'balasan admin, bukan tampilan di sini.</p></div>'+
+        '<div class="ks-faq"><h5>Pertanyaan Umum</h5><dl>'+
+          '<dt>Kenapa statusnya belum berubah padahal sudah diterima?</dt>'+
+          '<dd>Jadwal diperbarui manual oleh admin, sekitar 15&ndash;30 menit. '+
+          'Konfirmasi dari admin lebih dulu berlaku daripada tampilan di halaman ini.</dd>'+
+          '<dt>Slotnya sudah keduluan orang lain?</dt>'+
+          '<dd>Bisa terjadi kalau dua orang mengajukan berbarengan. '+
+          'Admin akan menawarkan jadwal terdekat yang masih kosong.</dd>'+
+          '<dt>Bisa ganti atau batal?</dt>'+
+          '<dd>Bisa. Kabari admin yang sama, sebaiknya paling lambat sehari sebelumnya.</dd>'+
+          '<dt>Kenapa ada slot yang tidak bisa saya klik?</dt>'+
+          '<dd>Slot bertanda <b>Eks</b> khusus member Eksklusif. Slot <b>Terisi</b> '+
+          'sudah diambil member lain.</dd>'+
+          '<dt>Sesinya lewat apa?</dt>'+
+          '<dd>Tertulis di halaman detail tiap slot. Tautannya dikirim admin '+
+          'menjelang sesi dimulai.</dd>'+
+        '</dl></div>'+
+      '</div>';
+    $('ks-info-overlay').hidden=false;
+  };
+  if($('ks-info-ok'))$('ks-info-ok').onclick=()=>{ $('ks-info-overlay').hidden=true; };
+
+  window.__ksBebas=async()=>{
+    const siap=pengaturanSiap();
+    const no=await nomorAdmin('a1');
+    if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
+    const nama=(profil&&profil.nama)?(' Saya '+profil.nama+'.'):'';
+    const pesan='Halo Kak Yudhis.'+nama+' Saya member Eksklusif dan mau mengajukan '+
+      'sesi konsultasi di luar jadwal yang tersedia di website. '+
+      'Kira-kira kapan waktu yang memungkinkan?';
+    bukaWA('https://wa.me/'+no+'?text='+encodeURIComponent(pesan),siap);
+  };
   window.__ksBuka=(id)=>{
     const c=ksCache; if(!c)return;
     const x=(c.items||[]).find(y=>y.id===id); if(!x)return;
@@ -3869,7 +3971,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     /* Tiap slot bisa diarahkan ke admin berbeda. Kalau admin belum memilih,
        ajuannya masuk ke Yudhis. */
     const tujuan={a1:1,a2:1,a3:1}[ksPilih.tujuan] ? ksPilih.tujuan : 'a1';
-    const no=await nomorAdmin(tujuan);
+    /* Konsultasi hanya untuk member berbayar, jadi Radit memakai nomor
+       khususnya — bukan nomor yang dipajang untuk pengunjung umum. */
+    const no=await nomorAdmin(tujuan==='a2' ? 'a2priv' : tujuan);
     if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
     const nama=(profil&&profil.nama)?(' Saya '+profil.nama+'.'):'';
     const sapa={a1:'Yudhis',a2:'Radit',a3:'Alief'}[tujuan]||'';
@@ -5535,12 +5639,12 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       '</div></div>';
 
     /* ---------- Tanya AI Agent ---------- */
-    out+='<div class="ai-card" onclick="window.__konsul(\'ai\')">'+
+    out+='<div class="ai-card" onclick="window.__aiKendala()">'+
       '<div class="ai-ic">&#129302;</div>'+
       '<div style="flex:1;min-width:0;">'+
         '<b>Tanya AI Agent FNC</b>'+
-        '<p>Butuh jawaban cepat di luar jam admin? Chat AI Agent kami di WhatsApp, '+
-        'balasannya langsung.</p>'+
+        '<p>Sedang dalam perbaikan. Sementara ini pertanyaanmu dijawab '+
+        'langsung oleh admin.</p>'+
         '<span class="go">&#128172; Mulai Chat</span>'+
       '</div></div>';
 
@@ -5903,7 +6007,11 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   /* Nomor cadangan — dipakai kalau pengaturan.json belum di-upload.
      Yang ada di berkas selalu menang, jadi kalau ada nomor kena ban
      tinggal ganti dari admin tanpa menyentuh kode. */
-  const WA_BAWAAN={a1:'0895423372080',a2:'087713361586',a3:'0895378218007',ai:'081918688086'};
+  const WA_BAWAAN={a1:'0895423372080',a2:'087713361586',a3:'0895378218007',
+    ai:'081918688086',
+    /* Nomor Radit ada dua: 1586 untuk pengunjung umum, 0081 khusus
+       member berbayar. Konsultasi memakai yang kedua. */
+    a2priv:'087747550081'};
   /* Urutan yang tampil di layar: Admin 1, Admin 2, Admin 3.
      Namanya sengaja tidak ditampilkan — hanya dipakai di template pesan. */
   const ADMIN_LIST=[
@@ -5951,6 +6059,24 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     const no=await nomorAdmin(kunci);
     if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
     bukaWA('https://wa.me/'+no+'?text='+encodeURIComponent(pesanKonsul(kunci)),siap);
+  };
+  /* AI Agent sedang bermasalah. Daripada mengarahkan ke nomor yang tidak
+     membalas — yang bikin orang merasa diabaikan — kendalanya dijelaskan
+     dan langsung dialihkan ke admin. */
+  window.__aiKendala=()=>{
+    if(!confirm('AI Agent FNC sedang dalam perbaikan, jadi belum bisa membalas.\n\n'+
+      'Pertanyaanmu bisa langsung dijawab Admin Yudhis lewat WhatsApp.\n\n'+
+      'Lanjut chat admin sekarang?'))return;
+    window.__aiKeAdmin();
+  };
+  window.__aiKeAdmin=async()=>{
+    const siap=pengaturanSiap();
+    const no=await nomorAdmin('a1');
+    if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
+    const nama=(profil&&profil.nama)?(' Saya '+profil.nama+'.'):'';
+    const pesan='Halo Kak Yudhis.'+nama+' Saya mau tanya seputar trading, '+
+      'tapi AI Agent FNC sedang dalam perbaikan. Boleh dibantu lewat chat?';
+    bukaWA('https://wa.me/'+no+'?text='+encodeURIComponent(pesan),siap);
   };
   window.__bukaGrup=async()=>{
     const siap=pengaturanSiap();
