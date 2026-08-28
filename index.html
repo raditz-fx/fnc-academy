@@ -615,7 +615,10 @@
   .ks-pita{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.05em;
     text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;}
   .ks-pita.ada{background:#DCFCE7;color:#15803D;}
-  .ks-pita.penuh{background:var(--cream);color:var(--gray);}
+  .ks-pita.penuh{background:#FEE2E2;color:#B91C1C;}
+  .ks-pita.penuh .siapa{display:block;font-size:9px;font-weight:600;opacity:.85;
+    margin-top:1px;max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ks-pita.gelap{background:var(--cream);color:var(--gray);}
   .ks-pita.ajukan{background:var(--aksen-halus);color:var(--orange-deep);}
   .ks-pita.eks{background:#FEF3C7;color:#92400E;margin-left:6px;}
   .ks-beta{display:flex;gap:11px;align-items:flex-start;border:1px dashed var(--orange);
@@ -1889,7 +1892,7 @@
           <button class="btn ghost sm" id="ks-reload">Muat Ulang</button>
         </div>
         <div class="seg" id="ks-seg" style="margin-bottom:14px;">
-          <button class="seg-btn active" type="button" data-ks="ada">Tersedia</button>
+          <button class="seg-btn active" type="button" data-ks="ada">Kosong</button>
           <button class="seg-btn" type="button" data-ks="semua">Semua Jadwal</button>
           <button class="seg-btn" type="button" data-ks="saya">Ajuan Saya</button>
         </div>
@@ -3752,10 +3755,16 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     return String(Math.floor(t/60)%24).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
   }
   function ksPita(x){
+    /* Slot terisi diberi warna merah dan menyebut siapa yang mengambil,
+       supaya member lain langsung paham slotnya bukan sekadar "tidak bisa
+       diklik" — dan tidak perlu bertanya ke admin. */
+    if(x.penuh){
+      return '<span class="ks-pita penuh">Terisi'+
+        (x.pemesan?'<span class="siapa">'+esc(x.pemesan)+'</span>':'')+'</span>';
+    }
     if(ksSudahAjukan(x.id))return '<span class="ks-pita ajukan">Sudah Diajukan</span>';
-    if(x.penuh)return '<span class="ks-pita penuh">Penuh</span>';
-    if(!ksBoleh(x))return '<span class="ks-pita penuh">Eksklusif</span>';
-    return '<span class="ks-pita ada">Tersedia</span>';
+    if(!ksBoleh(x))return '<span class="ks-pita gelap">Eksklusif</span>';
+    return '<span class="ks-pita ada">Kosong</span>';
   }
   function ksSlot(x){
     const mati = x.penuh || !ksBoleh(x) || ksLewat(x);
@@ -3771,7 +3780,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function ksKosong(){
     if(ksSeg==='saya')return '<div class="feed-empty">Belum ada slot yang kamu ajukan.<br>'+
       'Pilih jadwal di tab Tersedia.</div>';
-    if(ksSeg==='ada')return '<div class="feed-empty">Belum ada slot kosong untuk saat ini.<br>'+
+    if(ksSeg==='ada')return '<div class="feed-empty">Semua slot sudah terisi untuk saat ini.<br>'+
       'Cek lagi nanti, atau tanya admin lewat Beranda.</div>';
     return '<div class="feed-empty">Jadwal konsultasi belum dibuka.<br>Cek lagi nanti ya.</div>';
   }
@@ -3828,6 +3837,10 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         '<div class="ks-baris"><span>Mentor</span><b>'+esc(x.mentor||'Mentor FNC')+'</b></div>'+
         '<div class="ks-baris"><span>Durasi</span><b>'+(+x.durasi||60)+' menit</b></div>'+
         '<div class="ks-baris"><span>Media</span><b>'+esc(x.media||'Google Meet')+'</b></div>'+
+        '<div class="ks-baris"><span>Status</span><b>'+
+          (x.penuh
+            ? '<span style="color:#B91C1C;">Terisi'+(x.pemesan?' &middot; '+esc(x.pemesan):'')+'</span>'
+            : '<span style="color:#15803D;">Kosong</span>')+'</b></div>'+
         '<div class="ks-baris"><span>Untuk</span><b>'+
           (String(x.tingkat||'')==='eks'?'Member Eksklusif':'Private &amp; Eksklusif')+'</b></div>'+
         (x.catatan?'<p style="margin:13px 0 0;font-size:12px;line-height:1.7;'+
