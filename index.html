@@ -1466,8 +1466,11 @@
     font-weight:700;padding:3px 9px;border-radius:999px;}
   .mk-kotak{background:var(--kartu);border:1px solid var(--line-2);border-radius:16px;
     padding:7px;box-shadow:var(--bayang-1);}
-  .mk-pita{border-radius:11px;overflow:hidden;}
-  .mk-pita iframe{width:100%;height:82px;border:0;display:block;}
+  .mk-pita{border-radius:11px;overflow:hidden;height:82px;background:var(--kartu);}
+  /* Widget dibuat lebih besar dari kotaknya lalu digeser, supaya garis tepi
+     terang bawaan TradingView terpangkas dan tidak bocor kelihatan. */
+  .mk-pita iframe{width:calc(100% + 8px);height:90px;border:0;display:block;
+    margin:-4px 0 0 -4px;background:var(--kartu);}
   .mk-geser-bungkus{position:relative;display:flex;align-items:center;gap:5px;}
   .mk-geser{display:flex;gap:8px;overflow-x:auto;padding:2px;scroll-snap-type:x mandatory;
     -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;}
@@ -1487,8 +1490,10 @@
   .mk-tag.forex{background:rgba(59,130,246,.13);color:#3B82F6;}
   .mk-tag.komoditas{background:var(--aksen-halus);color:var(--orange-deep);}
   .mk-tag.kripto{background:rgba(139,92,246,.14);color:#8B5CF6;}
-  .mk-harga{min-height:96px;margin:2px 0 0;}
-  .mk-harga iframe{width:100%;height:96px;border:0;display:block;}
+  .mk-harga{height:96px;margin:2px 0 0;overflow:hidden;border-radius:9px;
+    background:var(--kartu);}
+  .mk-harga iframe{width:calc(100% + 8px);height:104px;border:0;display:block;
+    margin:-4px 0 0 -4px;background:var(--kartu);}
   .mk-buka{display:flex;align-items:center;justify-content:space-between;
     margin-top:6px;font-size:10.5px;font-weight:700;color:var(--orange-deep);letter-spacing:.2px;}
   .mk-buka i{font-style:normal;font-size:13px;transition:transform .16s;}
@@ -5829,29 +5834,42 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function mkBingkai(alamat, tinggi){
     const f=document.createElement('iframe');
     f.src=alamat; f.style.height=tinggi; f.setAttribute('scrolling','no');
-    f.setAttribute('allowtransparency','true');
+    f.style.background=mkWarnaKartu();   /* jaring pengaman kalau widget telat mengecat */
     return f;
   }
+  /* Warna kartu diambil langsung dari tema yang sedang aktif, lalu
+     DIKIRIM ke widget supaya dia mengecat latarnya sendiri. Dulu kita
+     menyuruhnya tembus pandang; kalau itu gagal, yang muncul putih
+     bawaan browser — kelihatan jelek di mode gelap. */
+  function mkWarnaKartu(){
+    try{
+      const w=getComputedStyle(document.documentElement)
+                .getPropertyValue('--kartu').trim();
+      if(w) return w;
+    }catch(e){}
+    return mkGelap() ? '#1B222C' : '#FFFFFF';
+  }
   function mkIsiWidget(){
-    const gelap=mkGelap();
+    const gelap=mkGelap(), bg=mkWarnaKartu();
     const pita=$('mk-pita');
     if(pita){
       pita.innerHTML='';
       const cfg={symbols:MK_PASAR.map(p=>({proName:p.sym,title:p.nama})),
         showSymbolLogo:true, colorTheme:gelap?'dark':'light',
-        isTransparent:true, displayMode:'adaptive', locale:'id'};
+        isTransparent:false, backgroundColor:bg,
+        displayMode:'adaptive', locale:'id'};
       pita.appendChild(mkBingkai(
         'https://s.tradingview.com/embed-widget/ticker-tape/?locale=id#'+
-        encodeURIComponent(JSON.stringify(cfg)),'82px'));
+        encodeURIComponent(JSON.stringify(cfg)),'90px'));
     }
     MK_PASAR.forEach((p,i)=>{
       const kotak=$('mk-h'+i); if(!kotak) return;
       kotak.innerHTML='';
       const cfg={symbol:p.sym,width:'100%',colorTheme:gelap?'dark':'light',
-        isTransparent:true,locale:'id'};
+        isTransparent:false, backgroundColor:bg, locale:'id'};
       kotak.appendChild(mkBingkai(
         'https://s.tradingview.com/embed-widget/single-quote/?locale=id#'+
-        encodeURIComponent(JSON.stringify(cfg)),'96px'));
+        encodeURIComponent(JSON.stringify(cfg)),'104px'));
     });
   }
 
@@ -5938,7 +5956,13 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       isi.appendChild(f);
     }
   }
-  function mkMulai(){ mkRangka(); mkIsiWidget(); }
+  function mkMulai(){
+    mkRangka(); mkIsiWidget();
+    /* Kalau tema sempat berubah tepat setelah halaman dibuka, widget
+       dipasang ulang sekali supaya warnanya pasti ikut. */
+    let temaSaatPasang=mkGelap();
+    setTimeout(()=>{ if(mkGelap()!==temaSaatPasang) mkIsiWidget(); },400);
+  }
 
   document.addEventListener('keydown',(e)=>{
     if(e.key!=='Escape')return;
