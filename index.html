@@ -1455,6 +1455,63 @@
   .notice-bar{background:#FEF3C7;border-bottom:1px solid #FCD34D;color:#92400E;
     padding:9px 20px;font-size:12.5px;line-height:1.5;}
   .notice-bar b{color:#78350F;}
+
+  /* ===== MARKET BERANDA ===== */
+  .mk-sesi{margin-bottom:16px;}
+  .mk-judul{display:flex;align-items:center;gap:9px;margin:0 0 9px;flex-wrap:wrap;}
+  .mk-judul .mk-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);
+    box-shadow:0 0 0 3px var(--aksen-halus);flex:0 0 auto;}
+  .mk-judul h3{margin:0;font-size:14px;font-weight:800;color:var(--slate);letter-spacing:.2px;}
+  .mk-pill{background:var(--aksen-halus);color:var(--orange-deep);font-size:10px;
+    font-weight:700;padding:3px 9px;border-radius:999px;}
+  .mk-kotak{background:var(--kartu);border:1px solid var(--line-2);border-radius:16px;
+    padding:7px;box-shadow:var(--bayang-1);}
+  .mk-pita{border-radius:11px;overflow:hidden;}
+  .mk-pita iframe{width:100%;height:82px;border:0;display:block;}
+  .mk-geser-bungkus{position:relative;display:flex;align-items:center;gap:5px;}
+  .mk-geser{display:flex;gap:8px;overflow-x:auto;padding:2px;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;}
+  .mk-geser::-webkit-scrollbar{display:none;}
+  .mk-nav{flex:0 0 26px;height:180px;border:1px solid var(--line-2);background:var(--kartu);
+    color:var(--orange-deep);border-radius:9px;font-size:13px;font-weight:800;
+    cursor:pointer;padding:0;font-family:inherit;transition:.14s;}
+  .mk-nav:hover:not(:disabled){background:var(--aksen-halus);border-color:var(--orange);}
+  .mk-nav:disabled{opacity:.22;cursor:default;}
+  .mk-kartu{flex:0 0 240px;border:1px solid var(--line-2);border-radius:13px;
+    background:var(--kartu);scroll-snap-align:start;overflow:hidden;
+    display:flex;flex-direction:column;transition:.16s;}
+  .mk-kartu:hover{border-color:var(--orange);box-shadow:var(--bayang-2);transform:translateY(-2px);}
+  .mk-atas{cursor:pointer;padding:10px 11px 9px;flex:1;}
+  .mk-tag{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.6px;
+    text-transform:uppercase;padding:2.5px 7px;border-radius:999px;margin-bottom:6px;}
+  .mk-tag.forex{background:rgba(59,130,246,.13);color:#3B82F6;}
+  .mk-tag.komoditas{background:var(--aksen-halus);color:var(--orange-deep);}
+  .mk-tag.kripto{background:rgba(139,92,246,.14);color:#8B5CF6;}
+  .mk-harga{min-height:96px;margin:2px 0 0;}
+  .mk-harga iframe{width:100%;height:96px;border:0;display:block;}
+  .mk-buka{display:flex;align-items:center;justify-content:space-between;
+    margin-top:6px;font-size:10.5px;font-weight:700;color:var(--orange-deep);letter-spacing:.2px;}
+  .mk-buka i{font-style:normal;font-size:13px;transition:transform .16s;}
+  .mk-kartu:hover .mk-buka i{transform:translateX(3px);}
+  .mk-analisa{border:0;border-top:1px solid var(--line-2);background:var(--aksen-halus);
+    color:var(--orange-deep);font-family:inherit;font-size:11.5px;font-weight:800;
+    letter-spacing:.3px;padding:10px 8px;cursor:pointer;width:100%;transition:.14s;}
+  .mk-analisa:hover{background:var(--orange);color:#fff;}
+  .mk-hint{font-size:10.5px;color:var(--gray);text-align:center;padding:9px 0 2px;}
+  .mk-layar{position:fixed;inset:0;background:var(--hal);z-index:9999;display:none;
+    flex-direction:column;}
+  .mk-layar.on{display:flex;}
+  .mk-layar-atas{display:flex;align-items:center;justify-content:space-between;
+    padding:11px 14px;border-bottom:1px solid var(--line-2);background:var(--cream);}
+  .mk-layar-atas b{font-size:14px;color:var(--slate);}
+  .mk-tutup{background:var(--orange);color:#fff;border:0;border-radius:10px;
+    padding:8px 15px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
+  .mk-layar-isi{flex:1;min-height:0;position:relative;background:var(--kartu);}
+  .mk-layar-isi iframe{width:100%;height:100%;border:0;display:block;}
+  .mk-memuat{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;color:var(--gray);background:var(--kartu);}
+  .mk-layar-kaki{font-size:10px;color:var(--gray);text-align:center;
+    padding:8px 12px;border-top:1px solid var(--line-2);line-height:1.45;background:var(--kartu);}
 </style>
 </head>
 <body>
@@ -1687,6 +1744,7 @@
         </div>
         <div class="hero-cta" id="hero-cta"></div>
       </div>
+      <div id="mk-wrap"></div>
       <div id="beranda-body"></div>
     </div>
 
@@ -5713,6 +5771,181 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
      ikut pengaturan sistem operasinya.
      ============================================================ */
   const K_TEMA='fncjt_tema';
+
+  /* ============================================================
+     MARKET BERANDA — pita harga, kartu market, chart layar penuh.
+     Data & chart dari TradingView (gratis, tanpa kunci rahasia).
+     Semua tampil untuk SEMUA tingkatan; hanya tombol "Cek Analisa"
+     yang membedakan umum vs berbayar.
+     ============================================================ */
+  const MK_PASAR=[
+    {nama:'Emas',      sym:'OANDA:XAUUSD',    jenis:'komoditas'},
+    {nama:'Bitcoin',   sym:'BINANCE:BTCUSDT', jenis:'kripto'},
+    {nama:'Minyak',    sym:'TVC:USOIL',       jenis:'komoditas'},
+    {nama:'Euro',      sym:'OANDA:EURUSD',    jenis:'forex'},
+    {nama:'Yen',       sym:'OANDA:USDJPY',    jenis:'forex'},
+    {nama:'Pound',     sym:'OANDA:GBPUSD',    jenis:'forex'},
+    {nama:'Ethereum',  sym:'BINANCE:ETHUSDT', jenis:'kripto'}
+  ];
+  function mkGelap(){ return document.documentElement.getAttribute('data-tema')==='gelap'; }
+
+  function mkRangka(){
+    const w=$('mk-wrap'); if(!w) return;
+    let k='';
+    MK_PASAR.forEach((p,i)=>{
+      k+='<div class="mk-kartu">'+
+           '<div class="mk-atas" onclick="window.__mkChart('+i+')">'+
+             '<span class="mk-tag '+p.jenis+'">'+p.jenis+'</span>'+
+             '<div class="mk-harga" id="mk-h'+i+'"></div>'+
+             '<div class="mk-buka"><span>Buka chart</span><i>&#8594;</i></div>'+
+           '</div>'+
+           '<button class="mk-analisa" onclick="window.__mkAnalisa('+i+')">Cek Analisa</button>'+
+         '</div>';
+    });
+    w.innerHTML=
+      '<div class="mk-sesi">'+
+        '<div class="mk-judul"><span class="mk-dot"></span><h3>Harga Berjalan</h3>'+
+          '<span class="mk-pill">real-time</span></div>'+
+        '<div class="mk-kotak"><div class="mk-pita" id="mk-pita"></div></div>'+
+      '</div>'+
+      '<div class="mk-sesi">'+
+        '<div class="mk-judul"><span class="mk-dot"></span><h3>Pasar Hari Ini</h3>'+
+          '<span class="mk-pill">pencet untuk chart</span></div>'+
+        '<div class="mk-kotak">'+
+          '<div class="mk-geser-bungkus">'+
+            '<button class="mk-nav" id="mk-kiri">&#10094;</button>'+
+            '<div class="mk-geser" id="mk-geser">'+k+'</div>'+
+            '<button class="mk-nav" id="mk-kanan">&#10095;</button>'+
+          '</div>'+
+          '<div class="mk-hint">Pakai tombol &#10094; &#10095; atau geser &middot; '+
+            'pencet kartu untuk chart layar penuh</div>'+
+        '</div>'+
+      '</div>';
+    mkPasangNav();
+  }
+
+  /* Widget dipasang sebagai bingkai terpisah supaya warnanya
+     bisa ikut berganti saat tema diubah. */
+  function mkBingkai(alamat, tinggi){
+    const f=document.createElement('iframe');
+    f.src=alamat; f.style.height=tinggi; f.setAttribute('scrolling','no');
+    f.setAttribute('allowtransparency','true');
+    return f;
+  }
+  function mkIsiWidget(){
+    const gelap=mkGelap();
+    const pita=$('mk-pita');
+    if(pita){
+      pita.innerHTML='';
+      const cfg={symbols:MK_PASAR.map(p=>({proName:p.sym,title:p.nama})),
+        showSymbolLogo:true, colorTheme:gelap?'dark':'light',
+        isTransparent:true, displayMode:'adaptive', locale:'id'};
+      pita.appendChild(mkBingkai(
+        'https://s.tradingview.com/embed-widget/ticker-tape/?locale=id#'+
+        encodeURIComponent(JSON.stringify(cfg)),'82px'));
+    }
+    MK_PASAR.forEach((p,i)=>{
+      const kotak=$('mk-h'+i); if(!kotak) return;
+      kotak.innerHTML='';
+      const cfg={symbol:p.sym,width:'100%',colorTheme:gelap?'dark':'light',
+        isTransparent:true,locale:'id'};
+      kotak.appendChild(mkBingkai(
+        'https://s.tradingview.com/embed-widget/single-quote/?locale=id#'+
+        encodeURIComponent(JSON.stringify(cfg)),'96px'));
+    });
+  }
+
+  function mkAlamatChart(sym){
+    const gelap=mkGelap();
+    const p={symbol:sym,interval:'15',timezone:'Asia/Jakarta',
+      theme:gelap?'dark':'light',style:'1',locale:'id',
+      hide_side_toolbar:'0',hide_top_toolbar:'0',allow_symbol_change:'1',
+      save_image:'1',details:'0',calendar:'0',withdateranges:'1',hideideas:'1'};
+    if(gelap){ p.backgroundColor='#0D1218'; p.gridColor='rgba(140,151,165,0.10)'; }
+    const q=[]; for(const k in p){ q.push(encodeURIComponent(k)+'='+encodeURIComponent(p[k])); }
+    if(gelap){
+      const ov={'mainSeriesProperties.candleStyle.upColor':'#FFFFFF',
+        'mainSeriesProperties.candleStyle.downColor':'#F2701D',
+        'mainSeriesProperties.candleStyle.borderUpColor':'#FFFFFF',
+        'mainSeriesProperties.candleStyle.borderDownColor':'#F2701D',
+        'mainSeriesProperties.candleStyle.wickUpColor':'#FFFFFF',
+        'mainSeriesProperties.candleStyle.wickDownColor':'#F2701D',
+        'paneProperties.background':'#0D1218'};
+      q.push('overrides='+encodeURIComponent(JSON.stringify(ov)));
+    }
+    return 'https://s.tradingview.com/widgetembed/?'+q.join('&');
+  }
+
+  let mkSymAktif=null;
+  window.__mkChart=(i)=>{
+    const p=MK_PASAR[i]; if(!p) return;
+    mkSymAktif=p.sym;
+    const layar=$('mk-layar'), isi=$('mk-layar-isi');
+    $('mk-layar-nama').textContent=p.nama;
+    isi.innerHTML='<div class="mk-memuat">Memuat chart...</div>';
+    const f=document.createElement('iframe');
+    f.setAttribute('allowtransparency','true');
+    f.setAttribute('scrolling','no');
+    f.setAttribute('allowfullscreen','true');
+    f.src=mkAlamatChart(p.sym);
+    f.onload=()=>{ const m=isi.querySelector('.mk-memuat'); if(m) m.remove(); };
+    isi.appendChild(f);
+    layar.classList.add('on');
+    document.body.style.overflow='hidden';
+  };
+  window.__mkTutupChart=()=>{
+    const layar=$('mk-layar');
+    layar.classList.remove('on');
+    $('mk-layar-isi').innerHTML='';   /* coretan analisa ikut terhapus */
+    mkSymAktif=null;
+    document.body.style.overflow='';
+  };
+
+  /* Member berbayar (private/eksklusif) langsung masuk tab Analisa.
+     Pengunjung umum diberi penjelasan lalu diarahkan ke tab Kelas. */
+  window.__mkAnalisa=(i)=>{
+    const p=MK_PASAR[i]; if(!p) return;
+    if(tier!=='umum'){ go('analisa'); return; }
+    const pesan='Analisa harian '+p.nama+' tersedia untuk member Private dan Eksklusif.\n\n'+
+                'Mau lihat pilihan kelasnya sekarang?';
+    if(confirm(pesan)) go('kelas');
+  };
+
+  function mkPasangNav(){
+    const geser=$('mk-geser'), kiri=$('mk-kiri'), kanan=$('mk-kanan');
+    if(!geser||!kiri||!kanan) return;
+    const langkah=()=>{ const k=geser.querySelector('.mk-kartu');
+      return k ? (k.offsetWidth+8)*2 : 496; };
+    const segar=()=>{ const maks=geser.scrollWidth-geser.clientWidth-2;
+      kiri.disabled=geser.scrollLeft<=2; kanan.disabled=geser.scrollLeft>=maks; };
+    kiri.onclick=()=>{ geser.scrollBy({left:-langkah(),behavior:'smooth'}); setTimeout(segar,320); };
+    kanan.onclick=()=>{ geser.scrollBy({left:langkah(),behavior:'smooth'}); setTimeout(segar,320); };
+    geser.onscroll=segar;
+    window.addEventListener('resize',segar);
+    setTimeout(segar,150);
+  }
+
+  /* Dipanggil ulang saat tema berganti supaya widget ikut gelap/terang. */
+  function mkSegarkanTema(){
+    mkIsiWidget();
+    if($('mk-layar')&&$('mk-layar').classList.contains('on')&&mkSymAktif){
+      const isi=$('mk-layar-isi'); isi.innerHTML='';
+      const f=document.createElement('iframe');
+      f.setAttribute('allowtransparency','true');
+      f.setAttribute('scrolling','no');
+      f.setAttribute('allowfullscreen','true');
+      f.src=mkAlamatChart(mkSymAktif);
+      isi.appendChild(f);
+    }
+  }
+  function mkMulai(){ mkRangka(); mkIsiWidget(); }
+
+  document.addEventListener('keydown',(e)=>{
+    if(e.key!=='Escape')return;
+    const L=$('mk-layar');
+    if(L&&L.classList.contains('on')) window.__mkTutupChart();
+  });
+
   function pakaiTema(t){
     document.documentElement.setAttribute('data-tema', t==='gelap'?'gelap':'terang');
     const b=$('tema-btn');
@@ -5720,6 +5953,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       b.innerHTML = t==='gelap' ? '&#9788;' : '&#9789;';   /* matahari / bulan */
       b.title = t==='gelap' ? 'Ganti ke mode terang' : 'Ganti ke mode gelap';
     }
+    try{ if(typeof mkSegarkanTema==='function' && $('mk-pita')) mkSegarkanTema(); }catch(e){}
   }
   async function muatTema(){
     let t=null;
@@ -6188,6 +6422,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   (async function boot(){
     await muatTema();
     if($('tema-btn'))$('tema-btn').onclick=gantiTema;
+    try{ mkMulai(); }catch(e){ console.warn('market gagal dimuat',e); }
     pasangSorotKursor();
     accounts=(await store.get(K_ACC))||[];
     trades=(await store.get(K_TR))||[];
@@ -6272,5 +6507,16 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   })();
 })();
 </script>
+<div class="mk-layar" id="mk-layar">
+  <div class="mk-layar-atas">
+    <b id="mk-layar-nama">Chart</b>
+    <button class="mk-tutup" onclick="window.__mkTutupChart()">&#10005; Tutup</button>
+  </div>
+  <div class="mk-layar-isi" id="mk-layar-isi"></div>
+  <div class="mk-layar-kaki">
+    Chart oleh TradingView &middot; coretan analisamu <b>bersifat sementara</b> &mdash;
+    hilang begitu chart ditutup. Pakai ikon kamera di chart untuk menyimpannya jadi gambar.
+  </div>
+</div>
 </body>
 </html>
