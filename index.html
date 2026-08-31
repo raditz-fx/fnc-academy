@@ -38,12 +38,12 @@
      Semua warna diturunkan dari variabel yang sama, jadi seluruh halaman
      ikut berganti tanpa perlu aturan terpisah per komponen. */
   html[data-tema="gelap"]{
-    --cream:#232B36; --cream-bg:#141A22;
-    --slate:#E8ECF1; --slate-2:#C3CBD5; --gray:#8C97A5;
-    --line:#2C3644; --line-2:#232B36; --white:#141A22;
-    --kartu:#1B222C; --hal:#0D1218;
-    --teks-isi:#DBE2EA;        /* jauh lebih terang supaya paragraf enak dibaca */
-    --kaca:rgba(30,38,50,.66);
+    --cream:#2A2A2A; --cream-bg:#141414;
+    --slate:#DBDBDB; --slate-2:#BDBDBD; --gray:#909090;
+    --line:#303030; --line-2:#2C2C2C; --white:#141414;
+    --kartu:#1F1F1F; --hal:#141414;
+    --teks-isi:#D1D1D1;        /* jauh lebih terang supaya paragraf enak dibaca */
+    --kaca:rgba(31,31,31,.75);
     --kaca-tepi:rgba(255,255,255,.09);
     --bayang-1:0 1px 2px rgba(0,0,0,.30), 0 4px 14px rgba(0,0,0,.28);
     --bayang-2:0 2px 8px rgba(0,0,0,.36), 0 14px 36px rgba(0,0,0,.42);
@@ -1517,6 +1517,15 @@
     font-size:12.5px;color:var(--gray);background:var(--kartu);}
   .mk-layar-kaki{font-size:10px;color:var(--gray);text-align:center;
     padding:8px 12px;border-top:1px solid var(--line-2);line-height:1.45;background:var(--kartu);}
+
+  /* ===== TOMBOL SEMBUNYIKAN KARTU SAPAAN ===== */
+  .hero{position:relative;}
+  .hero-tutup{position:absolute;top:10px;right:10px;width:26px;height:26px;
+    border:1px solid var(--line-2);background:var(--kartu);color:var(--gray);
+    border-radius:8px;font-size:12px;font-weight:800;line-height:1;cursor:pointer;
+    font-family:inherit;padding:0;opacity:.55;transition:.15s;z-index:3;}
+  .hero-tutup:hover{opacity:1;background:var(--orange);color:#fff;border-color:var(--orange);}
+  .hero-row{padding-right:34px;}
 </style>
 </head>
 <body>
@@ -1739,7 +1748,9 @@
   <div class="body">
     <!-- BERANDA -->
     <div class="view active" id="v-beranda">
-      <div class="hero">
+      <div class="hero" id="hero-kartu">
+        <button class="hero-tutup" id="hero-tutup" title="Sembunyikan sapaan"
+                aria-label="Sembunyikan sapaan">&#10005;</button>
         <div class="hero-row">
           <div>
             <h2 id="hero-title">Selamat datang</h2>
@@ -5841,23 +5852,31 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
      DIKIRIM ke widget supaya dia mengecat latarnya sendiri. Dulu kita
      menyuruhnya tembus pandang; kalau itu gagal, yang muncul putih
      bawaan browser — kelihatan jelek di mode gelap. */
-  function mkWarnaKartu(){
+  function mkWarnaVar(nama, cadangan){
     try{
       const w=getComputedStyle(document.documentElement)
-                .getPropertyValue('--kartu').trim();
+                .getPropertyValue(nama).trim();
       if(w) return w;
     }catch(e){}
-    return mkGelap() ? '#1B222C' : '#FFFFFF';
+    return cadangan;
+  }
+  function mkWarnaKartu(){
+    return mkWarnaVar('--kartu', mkGelap() ? '#1F1F1F' : '#FFFFFF');
+  }
+  function mkWarnaHal(){
+    return mkWarnaVar('--hal', mkGelap() ? '#141414' : '#F3EFE9');
   }
   function mkIsiWidget(){
-    const gelap=mkGelap(), bg=mkWarnaKartu();
+    const gelap=mkGelap();
     const pita=$('mk-pita');
     if(pita){
       pita.innerHTML='';
+      /* Widget dibuat TEMBUS PANDANG, lalu bingkainya yang kita cat dengan
+         warna kartu. Perintah warna latar ke TradingView diabaikan olehnya,
+         jadi cara ini satu-satunya yang bisa menyamakan warna dengan pasti. */
       const cfg={symbols:MK_PASAR.map(p=>({proName:p.sym,title:p.nama})),
         showSymbolLogo:true, colorTheme:gelap?'dark':'light',
-        isTransparent:false, backgroundColor:bg,
-        displayMode:'adaptive', locale:'id'};
+        isTransparent:true, displayMode:'adaptive', locale:'id'};
       pita.appendChild(mkBingkai(
         'https://s.tradingview.com/embed-widget/ticker-tape/?locale=id#'+
         encodeURIComponent(JSON.stringify(cfg)),'90px'));
@@ -5866,7 +5885,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       const kotak=$('mk-h'+i); if(!kotak) return;
       kotak.innerHTML='';
       const cfg={symbol:p.sym,width:'100%',colorTheme:gelap?'dark':'light',
-        isTransparent:false, backgroundColor:bg, locale:'id'};
+        isTransparent:true, locale:'id'};
       kotak.appendChild(mkBingkai(
         'https://s.tradingview.com/embed-widget/single-quote/?locale=id#'+
         encodeURIComponent(JSON.stringify(cfg)),'104px'));
@@ -5879,7 +5898,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       theme:gelap?'dark':'light',style:'1',locale:'id',
       hide_side_toolbar:'0',hide_top_toolbar:'0',allow_symbol_change:'1',
       save_image:'1',details:'0',calendar:'0',withdateranges:'1',hideideas:'1'};
-    if(gelap){ p.backgroundColor='#0D1218'; p.gridColor='rgba(140,151,165,0.10)'; }
+    if(gelap){ p.backgroundColor=mkWarnaHal(); p.gridColor='rgba(149,152,161,0.10)'; }
     const q=[]; for(const k in p){ q.push(encodeURIComponent(k)+'='+encodeURIComponent(p[k])); }
     if(gelap){
       const ov={'mainSeriesProperties.candleStyle.upColor':'#FFFFFF',
@@ -5888,7 +5907,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         'mainSeriesProperties.candleStyle.borderDownColor':'#F2701D',
         'mainSeriesProperties.candleStyle.wickUpColor':'#FFFFFF',
         'mainSeriesProperties.candleStyle.wickDownColor':'#F2701D',
-        'paneProperties.background':'#0D1218'};
+        'paneProperties.background':mkWarnaHal()};
       q.push('overrides='+encodeURIComponent(JSON.stringify(ov)));
     }
     return 'https://s.tradingview.com/widgetembed/?'+q.join('&');
@@ -5969,6 +5988,15 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     const L=$('mk-layar');
     if(L&&L.classList.contains('on')) window.__mkTutupChart();
   });
+
+  /* Kartu sapaan bisa disembunyikan supaya tidak makan ruang di atas.
+     Sembunyinya hanya untuk kunjungan ini — kalau website dibuka lagi,
+     sapaannya muncul kembali seperti biasa. */
+  function pasangTutupHero(){
+    const b=$('hero-tutup'), k=$('hero-kartu');
+    if(!b||!k) return;
+    b.onclick=()=>{ k.style.display='none'; };
+  }
 
   function pakaiTema(t){
     document.documentElement.setAttribute('data-tema', t==='gelap'?'gelap':'terang');
@@ -6447,6 +6475,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     await muatTema();
     if($('tema-btn'))$('tema-btn').onclick=gantiTema;
     try{ mkMulai(); }catch(e){ console.warn('market gagal dimuat',e); }
+    try{ pasangTutupHero(); }catch(e){}
     pasangSorotKursor();
     accounts=(await store.get(K_ACC))||[];
     trades=(await store.get(K_TR))||[];
