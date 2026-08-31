@@ -6040,20 +6040,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         '<div class="mk-kotak"><div class="mk-pita" id="mk-pita"></div></div>'+
       '</div>'+
       '<div class="mk-sesi">'+
-        '<div class="mk-judul"><span class="mk-dot"></span><h3>Pasar Hari Ini</h3>'+
-          '<span class="mk-pill">pencet untuk chart</span></div>'+
-        '<div class="mk-kotak">'+
-          '<div class="mk-geser-bungkus">'+
-            '<button class="mk-nav" id="mk-kiri">&#10094;</button>'+
-            '<div class="mk-geser" id="mk-geser">'+k+'</div>'+
-            '<button class="mk-nav" id="mk-kanan">&#10095;</button>'+
-          '</div>'+
-          '<div class="mk-hint">Pakai tombol &#10094; &#10095; atau geser &middot; '+
-            'pencet kartu untuk chart layar penuh</div>'+
-        '</div>'+
-      '</div>'+
-      '<div class="mk-sesi">'+
-        '<div class="mk-judul"><span class="mk-dot"></span><h3>Cari Pair Lain</h3>'+
+        '<div class="mk-judul"><span class="mk-dot"></span><h3>Cari Pair</h3>'+
           '<span class="mk-pill">forex &middot; kripto &middot; indeks &middot; saham</span></div>'+
         '<div class="mk-kotak">'+
           '<div class="mk-cari-bar">'+
@@ -6077,6 +6064,19 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
               '<button type="button" class="mk-b-chart" onclick="window.__mkCariChart()">Buka Chart</button>'+
             '</div>'+
           '</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="mk-sesi">'+
+        '<div class="mk-judul"><span class="mk-dot"></span><h3>Pasar Hari Ini</h3>'+
+          '<span class="mk-pill">pencet untuk chart</span></div>'+
+        '<div class="mk-kotak">'+
+          '<div class="mk-geser-bungkus">'+
+            '<button class="mk-nav" id="mk-kiri">&#10094;</button>'+
+            '<div class="mk-geser" id="mk-geser">'+k+'</div>'+
+            '<button class="mk-nav" id="mk-kanan">&#10095;</button>'+
+          '</div>'+
+          '<div class="mk-hint">Pakai tombol &#10094; &#10095; atau geser &middot; '+
+            'pencet kartu untuk chart layar penuh</div>'+
         '</div>'+
       '</div>';
     mkPasangNav();
