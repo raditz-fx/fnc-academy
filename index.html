@@ -1710,7 +1710,10 @@
     z-index:32;position:relative;transition:opacity .18s,background .15s;}
   .tabs-nav:hover:not(:disabled){background:var(--aksen-halus);}
   .tabs-nav:disabled{opacity:0;pointer-events:none;}
-  @media(max-width:520px){ .tabs-nav{flex:0 0 24px;font-size:12px;} }
+  /* Di HP tombolnya disembunyikan — geser jari sudah lebih enak dan
+     tombolnya makan tempat. Bayangan tepi tetap ada sebagai penanda.
+     Di layar besar tombol dipertahankan karena tidak ada geser jari. */
+  @media(max-width:900px){ .tabs-nav{display:none;} }
 </style>
 </head>
 <body>
