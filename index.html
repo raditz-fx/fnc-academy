@@ -1644,6 +1644,53 @@
   .jm-lapor .bad{color:var(--loss);font-weight:800;}
   .jm-lapor ul{margin:7px 0 0;padding-left:17px;}
   .jm-lapor li{margin-bottom:3px;}
+
+  /* ===== BANTUAN: FAQ & TUTORIAL ===== */
+  .hp-cari-bar{display:flex;align-items:center;gap:9px;border:1px solid var(--line-2);
+    border-radius:12px;padding:12px 14px;background:var(--kartu);margin-bottom:11px;
+    transition:border-color .16s,box-shadow .16s;}
+  .hp-cari-bar:focus-within{border-color:var(--orange);box-shadow:0 0 0 3px var(--aksen-halus);}
+  .hp-cari-bar svg{width:17px;height:17px;flex:0 0 auto;color:var(--gray);}
+  .hp-cari-bar input{flex:1;min-width:0;border:0;background:transparent;outline:none;
+    font-family:inherit;font-size:13.5px;color:var(--teks-isi);}
+  .hp-cari-x{border:0;background:transparent;color:var(--gray);font-size:15px;
+    cursor:pointer;display:none;font-family:inherit;padding:0 2px;}
+  .hp-cari-x.on{display:block;}
+  .hp-chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:3px;margin-bottom:13px;
+    scrollbar-width:none;}
+  .hp-chips::-webkit-scrollbar{display:none;}
+  .hp-chip{flex:0 0 auto;border:1px solid var(--line-2);background:var(--kartu);
+    color:var(--gray);font-family:inherit;font-size:11.5px;font-weight:700;
+    padding:7px 13px;border-radius:999px;cursor:pointer;transition:.14s;}
+  .hp-chip:hover{border-color:var(--orange);color:var(--orange-deep);}
+  .hp-chip.on{background:var(--orange);color:#fff;border-color:var(--orange);}
+  .hp-info{font-size:12px;color:var(--gray);margin-bottom:11px;}
+  .hp-grup{margin-bottom:16px;}
+  .hp-grup-judul{display:flex;align-items:center;gap:9px;margin:0 0 9px;}
+  .hp-grup-judul .ic{width:26px;height:26px;border-radius:8px;display:flex;
+    align-items:center;justify-content:center;font-size:13px;background:var(--aksen-halus);}
+  .hp-grup-judul h3{margin:0;font-size:14px;font-weight:800;color:var(--slate);}
+  .hp-item{border:1px solid var(--line-2);border-radius:12px;background:var(--kartu);
+    margin-bottom:7px;overflow:hidden;}
+  .hp-t{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;
+    background:transparent;font-family:inherit;font-size:13px;font-weight:700;
+    color:var(--slate);padding:13px 14px;cursor:pointer;line-height:1.5;}
+  .hp-t:hover{background:var(--aksen-halus);}
+  .hp-t .pan{margin-left:auto;flex:0 0 auto;color:var(--orange-deep);font-size:11px;
+    transition:transform .2s;}
+  .hp-item.buka .hp-t .pan{transform:rotate(180deg);}
+  .hp-j{display:none;padding:0 14px 14px;font-size:12.5px;line-height:1.8;
+    color:var(--teks-isi);}
+  .hp-item.buka .hp-j{display:block;}
+  .hp-j b{color:var(--slate);}
+  .hp-j ol,.hp-j ul{margin:8px 0 0;padding-left:19px;}
+  .hp-j li{margin-bottom:5px;}
+  .hp-j code{font-family:var(--mono),monospace;font-size:11.5px;background:var(--hal);
+    padding:2px 6px;border-radius:5px;color:var(--orange-deep);}
+  .hp-kosong{text-align:center;padding:26px 16px;font-size:12.5px;color:var(--gray);
+    line-height:1.7;}
+  .hp-kosong b{color:var(--slate);}
+  mark{background:var(--aksen-halus);color:var(--orange-deep);padding:0 2px;border-radius:3px;}
 </style>
 </head>
 <body>
@@ -2346,118 +2393,16 @@ EURUSD | buy | 1.0850 | 1.0820 | 1.0910 | be</pre>
 
     <!-- HELP -->
     <div class="view" id="v-help">
-      <div class="panel">
-        <h3>Cara Pakai</h3>
-        <div class="help-block">
-          <ol>
-            <li>Buka tab <b>Akun</b> → <span class="kbd">+ Akun Baru</span>. Isi nama, broker, currency, dan <b>saldo awal</b>. Saldo awal ini dipakai untuk menghitung Risk $.</li>
-            <li>Buka tab <b>Jurnal</b> → <span class="kbd">+ Trade Baru</span>. Isi Tanggal, Market, Entry, SL, TP, Risk %, dan Hasil.</li>
-            <li>Kolom <b>Risk $, R:R, Net P/L</b> dihitung otomatis — kamu tidak perlu isi manual.</li>
-            <li>Buka tab <b>Dashboard</b> untuk lihat win rate, profit factor, drawdown, dan equity curve kamu.</li>
-          </ol>
-        </div>
+      <div class="hp-cari-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="hp-cari" type="text" autocomplete="off"
+          placeholder="Cari: jurnal, kode akses, konsultasi, chart...">
+        <button class="hp-cari-x" id="hp-cari-x" type="button">&#10005;</button>
       </div>
-
-      <div class="panel">
-        <h3>Rumus yang Dipakai</h3>
-        <div class="help-block">
-          <ul>
-            <li><b>Risk ($)</b> = Risk % × saldo awal akun. Contoh: saldo $1.000, risk 1% → Risk $10.</li>
-            <li><b>R:R</b> = jarak Entry→TP ÷ jarak Entry→SL. Contoh: TP 3× lebih jauh dari SL → R:R = 3.</li>
-            <li><b>Net P/L</b>: Win = +(Risk × R:R) · Loss = −Risk · BE = 0.</li>
-          </ul>
-          <div class="note" style="margin-top:12px;">
-            Angka P/L di sini adalah <b>hasil teoretis</b> berdasarkan jarak SL:TP, bukan fill price broker.
-            Untuk rekonsiliasi saldo riil, tetap pakai statement broker kamu.
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Data & Privasi</h3>
-        <div class="help-block">
-          <p>Jurnal ini <b>tidak punya server</b>. Semua data trade kamu disimpan di browser milik kamu sendiri
-          dan tidak pernah dikirim ke FNC Academy atau pihak mana pun. Admin FNC tidak bisa melihat isi jurnal kamu.</p>
-          <p>Konsekuensinya:</p>
-          <ul>
-            <li>Data <b>tidak sinkron</b> antar perangkat. Jurnal di HP dan laptop terpisah.</li>
-            <li>Menghapus cache/data browser akan <b>menghapus jurnal</b>.</li>
-            <li>Mode incognito tidak menyimpan apa pun setelah tab ditutup.</li>
-          </ul>
-          <p>Karena itu: klik <b>Backup</b> di tab Jurnal secara rutin (misalnya tiap akhir minggu).
-          File backup bisa kamu <b>Restore</b> kapan saja, termasuk untuk pindah ke perangkat lain.</p>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Akun Cent (USC)</h3>
-        <div class="help-block">
-          <p>Kalau kamu pakai akun cent, pilih <b>USC</b> saat membuat akun, lalu isi saldo awal
-          <b>sesuai angka yang tampil di MT5</b> — bukan dikonversi dulu.
-          Contoh: deposit $10, MT5 menunjukkan 1.000 USC, maka isi <b>1000</b>.</p>
-          <p>Perhitungan 1 USD = 100 USC. Semua angka di dashboard dan jurnal otomatis tampil
-          dalam USC saat akun cent dipilih, dengan padanan Rupiah di bawahnya.</p>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Kalkulator</h3>
-        <div class="help-block">
-          <p>Tab <b>Kalkulator</b> berisi empat alat bantu:</p>
-          <ul>
-            <li><b>Nilai pip</b> — berapa rupiah/dolar yang bergerak tiap 1 pip di volume tertentu.</li>
-            <li><b>Ukuran lot dari risiko</b> — yang paling penting. Masukkan saldo, risk %, entry, dan SL;
-            hasilnya berapa lot yang harus dipakai supaya kerugian tepat sesuai batas risikomu.</li>
-            <li><b>Simulasi P/L</b> — perkiraan hasil dari entry ke exit.</li>
-            <li><b>Cek R:R</b> — rasio risk:reward beserta jarak pip masing-masing sisi.</li>
-          </ul>
-          <p>Instrumen umum seperti XAUUSD, EURUSD, dan USDJPY sudah terisi otomatis.
-          Untuk instrumen lain, pilih "Lainnya" dan isi contract size sendiri sesuai
-          spesifikasi kontrak brokermu.</p>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Berita &amp; Update Market</h3>
-        <div class="help-block">
-          <p>Tab <b>Berita</b> berisi update market, jadwal news penting, dan pengumuman komunitas
-          dari tim FNC Academy. Ada dua bagian yang bisa kamu pilih di tombol atas:</p>
-          <ul>
-            <li><b>Umum</b> — terbuka untuk semua member private. Tidak perlu kode tambahan.</li>
-            <li><b>Eksklusif</b> 🔒 — butuh kode khusus. Kodenya sama dengan kode tab Analisa,
-            jadi sekali kamu buka salah satu, dua-duanya langsung terbuka.</li>
-          </ul>
-          <p>Tekan <b>Muat Ulang</b> kalau kamu ingin mengambil berita terbaru tanpa menutup aplikasi.
-          Gambar pada berita bisa ditekan untuk memperbesar.</p>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Analisa Market</h3>
-        <div class="help-block">
-          <p>Tab <b>Analisa</b> berisi pembahasan chart dan rencana trading yang dibagikan tim FNC Academy —
-          lengkap dengan gambar dan keterangan. Bagian ini <b>terkunci</b> dan butuh kode analisa
-          yang dibagikan khusus. Masukkan kode satu kali, lalu isinya terbuka.</p>
-          <ul>
-            <li>Gambar analisa bisa ditekan untuk dilihat lebih besar.</li>
-            <li>Tombol <b>Muat Ulang</b> mengambil analisa terbaru.</li>
-            <li>Tombol <b>Kunci</b> menutup kembali akses di perangkat ini — berguna kalau
-            HP kamu dipakai bergantian dengan orang lain.</li>
-          </ul>
-          <div class="note" style="margin-top:12px;">
-            Analisa adalah <b>bahan belajar</b>, bukan sinyal atau ajakan entry. Pelajari alasannya,
-            keputusan trading tetap ada di tangan kamu sendiri.
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <h3>Butuh Bantuan?</h3>
-        <div class="help-block">
-          <p>Tanya langsung di grup private FNC Academy atau saat live session Discord.
-          Kalau ada bug atau request fitur, kabari admin ya.</p>
-        </div>
-      </div>
+      <div class="hp-chips" id="hp-chips"></div>
+      <div class="hp-info" id="hp-info" hidden></div>
+      <div id="hp-isi"></div>
     </div>
   </div>
 
@@ -3911,6 +3856,82 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     return "window.__bukaLuar(window.__sos('"+kunci+"'))";
   }
   window.__sos=(k)=>sosLink(k);
+
+
+  /* ============================================================
+     BANTUAN — FAQ & tutorial yang bisa dicari.
+     Isinya ditulis di sini (bukan dari berkas luar) supaya tetap
+     terbaca walau koneksi member sedang buruk.
+     ============================================================ */
+  const HP_DATA=[["Mulai di Sini", "&#128075;", [["Saya baru pertama masuk, harus mulai dari mana?", "Tiga langkah saja:<ol><li>Buka tab <b>Profil</b>, isi namamu. Ini dipakai menandai catatan jurnalmu.</li><li>Masih di Profil, buat <b>akun trading</b> — isi nama akun, broker, mata uang, dan saldo awal. Saldo awal dipakai menghitung risiko.</li><li>Buka tab <b>Jurnal</b>, tekan <b>+ Trade Baru</b>, pilih mode <b>Cepat</b>.</li></ol>Selesai. Statistik langsung terisi sendiri."], ["Apa bedanya Umum, Private, dan Eksklusif?", "<b>Umum</b> bisa melihat Beranda, Berita, Kelas, Kalender, Jurnal, Statistik, dan Kalkulator — gratis tanpa kode.<br><b>Private</b> menambah Rekap Live dan Materi.<br><b>Eksklusif</b> menambah Analisa, Berita Eksklusif, Rekap dan Materi Eksklusif, plus prioritas konsultasi."], ["Data saya disimpan di mana? Aman?", "Jurnal, akun, dan profilmu disimpan <b>di dalam browser HP atau laptopmu sendiri</b> — tidak dikirim ke server mana pun. Artinya tidak ada yang bisa melihatnya selain kamu.<br><br>Konsekuensinya: kalau kamu menghapus data browser atau ganti HP, catatanmu ikut hilang. Makanya <b>rutin tekan tombol Backup</b> di tab Jurnal."]]], ["Jurnal Trading", "&#128221;", [["Cara mencatat trade paling cepat", "Tab <b>Jurnal</b> &rarr; <b>+ Trade Baru</b> &rarr; pilih <b>Cepat</b>. Isi market, arah, entry, stop loss, take profit, dan hasil. Tanggal, jam, dan akun diisi sistem otomatis."], ["Cara menempel banyak trade sekaligus", "Tab <b>Jurnal</b> &rarr; <b>+ Trade Baru</b> &rarr; <b>Tempel</b>. Tulis <b>satu trade satu baris</b> dengan format:<br><code>MARKET | ARAH | ENTRY | SL | TP | HASIL</code><br>Contoh:<br><code>XAUUSD | buy | 4450 | 4440 | 4470 | win</code><br><br>Arah boleh <code>buy</code>/<code>sell</code> atau <code>beli</code>/<code>jual</code>. Hasil boleh <code>win</code>/<code>loss</code>/<code>be</code>. Koma dianggap titik desimal, jadi <code>1,0850</code> juga diterima.<br><br>Tekan <b>Periksa Dulu</b> untuk melihat mana yang sudah benar sebelum disimpan."], ["Apa itu Risk % dan kenapa wajib diisi?", "Risk % adalah berapa persen saldo yang kamu pertaruhkan di satu trade. Contoh: saldo $1.000 dengan risk 1% berarti kamu siap rugi $10 kalau kena stop loss.<br><br>Ini <b>wajib</b> karena seluruh perhitungan untung-rugi di tab Statistik memakai angka ini. Kalau kosong, statistikmu jadi nol."], ["Kenapa Net P/L saya beda dengan saldo di broker?", "Angka di sini adalah <b>hasil teoretis</b> berdasarkan jarak stop loss dan take profit — bukan harga eksekusi asli dari broker.<br><br>Perbedaan wajar muncul karena spread, komisi, swap, dan slippage. Untuk mencocokkan saldo asli, tetap pakai laporan dari brokermu."], ["Cara mengamankan catatan jurnal", "Tab <b>Jurnal</b> &rarr; tombol <b>Backup</b>. Sebuah berkas akan terunduh — simpan di Google Drive atau kirim ke chat WhatsApp dirimu sendiri.<br><br>Untuk mengembalikannya di HP baru: tekan <b>Restore</b>, pilih berkas itu.<br><br>Biasakan backup <b>seminggu sekali</b>."]]], ["Kode Akses & Keanggotaan", "&#128273;", [["Di mana memasukkan kode akses?", "Tab <b>Profil</b> &rarr; tombol <b>Masukkan Kode</b>. Setelah kodenya benar, tab yang terkunci langsung terbuka."], ["Kode saya ditolak, padahal sudah benar", "Coba periksa:<ul><li>Huruf besar-kecil dan tanda hubung sudah persis sama</li><li>Tidak ada spasi ikut tersalin di depan atau belakang</li><li>Masa aktif keanggotaanmu belum habis</li></ul>Kalau tetap ditolak, hubungi admin lewat tab Konsultasi di Beranda."], ["Saya sudah bayar tapi tab masih terkunci", "Kode dikirim admin secara manual setelah pembayaran dicek. Kalau sudah lewat beberapa jam dan belum ada kabar, chat admin dan sertakan bukti transfernya."], ["Kenapa saya diminta memasukkan kode lagi?", "Biasanya karena data browser terhapus, memakai mode penyamaran, atau berpindah perangkat. Kodenya masih berlaku — tinggal masukkan lagi di tab Profil."]]], ["Market & Chart", "&#128200;", [["Cara membuka chart sebuah pair", "Di <b>Beranda</b>, ketik nama pair di kotak <b>Cari Pair</b> — bisa pakai kode (<code>gbpjpy</code>) atau nama Indonesia (<code>emas</code>, <code>minyak</code>). Pencet hasilnya, harganya muncul, lalu tekan <b>Buka Chart</b>.<br><br>Untuk tujuh pair favorit, langsung pencet kartunya di <b>Pasar Hari Ini</b>."], ["Pair yang saya cari tidak ada di daftar", "Ketik saja simbolnya, nanti muncul tombol <b>Coba buka</b>. Sebagian besar simbol TradingView bisa dibuka lewat jalur itu."], ["Bisakah analisa di chart saya simpan?", "Coretan di chart ini <b>tidak bisa disimpan</b>, karena chart-nya tidak terhubung ke akun TradingView-mu. Begitu ditutup, coretannya hilang.<br><br>Tapi ada <b>ikon kamera</b> di pojok chart — pakai itu untuk menyimpan analisamu sebagai gambar. Untuk analisa yang tersimpan permanen, pakai TradingView atau MT5 milikmu sendiri."], ["Harganya tidak muncul / kosong", "Hampir selalu masalah koneksi. Coba muat ulang halaman. Kalau memakai penghemat data atau pemblokir iklan, coba matikan dulu untuk situs ini."]]], ["Konsultasi 1-on-1", "&#128172;", [["Siapa yang bisa ikut konsultasi?", "Konsultasi 1-on-1 adalah benefit paket <b>Lifetime</b> dan <b>Eksklusif</b>.<br><br><b>Lifetime</b> mengajukan slot dari jadwal yang tersedia. <b>Eksklusif</b> mendapat prioritas, plus bisa mengajukan waktu sendiri di luar jadwal."], ["Cara mengajukan sesi", "Tab <b>Konsultasi</b> &rarr; pilih slot berstatus <b>Kosong</b> &rarr; tekan <b>Ajukan Slot Ini</b>. WhatsApp terbuka dengan pesan yang sudah terisi — tinggal kirim, lalu tunggu konfirmasi admin."], ["Kenapa ajuan saya ditolak karena waktu?", "Pengajuan ditutup <b>1 jam sebelum sesi dimulai</b>, supaya mentor sempat menyiapkan bahan dan meninjau jurnalmu. Silakan pilih jadwal lain."], ["Status slot belum berubah padahal admin sudah membalas", "Jadwal diperbarui admin secara manual, biasanya 15&ndash;30 menit. <b>Konfirmasi dari admin lebih berlaku</b> daripada tampilan di halaman ini."], ["Slot saya keduluan orang lain", "Bisa terjadi kalau dua orang mengajukan berbarengan. Admin akan menawarkan jadwal terdekat yang masih kosong."]]], ["Statistik & Kalkulator", "&#128202;", [["Cara membaca tab Statistik", "<b>Win Rate</b> — persentase trade yang untung.<br><b>Profit Factor</b> — total untung dibagi total rugi; di atas 1 berarti secara keseluruhan kamu untung.<br><b>Drawdown</b> — penurunan terdalam dari puncak saldo.<br><b>Equity Curve</b> — grafik naik-turun saldomu dari waktu ke waktu."], ["Statistik saya kosong padahal sudah ada trade", "Paling sering karena <b>Risk %</b> belum terisi di trade-trade itu. Buka trade-nya, isi Risk %, lalu statistik langsung terhitung."], ["Cara pakai Kalkulator", "Tab <b>Kalkulator</b> punya empat alat: nilai pip, ukuran lot dari risiko, hitung untung-rugi, dan rasio risk-reward. Pilih instrumennya dulu di bagian atas, karena tiap instrumen beda ukuran kontraknya."], ["Ukuran lot dari kalkulator beda dengan broker saya", "Ukuran kontrak tiap broker bisa berbeda. Cek spesifikasi kontrak di brokermu, lalu sesuaikan kolom <b>Contract Size</b> di kalkulator."]]], ["Tampilan & Lainnya", "&#9881;&#65039;", [["Cara mengubah mode gelap atau terang", "Tekan ikon matahari/bulan di pojok kanan atas halaman. Pilihanmu tersimpan di perangkat ini."], ["Kartu sapaan di Beranda bisa disembunyikan?", "Bisa. Tekan tanda <b>&#10005;</b> di pojok kanan atas kartu sapaan. Dia akan muncul lagi saat kamu membuka website berikutnya."], ["Tombol Tanya AI tidak berfungsi", "AI Agent sedang dalam perbaikan. Sementara ini pertanyaanmu dijawab langsung oleh Admin Yudhis lewat WhatsApp — tombolnya sudah otomatis mengarah ke sana."], ["Halaman terasa lambat dibuka", "Coba muat ulang halaman. Kalau tab Berita yang terasa berat, itu karena berkas gambarnya besar — tim sedang mengerjakan perbaikannya."], ["Saya menemukan masalah lain", "Chat admin lewat tab <b>Konsultasi</b> di Beranda. Sertakan tangkapan layar dan sebutkan tab mana yang bermasalah — itu sangat membantu mempercepat perbaikan."]]]];
+  let hpKategori='';
+
+  function hpTandai(teks,q){
+    if(!q)return teks;
+    const k=q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    return teks.replace(/>([^<]+)</g,(m,isi)=>
+      '>'+isi.replace(new RegExp('('+k+')','gi'),'<mark>$1</mark>')+'<');
+  }
+  function hpCocok(t,j,q){
+    if(!q)return true;
+    const k=q.toLowerCase();
+    return (t+' '+j).toLowerCase().replace(/<[^>]*>/g,' ').indexOf(k)>=0;
+  }
+  function hpGambar(){
+    const q=(($('hp-cari')&&$('hp-cari').value)||'').trim();
+    let total=0, out='';
+    HP_DATA.forEach((g,gi)=>{
+      if(hpKategori && hpKategori!==g[0])return;
+      const isi=g[2].filter(x=>hpCocok(x[0],x[1],q));
+      if(!isi.length)return;
+      total+=isi.length;
+      out+='<div class="hp-grup">'+
+        '<div class="hp-grup-judul"><span class="ic">'+g[1]+'</span><h3>'+esc(g[0])+'</h3></div>'+
+        isi.map((x,xi)=>
+          '<div class="hp-item'+((q||hpKategori)&&isi.length<=3?' buka':'')+'">'+
+            '<button type="button" class="hp-t" onclick="window.__hpBuka(this)">'+
+              esc(x[0])+'<span class="pan">&#9660;</span></button>'+
+            '<div class="hp-j">'+x[1]+'</div>'+
+          '</div>').join('')+
+        '</div>';
+    });
+    const info=$('hp-info');
+    if(info){
+      if(q||hpKategori){ info.hidden=false;
+        info.textContent = total ? (total+' jawaban ditemukan') : 'Tidak ada yang cocok';
+      } else info.hidden=true;
+    }
+    $('hp-isi').innerHTML = total
+      ? (q ? hpTandai(out,q) : out)
+      : '<div class="hp-kosong"><b>Belum ketemu jawabannya?</b><br>'+
+        'Coba kata kunci lain, atau chat admin lewat tab Konsultasi di Beranda.</div>';
+  }
+  window.__hpBuka=(b)=>{ b.parentNode.classList.toggle('buka'); };
+  function hpChips(){
+    const w=$('hp-chips'); if(!w)return;
+    w.innerHTML='<button type="button" class="hp-chip'+(hpKategori?'':' on')+'" '+
+      'data-hp="">Semua</button>'+
+      HP_DATA.map(g=>'<button type="button" class="hp-chip'+
+        (hpKategori===g[0]?' on':'')+'" data-hp="'+esc(g[0])+'">'+esc(g[0])+'</button>').join('');
+    w.querySelectorAll('[data-hp]').forEach(b=>b.onclick=()=>{
+      hpKategori=b.dataset.hp; hpChips(); hpGambar();
+    });
+  }
+  function showHelp(){
+    if(!$('hp-isi'))return;
+    hpChips(); hpGambar();
+  }
+  function hpPasang(){
+    const inp=$('hp-cari'), x=$('hp-cari-x');
+    if(!inp)return;
+    let jeda=null;
+    inp.addEventListener('input',()=>{
+      if(x)x.classList.toggle('on',!!inp.value);
+      clearTimeout(jeda); jeda=setTimeout(hpGambar,180);
+    });
+    inp.addEventListener('keydown',e=>{ if(e.key==='Escape'){ inp.value=''; hpGambar(); } });
+    if(x)x.onclick=()=>{ inp.value=''; x.classList.remove('on'); hpGambar(); inp.focus(); };
+  }
 
   async function showInfo(){
     if(!$('info-isi'))return;
@@ -5830,6 +5851,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(view==='challenge')showChallenge();
     if(view==='konsul')showKonsul();
     if(view==='info')showInfo();
+    if(view==='help')showHelp();
     if(view==='materi')showMateri();
     if(view==='dashboard')renderDashboard();
     replayAnim(view);
@@ -7121,6 +7143,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if($('tema-btn'))$('tema-btn').onclick=gantiTema;
     try{ mkMulai(); }catch(e){ console.warn('market gagal dimuat',e); }
     try{ pasangTutupHero(); }catch(e){}
+    try{ hpPasang(); }catch(e){}
     pasangSorotKursor();
     accounts=(await store.get(K_ACC))||[];
     trades=(await store.get(K_TR))||[];
