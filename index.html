@@ -4686,10 +4686,10 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         return true;
       }catch(e){ return false; }
     }
-    m=h.match(/^#(berita|analisa)=(.+)$/);
+    m=h.match(/^#(berita|analisa|rekap)=(.+)$/);
     if(m){
       const jenis=m[1], id=decodeURIComponent(m[2]);
-      go(jenis==='analisa'?'analisa':'news');
+      go(jenis==='analisa'?'analisa': jenis==='rekap'?'rekap':'news');
       buruKiriman(jenis,id);
       return true;
     }
@@ -4721,7 +4721,8 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     const kartu=document.querySelector('[data-kid="'+CSS.escape(id)+'"]');
     const judul=(kartu&&kartu.querySelector('.fi-judul,h4,h3'))
       ? kartu.querySelector('.fi-judul,h4,h3').textContent.trim()
-      : (jenis==='analisa'?'Analisa FNC Academy':'Berita FNC Academy');
+      : (jenis==='analisa'?'Analisa FNC Academy'
+        : jenis==='rekap'?'Rekap Live FNC Academy':'Berita FNC Academy');
     bagikanTautan(tautanKe(jenis,id),judul,tombol);
   };
   /* Membuka kiriman tertentu: pindah tab, bentangkan kartunya, lalu
@@ -4745,8 +4746,11 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
      Untuk isi eksklusif tanpa kode yang benar, kartunya memang tidak akan
      pernah ada, jadi pencarian berhenti sendiri tanpa membocorkan apa pun. */
   function buruKiriman(jenis,id){
-    const elId = (jenis==='analisa') ? 'analisa-list' : 'news-list';
-    const segId = (jenis==='analisa') ? null : 'news-seg';
+    const elId = (jenis==='analisa') ? 'analisa-list'
+               : (jenis==='rekap')   ? 'rk-list' : 'news-list';
+    /* Rekap punya segmen Private/Eksklusif sendiri, sama seperti Berita. */
+    const segId = (jenis==='analisa') ? null
+                : (jenis==='rekap')   ? 'rk-seg' : 'news-seg';
     let sisa=30, sudahSegmen=false, muat=0;
     const coba=setInterval(()=>{
       if(sorotKiriman(id)){ clearInterval(coba); return; }
@@ -5150,6 +5154,12 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         (it.body?'<div class="feed-body" style="margin-top:10px;">'+waFormat(it.body)+'</div>':'')+
         (it.url?'<div class="ext-btn" onclick="window.__buka(\''+esc(it.url).replace(/'/g,"\\'")+'\')">'+
           '&#9654; Tonton di Google Drive</div>':'')+
+        /* Tautan bagikan hanya membawa NOMOR kirimannya, tidak pernah kode akses
+           maupun isinya. Penerima tanpa kode yang benar tidak bisa membuka
+           rekap.json sama sekali, jadi tautan yang bocor pun tidak membocorkan isi. */
+        (it.id?'<div class="fi-bagi"><button type="button" title="Bagikan rekap ini" '+
+          'onclick="event.stopPropagation();window.__feedBagi(\''+esc(it.id)+'\',\'rekap\',this)">'+
+          '&#128279; Bagikan</button></div>':'')+
       '</div></div></div>';
   }
   async function loadRekap(force){
