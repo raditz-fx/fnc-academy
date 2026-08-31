@@ -5867,16 +5867,17 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     return mkWarnaVar('--hal', mkGelap() ? '#141414' : '#F3EFE9');
   }
   function mkIsiWidget(){
-    const gelap=mkGelap();
+    const gelap=mkGelap(), bg=mkWarnaKartu();
     const pita=$('mk-pita');
     if(pita){
       pita.innerHTML='';
-      /* Widget dibuat TEMBUS PANDANG, lalu bingkainya yang kita cat dengan
-         warna kartu. Perintah warna latar ke TradingView diabaikan olehnya,
-         jadi cara ini satu-satunya yang bisa menyamakan warna dengan pasti. */
+      /* Tembus pandang DIMATIKAN — kalau dinyalakan, latar widget jadi putih.
+         Warna gelap bawaan widget ini #1F1F1F, sama persis dengan warna
+         kartu kita, jadi menyatu tanpa perlu akal-akalan. */
       const cfg={symbols:MK_PASAR.map(p=>({proName:p.sym,title:p.nama})),
         showSymbolLogo:true, colorTheme:gelap?'dark':'light',
-        isTransparent:true, displayMode:'adaptive', locale:'id'};
+        isTransparent:false, backgroundColor:bg,
+        displayMode:'adaptive', locale:'id'};
       pita.appendChild(mkBingkai(
         'https://s.tradingview.com/embed-widget/ticker-tape/?locale=id#'+
         encodeURIComponent(JSON.stringify(cfg)),'90px'));
@@ -5885,7 +5886,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       const kotak=$('mk-h'+i); if(!kotak) return;
       kotak.innerHTML='';
       const cfg={symbol:p.sym,width:'100%',colorTheme:gelap?'dark':'light',
-        isTransparent:true, locale:'id'};
+        isTransparent:false, backgroundColor:bg, locale:'id'};
       kotak.appendChild(mkBingkai(
         'https://s.tradingview.com/embed-widget/single-quote/?locale=id#'+
         encodeURIComponent(JSON.stringify(cfg)),'104px'));
