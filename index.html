@@ -1613,6 +1613,37 @@
   .mk-b-chart{background:var(--orange);color:#fff;}
   .mk-b-tutup{background:var(--hal);color:var(--gray);
     border:1px solid var(--line-2)!important;}
+
+  /* ===== JURNAL: MODE PENGISIAN ===== */
+  .jm-mode{display:flex;gap:6px;margin:0 0 12px;background:var(--hal);
+    border:1px solid var(--line-2);border-radius:12px;padding:4px;}
+  .jm-tab{flex:1;border:0;background:transparent;color:var(--gray);font-family:inherit;
+    font-size:12.5px;font-weight:800;padding:9px 8px;border-radius:9px;cursor:pointer;
+    transition:.15s;}
+  .jm-tab:hover{color:var(--slate);}
+  .jm-tab.active{background:var(--orange);color:#fff;}
+  .jm-panel{display:none;}
+  .jm-panel.on{display:block;}
+  .jm-nb{margin:0 0 12px;font-size:12px;color:var(--gray);line-height:1.6;}
+  .jm-contoh{background:var(--hal);border:1px solid var(--line-2);border-radius:12px;
+    padding:12px 13px;}
+  .jm-contoh-atas{display:flex;align-items:center;justify-content:space-between;
+    gap:10px;margin-bottom:8px;}
+  .jm-contoh-atas b{font-size:12px;color:var(--slate);letter-spacing:.2px;}
+  .jm-contoh code{display:block;font-family:var(--mono),monospace;font-size:11.5px;
+    color:var(--orange-deep);background:var(--aksen-halus);padding:7px 10px;
+    border-radius:8px;margin-bottom:8px;word-break:break-word;}
+  .jm-contoh pre{margin:0;font-family:var(--mono),monospace;font-size:11.5px;
+    line-height:1.85;color:var(--teks-isi);white-space:pre-wrap;word-break:break-word;}
+  .jm-ket{margin:9px 0 0;font-size:11px;color:var(--gray);line-height:1.75;}
+  .jm-ket code{display:inline-block;margin-top:5px;font-size:10.5px;}
+  .jm-lapor{margin-top:12px;border-radius:11px;padding:11px 13px;font-size:12px;
+    line-height:1.7;border:1px solid var(--line-2);background:var(--hal);}
+  .jm-lapor b{color:var(--slate);}
+  .jm-lapor .ok{color:var(--win);font-weight:800;}
+  .jm-lapor .bad{color:var(--loss);font-weight:800;}
+  .jm-lapor ul{margin:7px 0 0;padding-left:17px;}
+  .jm-lapor li{margin-bottom:3px;}
 </style>
 </head>
 <body>
@@ -1929,6 +1960,64 @@
         </div>
       </div>
       <input type="file" id="restore-file" accept="application/json" hidden>
+
+      <div class="jm-mode" id="jm-mode" hidden>
+        <button type="button" class="jm-tab active" data-jm="cepat">Cepat</button>
+        <button type="button" class="jm-tab" data-jm="tempel">Tempel</button>
+        <button type="button" class="jm-tab" data-jm="lengkap">Lengkap</button>
+      </div>
+
+      <div class="form jm-panel" id="jm-cepat">
+        <p class="jm-nb">Isi yang penting saja. Sisanya bisa dilengkapi nanti lewat tombol ubah.</p>
+        <div class="fgrid">
+          <div class="field"><label for="q-market">Market</label>
+            <input id="q-market" placeholder="XAUUSD" autocomplete="off"></div>
+          <div class="field"><label for="q-posisi">Posisi</label>
+            <select id="q-posisi"><option>Buy</option><option>Sell</option></select></div>
+          <div class="field"><label for="q-entry">Entry</label>
+            <input id="q-entry" type="number" step="any" inputmode="decimal"></div>
+          <div class="field"><label for="q-sl">Stop Loss</label>
+            <input id="q-sl" type="number" step="any" inputmode="decimal"></div>
+          <div class="field"><label for="q-tp">Take Profit</label>
+            <input id="q-tp" type="number" step="any" inputmode="decimal"></div>
+          <div class="field"><label for="q-result">Hasil</label>
+            <select id="q-result"><option>Win</option><option>Loss</option><option>BE</option></select></div>
+          <div class="field"><label for="q-risk">Risk %</label>
+            <input id="q-risk" type="number" step="any" inputmode="decimal">
+            <div class="hint" style="font-size:11px;color:var(--gray);margin-top:4px;">
+              Dipakai menghitung untung-rugi di Statistik. Terisi otomatis dari yang terakhir kamu pakai.</div></div>
+        </div>
+        <div class="welcome-actions" style="margin-top:13px;">
+          <button class="btn ghost" type="button" id="q-batal">Batal</button>
+          <button class="btn" type="button" id="q-simpan">Simpan Trade</button>
+        </div>
+      </div>
+
+      <div class="form jm-panel" id="jm-tempel">
+        <p class="jm-nb">Salin catatan trade kamu, tempel di bawah. <b>Satu trade satu baris.</b></p>
+        <div class="jm-contoh">
+          <div class="jm-contoh-atas"><b>Format</b>
+            <button class="btn ghost sm" type="button" id="p-salin">Salin Contoh</button></div>
+          <code id="p-format">MARKET | ARAH | ENTRY | SL | TP | HASIL</code>
+          <pre id="p-contoh">XAUUSD | buy | 4450 | 4440 | 4470 | win
+BTCUSD | sell | 78000 | 78500 | 77000 | loss
+EURUSD | buy | 1.0850 | 1.0820 | 1.0910 | be</pre>
+          <p class="jm-ket">Arah: <b>buy</b> / <b>sell</b> &middot; Hasil: <b>win</b> / <b>loss</b> / <b>be</b><br>
+            Mau lebih detail? Tambah Risk % dan tanggal di belakang:<br>
+            <code>XAUUSD | buy | 4450 | 4440 | 4470 | win | 1.5 | 2026-08-30</code></p>
+        </div>
+        <div class="field" style="margin-top:12px;">
+          <label for="p-teks">Tempel di sini</label>
+          <textarea id="p-teks" rows="7" spellcheck="false"
+            placeholder="XAUUSD | buy | 4450 | 4440 | 4470 | win"></textarea>
+        </div>
+        <div id="p-lapor" class="jm-lapor" hidden></div>
+        <div class="welcome-actions" style="margin-top:13px;">
+          <button class="btn ghost" type="button" id="p-batal">Batal</button>
+          <button class="btn ghost" type="button" id="p-periksa">Periksa Dulu</button>
+          <button class="btn" type="button" id="p-simpan">Simpan Semua</button>
+        </div>
+      </div>
 
       <div class="form" id="trade-form">
         <div class="fgrid">
@@ -5484,12 +5573,203 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   /* ---------- EVENTS ---------- */
   if($('in-posisi'))$('in-posisi').addEventListener('change',()=>{ posisiDiubahManual=true; });
 
+
+  /* ============================================================
+     JURNAL — TIGA MODE PENGISIAN
+     Cepat  : kolom penting saja
+     Tempel : banyak trade sekaligus dari catatan member
+     Lengkap: form 15 kolom yang lama
+     Ketiganya menyimpan ke tempat yang SAMA, jadi Statistik tetap
+     terhitung normal. Risk % wajib ada karena untung-rugi dihitung
+     dari situ — kalau kosong, Statistik jadi nol.
+     ============================================================ */
+  const K_RISK='fncjt_risk_terakhir';
+  let jmMode='cepat';
+
+  function jmRiskBawaan(){
+    const v=parseFloat(settings && settings.riskTerakhir);
+    return (!isNaN(v) && v>0) ? v : 1;
+  }
+  async function jmSimpanRisk(v){
+    const n=parseFloat(v);
+    if(isNaN(n)||n<=0)return;
+    settings.riskTerakhir=n;
+    try{ await persist(); }catch(e){}
+  }
+  function jmAkun(){
+    return currentAccId() || (accounts.length ? accounts[0].id : '');
+  }
+  function jmSekarang(){
+    const d=new Date();
+    return {tgl:d.toISOString().slice(0,10),
+            jam:String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+  }
+  function jmTrade(o){
+    const w=jmSekarang();
+    return {id:'t_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
+      dibuat:new Date().toISOString(),
+      accountId:o.accountId, date:o.date||w.tgl, jam:o.jam||w.jam,
+      market:o.market, entry:o.entry, sl:o.sl, tp:o.tp,
+      vol:null, riskPct:o.riskPct, posisi:o.posisi,
+      result:o.result, strategy:'', tf:'', reason:''};
+  }
+  function jmSetMode(m){
+    jmMode=m;
+    document.querySelectorAll('#jm-mode .jm-tab').forEach(b=>
+      b.classList.toggle('active', b.dataset.jm===m));
+    $('jm-cepat').classList.toggle('on', m==='cepat');
+    $('jm-tempel').classList.toggle('on', m==='tempel');
+    $('trade-form').classList.toggle('open', m==='lengkap');
+    if(m==='cepat'){
+      $('q-risk').value=jmRiskBawaan();
+      $('q-market').focus();
+    }
+  }
+  function jmBuka(){
+    if(!accounts.length){ alert('Buat akun dulu di tab Akun.'); return; }
+    $('jm-mode').hidden=false;
+    jmSetMode('cepat');
+  }
+  function jmTutup(){
+    $('jm-mode').hidden=true;
+    $('jm-cepat').classList.remove('on');
+    $('jm-tempel').classList.remove('on');
+    $('trade-form').classList.remove('open');
+    ['q-market','q-entry','q-sl','q-tp'].forEach(i=>{ if($(i))$(i).value=''; });
+    if($('p-teks'))$('p-teks').value='';
+    if($('p-lapor'))$('p-lapor').hidden=true;
+  }
+
+  /* ---------- MODE CEPAT ---------- */
+  async function jmSimpanCepat(){
+    const market=($('q-market').value||'').trim().toUpperCase();
+    const entry=parseFloat($('q-entry').value), sl=parseFloat($('q-sl').value),
+          tp=parseFloat($('q-tp').value), risk=parseFloat($('q-risk').value);
+    const akun=jmAkun();
+    if(!akun){ alert('Buat akun dulu di tab Akun.'); return; }
+    if(!market){ alert('Market belum diisi.'); $('q-market').focus(); return; }
+    if(isNaN(entry)||isNaN(sl)||isNaN(tp)){
+      alert('Entry, Stop Loss, dan Take Profit harus diisi angka.'); return; }
+    if(entry===sl){ alert('Stop Loss tidak boleh sama dengan Entry.'); return; }
+    if(isNaN(risk)||risk<=0){ alert('Risk % harus lebih dari 0.'); $('q-risk').focus(); return; }
+    trades.push(jmTrade({accountId:akun,market:market,entry:entry,sl:sl,tp:tp,
+      riskPct:risk, posisi:$('q-posisi').value, result:$('q-result').value}));
+    await jmSimpanRisk(risk);
+    await persist(); jmTutup(); renderAll();
+  }
+
+  /* ---------- MODE TEMPEL ---------- */
+  const JM_ARAH={buy:'Buy',b:'Buy',long:'Buy',beli:'Buy',
+                 sell:'Sell',s:'Sell',short:'Sell',jual:'Sell'};
+  const JM_HASIL={win:'Win',w:'Win',profit:'Win',untung:'Win',tp:'Win',
+                  loss:'Loss',l:'Loss',rugi:'Loss',sl:'Loss',
+                  be:'BE',breakeven:'BE',impas:'BE'};
+  /* Angka boleh ditulis 1.0850 atau 1,0850 — koma dianggap titik desimal. */
+  function jmAngka(s){
+    const t=String(s||'').trim().replace(/\s/g,'').replace(',', '.');
+    const n=parseFloat(t);
+    return isNaN(n) ? null : n;
+  }
+  function jmBacaBaris(baris,no){
+    const k=baris.split('|').map(x=>x.trim());
+    if(k.length<6) return {no:no,salah:'kurang kolom (butuh 6, ada '+k.length+')'};
+    const market=k[0].toUpperCase();
+    if(!market) return {no:no,salah:'nama market kosong'};
+    const arah=JM_ARAH[k[1].toLowerCase()];
+    if(!arah) return {no:no,salah:'arah "'+k[1]+'" tidak dikenal (pakai buy / sell)'};
+    const entry=jmAngka(k[2]), sl=jmAngka(k[3]), tp=jmAngka(k[4]);
+    if(entry===null) return {no:no,salah:'entry "'+k[2]+'" bukan angka'};
+    if(sl===null)    return {no:no,salah:'stop loss "'+k[3]+'" bukan angka'};
+    if(tp===null)    return {no:no,salah:'take profit "'+k[4]+'" bukan angka'};
+    if(entry===sl)   return {no:no,salah:'stop loss sama dengan entry'};
+    const hasil=JM_HASIL[k[5].toLowerCase()];
+    if(!hasil) return {no:no,salah:'hasil "'+k[5]+'" tidak dikenal (pakai win / loss / be)'};
+    let risk=jmRiskBawaan();
+    if(k.length>=7 && k[6]){
+      const r=jmAngka(k[6]);
+      if(r===null||r<=0) return {no:no,salah:'risk "'+k[6]+'" bukan angka yang benar'};
+      risk=r;
+    }
+    let tgl='';
+    if(k.length>=8 && k[7]){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(k[7]))
+        return {no:no,salah:'tanggal "'+k[7]+'" harus format 2026-08-30'};
+      tgl=k[7];
+    }
+    return {no:no,data:{market:market,posisi:arah,entry:entry,sl:sl,tp:tp,
+      result:hasil,riskPct:risk,date:tgl}};
+  }
+  function jmBacaSemua(){
+    const teks=($('p-teks').value||'').split('\n');
+    const ok=[], gagal=[];
+    teks.forEach((b,i)=>{
+      if(!b.trim())return;
+      const h=jmBacaBaris(b,i+1);
+      if(h.salah) gagal.push(h); else ok.push(h.data);
+    });
+    return {ok:ok,gagal:gagal};
+  }
+  function jmLapor(hasil){
+    const el=$('p-lapor'); el.hidden=false;
+    let h='';
+    if(hasil.ok.length) h+='<span class="ok">&#10003; '+hasil.ok.length+' trade siap disimpan.</span>';
+    if(hasil.gagal.length){
+      if(h)h+='<br>';
+      h+='<span class="bad">&#10005; '+hasil.gagal.length+' baris belum bisa dibaca:</span><ul>'+
+        hasil.gagal.slice(0,8).map(g=>'<li>Baris '+g.no+' &mdash; '+esc(g.salah)+'</li>').join('')+
+        '</ul>';
+      if(hasil.gagal.length>8) h+='<p style="margin:5px 0 0;">...dan '+(hasil.gagal.length-8)+' lagi.</p>';
+    }
+    if(!hasil.ok.length && !hasil.gagal.length) h='<b>Belum ada yang ditempel.</b>';
+    el.innerHTML=h;
+  }
+  async function jmSimpanTempel(){
+    const akun=jmAkun();
+    if(!akun){ alert('Buat akun dulu di tab Akun.'); return; }
+    const hasil=jmBacaSemua();
+    jmLapor(hasil);
+    if(!hasil.ok.length) return;
+    if(hasil.gagal.length &&
+       !confirm(hasil.ok.length+' trade akan disimpan.\n'+
+                hasil.gagal.length+' baris yang bermasalah dilewati.\n\nLanjutkan?')) return;
+    hasil.ok.forEach(d=>trades.push(jmTrade(Object.assign({accountId:akun},d))));
+    await jmSimpanRisk(hasil.ok[hasil.ok.length-1].riskPct);
+    await persist(); jmTutup(); renderAll();
+  }
+
+  function jmPasang(){
+    if(!$('jm-mode')) return;
+    document.querySelectorAll('#jm-mode .jm-tab').forEach(b=>
+      b.onclick=()=>jmSetMode(b.dataset.jm));
+    $('q-simpan').onclick=jmSimpanCepat;
+    $('q-batal').onclick=jmTutup;
+    $('p-simpan').onclick=jmSimpanTempel;
+    $('p-periksa').onclick=()=>jmLapor(jmBacaSemua());
+    $('p-batal').onclick=jmTutup;
+    $('p-salin').onclick=()=>{
+      const t=$('p-contoh').textContent;
+      const beres=()=>{ const b=$('p-salin'), l=b.textContent;
+        b.textContent='Tersalin'; setTimeout(()=>{ b.textContent=l; },1400); };
+      try{
+        if(navigator.clipboard&&navigator.clipboard.writeText)
+          navigator.clipboard.writeText(t).then(beres,beres);
+        else beres();
+      }catch(e){ beres(); }
+    };
+    ['q-market','q-entry','q-sl','q-tp'].forEach(i=>{
+      $(i).addEventListener('keydown',e=>{ if(e.key==='Enter')jmSimpanCepat(); });
+    });
+  }
+
   $('toggle-form').onclick=()=>{
     if(!accounts.length){alert('Buat akun dulu di tab Akun.');return;}
-    const f=$('trade-form');
-    if(!f.classList.contains('open')){ posisiDiubahManual=false; resetForm(); }
-    f.classList.toggle('open');};
-  $('cancel-form').onclick=()=>$('trade-form').classList.remove('open');
+    /* Kalau panel sudah terbuka, tombol ini menutupnya. */
+    if(!$('jm-mode').hidden){ jmTutup(); return; }
+    posisiDiubahManual=false; resetForm();
+    jmBuka();
+  };
+  jmPasang();
+  $('cancel-form').onclick=()=>jmTutup();
   $('save-trade').onclick=async()=>{
     const d=readForm();
     if(!d.accountId||!d.market||isNaN(d.entry)||isNaN(d.sl)||isNaN(d.tp)||isNaN(d.riskPct)){
@@ -5498,7 +5778,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(editTradeId)trades=trades.map(t=>t.id===editTradeId?{...t,...d}:t);
     else trades.push({id:'t_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),
       dibuat:new Date().toISOString(),...d});
-    await persist();$('trade-form').classList.remove('open');renderAll();};
+    await persist();jmTutup();renderAll();};
 
   $('toggle-acct-form').onclick=()=>{const f=$('acct-form');if(!f.classList.contains('open'))resetAcctForm();f.classList.toggle('open');};
   $('cancel-acct').onclick=()=>$('acct-form').classList.remove('open');
