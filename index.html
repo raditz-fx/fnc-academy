@@ -1611,14 +1611,15 @@
 <div class="overlay" id="ks-info-overlay" hidden>
   <div class="gate-card peng-kotak">
     <div class="peng-atas">
-      <div class="peng-ic" aria-hidden="true">&#128197;</div>
+      <div class="peng-ic" aria-hidden="true" id="ks-info-ic">&#128197;</div>
       <div style="flex:1;min-width:0;">
-        <b>Cara Mengajukan Konsultasi</b>
-        <span>Baca sebentar sebelum memilih jadwal</span>
+        <b id="ks-info-judul">Cara Mengajukan Konsultasi</b>
+        <span id="ks-info-sub">Baca sebentar sebelum memilih jadwal</span>
       </div>
     </div>
     <div class="peng-isi" id="ks-info-isi"></div>
     <div class="welcome-actions">
+      <button class="btn ghost" id="ks-info-batal" type="button" hidden>Nanti Saja</button>
       <button class="btn" id="ks-info-ok" type="button">Saya Paham, Lihat Jadwal</button>
     </div>
   </div>
@@ -4020,10 +4021,38 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   if($('ks-info-ok'))$('ks-info-ok').onclick=()=>{ $('ks-info-overlay').hidden=true; };
 
   /* Pop-up penjelasan untuk member Private yang menekan Ajukan Slot. */
+  /* Pop-up serbaguna bergaya website — menggantikan kotak bawaan browser
+     yang tampilannya tidak menyatu dengan tampilan FNC. */
+  function popupInfo(o){
+    const ov=$('ks-info-overlay');
+    if(!ov){ if(o.aksi) o.aksi(); return; }
+    $('ks-info-ic').innerHTML   = o.ikon  || '&#128161;';
+    $('ks-info-judul').textContent = o.judul || 'Informasi';
+    $('ks-info-sub').textContent   = o.sub   || '';
+    $('ks-info-isi').innerHTML     = o.isi   || '';
+    const ok=$('ks-info-ok'), batal=$('ks-info-batal');
+    ok.textContent = o.tombol || 'Mengerti';
+    ok.onclick=()=>{ tutupPopupInfo(); if(o.aksi) o.aksi(); };
+    if(o.batal){
+      batal.hidden=false;
+      batal.textContent=o.batal;
+      batal.onclick=()=>{ tutupPopupInfo(); };
+    } else { batal.hidden=true; batal.onclick=null; }
+    ov.hidden=false;
+  }
+  function tutupPopupInfo(){
+    const ov=$('ks-info-overlay'); if(ov) ov.hidden=true;
+  }
+
   function ksPopupEksklusif(){
-    const isi=$('ks-info-isi'), ov=$('ks-info-overlay'), ok=$('ks-info-ok');
-    if(!isi||!ov){ alert('Pengajuan konsultasi khusus member Eksklusif.'); return; }
-    isi.innerHTML=
+    popupInfo({
+      ikon:'&#128274;',
+      judul:'Konsultasi 1-on-1',
+      sub:'Benefit paket Lifetime & Eksklusif',
+      tombol:'Lihat Pilihan Kelas',
+      batal:'Nanti Saja',
+      aksi:()=>{ go('kelas'); },
+      isi:
       '<p><b>Konsultasi 1-on-1 adalah benefit paket Lifetime &amp; Eksklusif.</b></p>'+
       '<p>Sesi ini bukan kelas grup &mdash; kamu ngobrol empat mata dengan mentor '+
       'untuk membahas analisa, strategi, dan evaluasi jurnal trading kamu sendiri.</p>'+
@@ -4032,58 +4061,56 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         '<li><b>Eksklusif</b> &mdash; prioritas, plus bisa ajukan waktu di luar jadwal</li>'+
       '</ul>'+
       '<p style="margin-top:12px;">Kamu belum punya akses ke fitur ini. '+
-      'Lihat pilihan paketnya dulu, yuk.</p>';
-    ok.textContent='Lihat Pilihan Kelas';
-    ok.onclick=()=>{ ov.hidden=true; ok.textContent='Saya Paham, Lihat Jadwal'; ok.onclick=null; go('kelas'); };
-    ov.hidden=false;
+      'Lihat pilihan paketnya dulu, yuk.</p>'
+    });
   }
 
   /* Pop-up kalau member menekan Ajukan kurang dari 1 jam sebelum sesi. */
   function ksPopupTerlambat(sisa){
-    const isi=$('ks-info-isi'), ov=$('ks-info-overlay'), ok=$('ks-info-ok');
     const kabar = (sisa!==null && sisa>0)
       ? ('Sesi ini mulai <b>'+sisa+' menit lagi</b>.')
       : 'Sesi ini sudah lewat waktunya.';
-    if(!isi||!ov){ alert('Ajuan ditutup 1 jam sebelum sesi dimulai.'); return; }
-    isi.innerHTML=
+    popupInfo({
+      ikon:'&#9200;',
+      judul:'Pengajuan Sudah Ditutup',
+      sub:'Batas ajuan 1 jam sebelum sesi',
+      tombol:'Pilih Jadwal Lain',
+      isi:
       '<p>'+kabar+'</p>'+
       '<p><b>Pengajuan ditutup 1 jam sebelum sesi dimulai.</b></p>'+
       '<p>Ini supaya mentor punya waktu menyiapkan bahan dan meninjau jurnal kamu, '+
       'jadi sesinya benar-benar terpakai &mdash; bukan habis untuk persiapan.</p>'+
-      '<p style="margin-top:12px;">Silakan pilih jadwal lain, atau ajukan waktu bebas '+
-      'kalau semua slot sudah penuh.</p>';
-    ok.textContent='Pilih Jadwal Lain';
-    ok.onclick=()=>{ ov.hidden=true; ok.textContent='Saya Paham, Lihat Jadwal'; ok.onclick=null; };
-    ov.hidden=false;
+      '<p style="margin-top:12px;">Silakan pilih jadwal lain, atau ajukan waktu sendiri '+
+      'kalau semua slot sudah penuh.</p>'
+    });
   }
 
   /* Ajuan waktu bebas: member memilih sendiri mau menghubungi admin yang mana. */
   window.__ksBebas=()=>{
-    const isi=$('ks-info-isi'), ov=$('ks-info-overlay'), ok=$('ks-info-ok');
-    if(!isi||!ov){ window.__ksBebasKirim('a1'); return; }
-    isi.innerHTML=
-      '<p>Semua slot penuh atau jamnya belum cocok? Sebagai member <b>Eksklusif</b>, '+
-      'kamu bisa mengajukan waktu sendiri di luar jadwal.</p>'+
-      '<p style="margin-top:10px;"><b>Mau diajukan ke admin yang mana?</b></p>'+
-      '<div class="ks-adm-pilih">'+
-        '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a1\')">'+
-          '<b>Yudhis</b><span>Mentor utama &middot; analisa &amp; strategi</span></button>'+
-        '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a2\')">'+
-          '<b>Radit</b><span>Founder &middot; arah belajar &amp; evaluasi</span></button>'+
-        '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a3\')">'+
-          '<b>Alief</b><span>Operasional &middot; jadwal &amp; keanggotaan</span></button>'+
-      '</div>'+
-      '<p style="margin-top:12px;font-size:11.5px;color:var(--gray);line-height:1.6;">'+
-        'Sebutkan dua atau tiga pilihan waktu biar admin gampang mencocokkan. '+
-        'Ajuan tetap ditutup 1 jam sebelum sesi dimulai.</p>';
-    ok.textContent='Nanti Saja';
-    ok.onclick=()=>{ ov.hidden=true; ok.textContent='Saya Paham, Lihat Jadwal'; ok.onclick=null; };
-    ov.hidden=false;
+    popupInfo({
+      ikon:'&#128197;',
+      judul:'Ajukan Waktu Sendiri',
+      sub:'Khusus member Eksklusif',
+      tombol:'Nanti Saja',
+      isi:
+        '<p>Semua slot penuh atau jamnya belum cocok? Sebagai member <b>Eksklusif</b>, '+
+        'kamu bisa mengajukan waktu sendiri di luar jadwal.</p>'+
+        '<p style="margin-top:10px;"><b>Mau diajukan ke admin yang mana?</b></p>'+
+        '<div class="ks-adm-pilih">'+
+          '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a1\')">'+
+            '<b>Yudhis</b><span>Mentor utama &middot; analisa &amp; strategi</span></button>'+
+          '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a2\')">'+
+            '<b>Radit</b><span>Founder &middot; arah belajar &amp; evaluasi</span></button>'+
+          '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a3\')">'+
+            '<b>Alief</b><span>Operasional &middot; jadwal &amp; keanggotaan</span></button>'+
+        '</div>'+
+        '<p style="margin-top:12px;font-size:11.5px;color:var(--gray);line-height:1.6;">'+
+          'Sebutkan dua atau tiga pilihan waktu biar admin gampang mencocokkan. '+
+          'Ajuan tetap ditutup 1 jam sebelum sesi dimulai.</p>'
+    });
   };
   window.__ksBebasKirim=async(tujuan)=>{
-    const ov=$('ks-info-overlay'), ok=$('ks-info-ok');
-    if(ov){ ov.hidden=true; }
-    if(ok){ ok.textContent='Saya Paham, Lihat Jadwal'; ok.onclick=null; }
+    tutupPopupInfo();
     const siap=pengaturanSiap();
     const kode={a1:1,a2:1,a3:1}[tujuan] ? tujuan : 'a1';
     const no=await nomorAdmin(kode==='a2' ? 'a2priv' : kode);
@@ -5556,7 +5583,13 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     }
   };
   $('upg-cancel').onclick=()=>{ $('upgrade-overlay').hidden=true; };
-  if($('ai-fab'))$('ai-fab').onclick=bukaAI;
+  /* Tombol melayang diarahkan ke pemberitahuan perbaikan, BUKAN ke nomor AI.
+     Dibungkus fungsi supaya dicari saat tombol ditekan — sambungan ini dipasang
+     lebih dulu daripada pemberitahuannya dibuat.
+     Kalau AI Agent sudah pulih, ganti isinya kembali ke bukaAI(). */
+  if($('ai-fab'))$('ai-fab').onclick=()=>{
+    if(typeof window.__aiKendala==='function') window.__aiKendala();
+  };
 
   /* ---------- keluar / ganti kode akses ----------
      Hanya menghapus kode & tingkatan akses. Profil, akun, dan jurnal TIDAK dihapus. */
@@ -6072,9 +6105,19 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   window.__mkAnalisa=(i)=>{
     const p=MK_PASAR[i]; if(!p) return;
     if(tier!=='umum'){ go('analisa'); return; }
-    const pesan='Analisa harian '+p.nama+' tersedia untuk member Private dan Eksklusif.\n\n'+
-                'Mau lihat pilihan kelasnya sekarang?';
-    if(confirm(pesan)) go('kelas');
+    popupInfo({
+      ikon:'&#128200;',
+      judul:'Analisa Harian',
+      sub:'Khusus member Private & Eksklusif',
+      tombol:'Lihat Pilihan Kelas',
+      batal:'Nanti Saja',
+      aksi:()=>{ go('kelas'); },
+      isi:'<p>Analisa harian <b>'+esc(p.nama)+'</b> dibahas tuntas oleh mentor FNC &mdash; '+
+          'lengkap dengan alasan di balik setiap level yang ditandai.</p>'+
+          '<p style="margin-top:10px;">Tersedia untuk member <b>Private</b> dan '+
+          '<b>Eksklusif</b>. Kamu tetap bisa pakai chart dan harga di Beranda '+
+          'kapan saja, gratis.</p>'
+    });
   };
 
   function mkPasangNav(){
@@ -6479,10 +6522,21 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
      membalas — yang bikin orang merasa diabaikan — kendalanya dijelaskan
      dan langsung dialihkan ke admin. */
   window.__aiKendala=()=>{
-    if(!confirm('AI Agent FNC sedang dalam perbaikan, jadi belum bisa membalas.\n\n'+
-      'Pertanyaanmu bisa langsung dijawab Admin Yudhis lewat WhatsApp.\n\n'+
-      'Lanjut chat admin sekarang?'))return;
-    window.__aiKeAdmin();
+    popupInfo({
+      ikon:'&#128295;',
+      judul:'AI Agent Sedang Diperbaiki',
+      sub:'Sementara ini dijawab admin langsung',
+      isi:'<p>AI Agent FNC lagi dalam perbaikan, jadi belum bisa membalas '+
+          'pertanyaanmu untuk sementara.</p>'+
+          '<p style="margin-top:10px;">Kabar baiknya: pertanyaanmu bisa langsung '+
+          'dijawab <b>Admin Yudhis</b> lewat WhatsApp &mdash; malah lebih enak, '+
+          'karena dijawab orang yang paham betul materinya.</p>'+
+          '<p style="margin-top:10px;font-size:11.5px;color:var(--gray);line-height:1.6;">'+
+          'Kami kabari lagi kalau AI Agent-nya sudah bisa dipakai.</p>',
+      tombol:'Chat Admin Yudhis',
+      batal:'Nanti Saja',
+      aksi:()=>{ window.__aiKeAdmin(); }
+    });
   };
   window.__aiKeAdmin=async()=>{
     const siap=pengaturanSiap();
