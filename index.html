@@ -1559,6 +1559,60 @@
     font-family:inherit;padding:0;opacity:.55;transition:.15s;z-index:3;}
   .hero-tutup:hover{opacity:1;background:var(--orange);color:#fff;border-color:var(--orange);}
   .hero-row{padding-right:34px;}
+
+  /* ===== CARI PAIR ===== */
+  .mk-cari-bar{position:relative;display:flex;align-items:center;gap:9px;
+    border:1px solid var(--line-2);border-radius:12px;padding:11px 13px;
+    background:var(--kartu);transition:border-color .16s,box-shadow .16s;}
+  .mk-cari-bar:focus-within{border-color:var(--orange);
+    box-shadow:0 0 0 3px var(--aksen-halus);}
+  .mk-cari-bar svg{width:17px;height:17px;flex:0 0 auto;color:var(--gray);}
+  .mk-cari-bar input{flex:1;min-width:0;border:0;background:transparent;outline:none;
+    font-family:inherit;font-size:13.5px;color:var(--teks-isi);}
+  .mk-cari-bar input::placeholder{color:var(--gray);}
+  .mk-cari-x{border:0;background:transparent;color:var(--gray);font-size:15px;
+    cursor:pointer;padding:0 2px;display:none;font-family:inherit;}
+  .mk-cari-x.on{display:block;}
+  .mk-hasil{margin-top:8px;border:1px solid var(--line-2);border-radius:12px;
+    overflow:hidden;display:none;}
+  .mk-hasil.on{display:block;}
+  .mk-hs{display:flex;align-items:center;gap:11px;padding:11px 13px;cursor:pointer;
+    border-bottom:1px solid var(--line-2);transition:background .13s;}
+  .mk-hs:last-child{border-bottom:0;}
+  .mk-hs:hover{background:var(--aksen-halus);}
+  .mk-hs-nama{flex:1;min-width:0;}
+  .mk-hs-nama b{display:block;font-size:13px;font-weight:800;color:var(--slate);
+    letter-spacing:-.1px;}
+  .mk-hs-nama span{font-size:11px;color:var(--gray);}
+  .mk-tag.indeks{background:rgba(16,185,129,.14);color:#10B981;}
+  .mk-tag.saham{background:rgba(236,72,153,.14);color:#EC4899;}
+  .mk-tag.idx{background:rgba(234,179,8,.16);color:#CA8A04;}
+  .mk-tag.lain{background:var(--line-2);color:var(--gray);}
+  .mk-kosong{padding:16px 14px;font-size:12.5px;color:var(--gray);
+    line-height:1.65;text-align:center;}
+  .mk-coba{margin-top:10px;border:1px solid var(--orange);background:var(--aksen-halus);
+    color:var(--orange-deep);border-radius:10px;padding:8px 14px;font-family:inherit;
+    font-size:12px;font-weight:800;cursor:pointer;transition:.14s;}
+  .mk-coba:hover{background:var(--orange);color:#fff;}
+  .mk-ringkas{margin-top:10px;border:1px solid var(--line-2);border-radius:14px;
+    background:var(--kartu);overflow:hidden;display:none;}
+  .mk-ringkas.on{display:block;}
+  .mk-rk-atas{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 13px 6px;gap:10px;}
+  .mk-rk-judul b{display:block;font-size:15px;font-weight:800;color:var(--slate);
+    letter-spacing:-.2px;}
+  .mk-rk-judul span{font-size:11px;color:var(--gray);}
+  .mk-rk-harga{height:96px;overflow:hidden;margin:0 8px;border-radius:10px;
+    background:var(--kartu);}
+  .mk-rk-harga iframe{width:calc(100% + 8px);height:104px;border:0;display:block;
+    margin:-4px 0 0 -4px;background:var(--kartu);}
+  .mk-rk-tbl{display:flex;gap:8px;padding:10px 12px 12px;}
+  .mk-rk-tbl button{flex:1;border:0;border-radius:11px;padding:11px;font-family:inherit;
+    font-size:12.5px;font-weight:800;cursor:pointer;transition:filter .13s;}
+  .mk-rk-tbl button:hover{filter:brightness(.93);}
+  .mk-b-chart{background:var(--orange);color:#fff;}
+  .mk-b-tutup{background:var(--hal);color:var(--gray);
+    border:1px solid var(--line-2)!important;}
 </style>
 </head>
 <body>
@@ -5997,8 +6051,36 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
           '<div class="mk-hint">Pakai tombol &#10094; &#10095; atau geser &middot; '+
             'pencet kartu untuk chart layar penuh</div>'+
         '</div>'+
+      '</div>'+
+      '<div class="mk-sesi">'+
+        '<div class="mk-judul"><span class="mk-dot"></span><h3>Cari Pair Lain</h3>'+
+          '<span class="mk-pill">forex &middot; kripto &middot; indeks &middot; saham</span></div>'+
+        '<div class="mk-kotak">'+
+          '<div class="mk-cari-bar">'+
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '+
+              'stroke-linecap="round"><circle cx="11" cy="11" r="7"/>'+
+              '<path d="M20 20l-3.5-3.5"/></svg>'+
+            '<input id="mk-cari" type="text" autocomplete="off" spellcheck="false" '+
+              'placeholder="Ketik pair, kripto, indeks, atau saham...">'+
+            '<button class="mk-cari-x" id="mk-cari-x" type="button">&#10005;</button>'+
+          '</div>'+
+          '<div class="mk-hasil" id="mk-hasil"></div>'+
+          '<div class="mk-ringkas" id="mk-ringkas">'+
+            '<div class="mk-rk-atas">'+
+              '<div class="mk-rk-judul"><b id="mk-rk-nama">&mdash;</b>'+
+                '<span id="mk-rk-desc"></span></div>'+
+              '<span class="mk-tag" id="mk-rk-tag"></span>'+
+            '</div>'+
+            '<div class="mk-rk-harga" id="mk-rk-harga"></div>'+
+            '<div class="mk-rk-tbl">'+
+              '<button type="button" class="mk-b-tutup" onclick="window.__mkCariTutup()">Tutup</button>'+
+              '<button type="button" class="mk-b-chart" onclick="window.__mkCariChart()">Buka Chart</button>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
       '</div>';
     mkPasangNav();
+    mkPasangCari();
   }
 
   /* Widget dipasang sebagai bingkai terpisah supaya warnanya
@@ -6078,20 +6160,24 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   let mkSymAktif=null;
   window.__mkChart=(i)=>{
     const p=MK_PASAR[i]; if(!p) return;
-    mkSymAktif=p.sym;
+    mkBukaChart(p.sym,p.nama);
+  };
+  /* Dipakai bersama oleh kartu market dan hasil pencarian pair. */
+  function mkBukaChart(sym,judul){
+    mkSymAktif=sym;
     const layar=$('mk-layar'), isi=$('mk-layar-isi');
-    $('mk-layar-nama').textContent=p.nama;
+    $('mk-layar-nama').textContent=judul;
     isi.innerHTML='<div class="mk-memuat">Memuat chart...</div>';
     const f=document.createElement('iframe');
     f.setAttribute('allowtransparency','true');
     f.setAttribute('scrolling','no');
     f.setAttribute('allowfullscreen','true');
-    f.src=mkAlamatChart(p.sym);
+    f.src=mkAlamatChart(sym);
     f.onload=()=>{ const m=isi.querySelector('.mk-memuat'); if(m) m.remove(); };
     isi.appendChild(f);
     layar.classList.add('on');
     document.body.style.overflow='hidden';
-  };
+  }
   window.__mkTutupChart=()=>{
     const layar=$('mk-layar');
     layar.classList.remove('on');
@@ -6120,7 +6206,102 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     });
   };
 
+  /* ===== CARI PAIR =====
+     Daftar pair pilihan kami (73 buah). TradingView tidak menyediakan cara
+     resmi mencari ke seluruh database mereka dari website luar, jadi kalau
+     yang dicari tidak ada di daftar, member tetap bisa mencoba membukanya
+     langsung lewat jalur bebas di bawah hasil pencarian. */
+  const MK_CARI=[{"n": "EUR/USD", "d": "Euro / Dolar AS", "s": "OANDA:EURUSD", "k": "forex"}, {"n": "GBP/USD", "d": "Pound / Dolar AS", "s": "OANDA:GBPUSD", "k": "forex"}, {"n": "USD/JPY", "d": "Dolar AS / Yen", "s": "OANDA:USDJPY", "k": "forex"}, {"n": "AUD/USD", "d": "Aussie / Dolar AS", "s": "OANDA:AUDUSD", "k": "forex"}, {"n": "USD/CAD", "d": "Dolar AS / Dolar Kanada", "s": "OANDA:USDCAD", "k": "forex"}, {"n": "USD/CHF", "d": "Dolar AS / Franc Swiss", "s": "OANDA:USDCHF", "k": "forex"}, {"n": "NZD/USD", "d": "Kiwi / Dolar AS", "s": "OANDA:NZDUSD", "k": "forex"}, {"n": "GBP/JPY", "d": "Pound / Yen", "s": "OANDA:GBPJPY", "k": "forex"}, {"n": "EUR/JPY", "d": "Euro / Yen", "s": "OANDA:EURJPY", "k": "forex"}, {"n": "EUR/GBP", "d": "Euro / Pound", "s": "OANDA:EURGBP", "k": "forex"}, {"n": "AUD/JPY", "d": "Aussie / Yen", "s": "OANDA:AUDJPY", "k": "forex"}, {"n": "CHF/JPY", "d": "Franc / Yen", "s": "OANDA:CHFJPY", "k": "forex"}, {"n": "CAD/JPY", "d": "Dolar Kanada / Yen", "s": "OANDA:CADJPY", "k": "forex"}, {"n": "NZD/JPY", "d": "Kiwi / Yen", "s": "OANDA:NZDJPY", "k": "forex"}, {"n": "EUR/AUD", "d": "Euro / Aussie", "s": "OANDA:EURAUD", "k": "forex"}, {"n": "EUR/CHF", "d": "Euro / Franc", "s": "OANDA:EURCHF", "k": "forex"}, {"n": "GBP/AUD", "d": "Pound / Aussie", "s": "OANDA:GBPAUD", "k": "forex"}, {"n": "GBP/CAD", "d": "Pound / Dolar Kanada", "s": "OANDA:GBPCAD", "k": "forex"}, {"n": "GBP/CHF", "d": "Pound / Franc", "s": "OANDA:GBPCHF", "k": "forex"}, {"n": "AUD/CAD", "d": "Aussie / Dolar Kanada", "s": "OANDA:AUDCAD", "k": "forex"}, {"n": "AUD/NZD", "d": "Aussie / Kiwi", "s": "OANDA:AUDNZD", "k": "forex"}, {"n": "EUR/CAD", "d": "Euro / Dolar Kanada", "s": "OANDA:EURCAD", "k": "forex"}, {"n": "USD/SGD", "d": "Dolar AS / Dolar Singapura", "s": "OANDA:USDSGD", "k": "forex"}, {"n": "USD/IDR", "d": "Dolar AS / Rupiah", "s": "FX_IDC:USDIDR", "k": "forex"}, {"n": "XAU/USD", "d": "Emas", "s": "OANDA:XAUUSD", "k": "komoditas"}, {"n": "XAG/USD", "d": "Perak", "s": "OANDA:XAGUSD", "k": "komoditas"}, {"n": "USOIL", "d": "Minyak Mentah WTI", "s": "TVC:USOIL", "k": "komoditas"}, {"n": "UKOIL", "d": "Minyak Mentah Brent", "s": "TVC:UKOIL", "k": "komoditas"}, {"n": "XPT/USD", "d": "Platinum", "s": "OANDA:XPTUSD", "k": "komoditas"}, {"n": "XPD/USD", "d": "Paladium", "s": "OANDA:XPDUSD", "k": "komoditas"}, {"n": "NATGAS", "d": "Gas Alam", "s": "TVC:NATGAS", "k": "komoditas"}, {"n": "COPPER", "d": "Tembaga", "s": "TVC:COPPER", "k": "komoditas"}, {"n": "BTC/USD", "d": "Bitcoin", "s": "BINANCE:BTCUSDT", "k": "kripto"}, {"n": "ETH/USD", "d": "Ethereum", "s": "BINANCE:ETHUSDT", "k": "kripto"}, {"n": "BNB/USD", "d": "BNB", "s": "BINANCE:BNBUSDT", "k": "kripto"}, {"n": "SOL/USD", "d": "Solana", "s": "BINANCE:SOLUSDT", "k": "kripto"}, {"n": "XRP/USD", "d": "XRP / Ripple", "s": "BINANCE:XRPUSDT", "k": "kripto"}, {"n": "ADA/USD", "d": "Cardano", "s": "BINANCE:ADAUSDT", "k": "kripto"}, {"n": "DOGE/USD", "d": "Dogecoin", "s": "BINANCE:DOGEUSDT", "k": "kripto"}, {"n": "AVAX/USD", "d": "Avalanche", "s": "BINANCE:AVAXUSDT", "k": "kripto"}, {"n": "DOT/USD", "d": "Polkadot", "s": "BINANCE:DOTUSDT", "k": "kripto"}, {"n": "LINK/USD", "d": "Chainlink", "s": "BINANCE:LINKUSDT", "k": "kripto"}, {"n": "LTC/USD", "d": "Litecoin", "s": "BINANCE:LTCUSDT", "k": "kripto"}, {"n": "TRX/USD", "d": "Tron", "s": "BINANCE:TRXUSDT", "k": "kripto"}, {"n": "TON/USD", "d": "Toncoin", "s": "BINANCE:TONUSDT", "k": "kripto"}, {"n": "SHIB/USD", "d": "Shiba Inu", "s": "BINANCE:SHIBUSDT", "k": "kripto"}, {"n": "PEPE/USD", "d": "Pepe", "s": "BINANCE:PEPEUSDT", "k": "kripto"}, {"n": "NEAR/USD", "d": "Near Protocol", "s": "BINANCE:NEARUSDT", "k": "kripto"}, {"n": "ATOM/USD", "d": "Cosmos", "s": "BINANCE:ATOMUSDT", "k": "kripto"}, {"n": "US30", "d": "Dow Jones", "s": "TVC:DJI", "k": "indeks"}, {"n": "NAS100", "d": "Nasdaq 100", "s": "TVC:NDX", "k": "indeks"}, {"n": "SPX500", "d": "S&P 500", "s": "TVC:SPX", "k": "indeks"}, {"n": "GER40", "d": "DAX Jerman", "s": "TVC:DAX", "k": "indeks"}, {"n": "UK100", "d": "FTSE 100 Inggris", "s": "TVC:UKX", "k": "indeks"}, {"n": "JPN225", "d": "Nikkei 225", "s": "TVC:NI225", "k": "indeks"}, {"n": "HK50", "d": "Hang Seng", "s": "TVC:HSI", "k": "indeks"}, {"n": "VIX", "d": "Indeks Volatilitas", "s": "TVC:VIX", "k": "indeks"}, {"n": "DXY", "d": "Indeks Dolar AS", "s": "TVC:DXY", "k": "indeks"}, {"n": "AAPL", "d": "Apple", "s": "NASDAQ:AAPL", "k": "saham"}, {"n": "TSLA", "d": "Tesla", "s": "NASDAQ:TSLA", "k": "saham"}, {"n": "NVDA", "d": "Nvidia", "s": "NASDAQ:NVDA", "k": "saham"}, {"n": "MSFT", "d": "Microsoft", "s": "NASDAQ:MSFT", "k": "saham"}, {"n": "AMZN", "d": "Amazon", "s": "NASDAQ:AMZN", "k": "saham"}, {"n": "GOOGL", "d": "Alphabet / Google", "s": "NASDAQ:GOOGL", "k": "saham"}, {"n": "META", "d": "Meta / Facebook", "s": "NASDAQ:META", "k": "saham"}, {"n": "AMD", "d": "AMD", "s": "NASDAQ:AMD", "k": "saham"}, {"n": "COIN", "d": "Coinbase", "s": "NASDAQ:COIN", "k": "saham"}, {"n": "BBCA", "d": "Bank Central Asia", "s": "IDX:BBCA", "k": "idx"}, {"n": "BBRI", "d": "Bank Rakyat Indonesia", "s": "IDX:BBRI", "k": "idx"}, {"n": "BMRI", "d": "Bank Mandiri", "s": "IDX:BMRI", "k": "idx"}, {"n": "TLKM", "d": "Telkom Indonesia", "s": "IDX:TLKM", "k": "idx"}, {"n": "ASII", "d": "Astra International", "s": "IDX:ASII", "k": "idx"}, {"n": "GOTO", "d": "GoTo Gojek Tokopedia", "s": "IDX:GOTO", "k": "idx"}];
+  let mkPilihCari=null;
+
+  function mkNorm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+  function mkCari(q){
+    const n=mkNorm(q); if(!n) return [];
+    const skor=[];
+    MK_CARI.forEach(p=>{
+      const a=mkNorm(p.n), b=mkNorm(p.d), c=mkNorm(p.s);
+      let s=-1;
+      if(a===n) s=0; else if(a.indexOf(n)===0) s=1;
+      else if(c.indexOf(n)>=0) s=2; else if(b.indexOf(n)===0) s=3;
+      else if(a.indexOf(n)>=0) s=4; else if(b.indexOf(n)>=0) s=5;
+      if(s>=0) skor.push([s,p]);
+    });
+    skor.sort((x,y)=>x[0]-y[0]);
+    return skor.slice(0,8).map(x=>x[1]);
+  }
+  function mkGambarHasil(q){
+    const box=$('mk-hasil'); if(!box) return;
+    if(!q.trim()){ box.classList.remove('on'); box.innerHTML=''; return; }
+    const r=mkCari(q);
+    if(!r.length){
+      /* Kategori simbol tak dikenal TIDAK ditebak — diberi label netral. */
+      box.innerHTML='<div class="mk-kosong">Tidak ada di daftar pilihan kami.<br>'+
+        'Kamu tetap bisa mencoba membukanya langsung di TradingView.'+
+        '<br><button type="button" class="mk-coba" id="mk-coba">Coba buka <b>'+
+        esc(q.toUpperCase())+'</b></button></div>';
+      box.classList.add('on');
+      const b=$('mk-coba');
+      if(b) b.onclick=()=>mkPilihPair({n:q.toUpperCase(),
+        d:'Dicoba langsung dari TradingView',
+        s:q.toUpperCase().replace(/\s+/g,''), k:'lain'});
+      return;
+    }
+    box.innerHTML=r.map(p=>
+      '<div class="mk-hs">'+
+        '<div class="mk-hs-nama"><b>'+esc(p.n)+'</b><span>'+esc(p.d)+'</span></div>'+
+        '<span class="mk-tag '+p.k+'">'+esc(p.k)+'</span>'+
+      '</div>').join('');
+    box.classList.add('on');
+    Array.prototype.forEach.call(box.querySelectorAll('.mk-hs'),(el,i)=>{
+      el.onclick=()=>mkPilihPair(r[i]);
+    });
+  }
+  function mkPilihPair(p){
+    mkPilihCari=p;
+    $('mk-hasil').classList.remove('on');
+    $('mk-rk-nama').textContent=p.n;
+    $('mk-rk-desc').textContent=p.d;
+    const tag=$('mk-rk-tag');
+    tag.textContent=p.k==='lain' ? 'pencarian bebas' : p.k;
+    tag.className='mk-tag '+p.k;
+    mkIsiHargaCari();
+    $('mk-ringkas').classList.add('on');
+  }
+  function mkIsiHargaCari(){
+    if(!mkPilihCari) return;
+    const kotak=$('mk-rk-harga'); if(!kotak) return;
+    kotak.innerHTML='';
+    const cfg={symbol:mkPilihCari.s,width:'100%',
+      colorTheme:mkGelap()?'dark':'light',isTransparent:false,
+      backgroundColor:mkWarnaKartu(),locale:'id'};
+    kotak.appendChild(mkBingkai(
+      'https://s.tradingview.com/embed-widget/single-quote/?locale=id#'+
+      encodeURIComponent(JSON.stringify(cfg)),'104px'));
+  }
+  window.__mkCariChart=()=>{
+    if(!mkPilihCari) return;
+    mkBukaChart(mkPilihCari.s, mkPilihCari.n+' \u2014 '+mkPilihCari.d);
+  };
+  window.__mkCariTutup=()=>{
+    $('mk-ringkas').classList.remove('on'); mkPilihCari=null;
+  };
+  function mkPasangCari(){
+    const inp=$('mk-cari'), x=$('mk-cari-x');
+    if(!inp) return;
+    inp.oninput=()=>{
+      if(x) x.classList.toggle('on', !!inp.value);
+      mkGambarHasil(inp.value);
+    };
+    if(x) x.onclick=()=>{
+      inp.value=''; x.classList.remove('on');
+      $('mk-hasil').classList.remove('on');
+      $('mk-ringkas').classList.remove('on');
+      mkPilihCari=null; inp.focus();
+    };
+  }
+
   function mkPasangNav(){
+
     const geser=$('mk-geser'), kiri=$('mk-kiri'), kanan=$('mk-kanan');
     if(!geser||!kiri||!kanan) return;
     const langkah=()=>{ const k=geser.querySelector('.mk-kartu');
@@ -6137,6 +6318,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   /* Dipanggil ulang saat tema berganti supaya widget ikut gelap/terang. */
   function mkSegarkanTema(){
     mkIsiWidget();
+    mkIsiHargaCari();
     if($('mk-layar')&&$('mk-layar').classList.contains('on')&&mkSymAktif){
       const isi=$('mk-layar-isi'); isi.innerHTML='';
       const f=document.createElement('iframe');
