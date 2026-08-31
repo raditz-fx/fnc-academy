@@ -601,17 +601,50 @@
   .ks-faq dt{font-size:12.5px;font-weight:700;color:var(--teks-isi);margin-top:11px;}
   .ks-faq dt:first-child{margin-top:0;}
   .ks-faq dd{margin:4px 0 0;font-size:12px;line-height:1.65;color:var(--slate-2);}
-  .ks-bebas{display:flex;align-items:center;gap:13px;margin-bottom:15px;
-    border:1px solid var(--orange);border-radius:15px;padding:14px 15px;
-    background:var(--aksen-halus);cursor:pointer;
-    transition:transform .16s ease,box-shadow .2s ease;}
-  .ks-bebas:hover{transform:translateY(-2px);box-shadow:var(--bayang-2);}
-  .ks-bebas .ic{width:40px;height:40px;border-radius:13px;flex:0 0 auto;display:flex;
-    align-items:center;justify-content:center;font-size:19px;background:var(--kartu);
-    border:1px solid var(--orange-light);}
-  .ks-bebas b{display:block;font-size:13.5px;color:var(--teks-isi);margin-bottom:2px;}
-  .ks-bebas p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.55;}
-  .ks-bebas .go{font-size:12px;font-weight:700;color:var(--orange-deep);white-space:nowrap;}
+  /* Kartu "Ajukan Konsultasi Bebas" — dibuat lebih tenang dan berkelas:
+     garis tepi tipis, sorot oranye halus di sisi kiri, tanpa kotak ikon
+     yang berat. Emoji diganti bentuk gambar supaya tidak terlihat murahan. */
+  .ks-bebas{position:relative;display:flex;align-items:center;gap:14px;
+    margin-bottom:15px;border:1px solid var(--line-2);border-radius:16px;
+    padding:16px 17px 16px 19px;background:var(--kartu);cursor:pointer;
+    overflow:hidden;box-shadow:var(--bayang-1);
+    transition:border-color .2s ease,box-shadow .22s ease,transform .16s ease;}
+  .ks-bebas::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:linear-gradient(180deg,var(--orange),var(--orange-light));}
+  .ks-bebas::after{content:'';position:absolute;right:-40px;top:-40px;
+    width:140px;height:140px;border-radius:50%;
+    background:radial-gradient(circle,var(--aksen-halus) 0%,transparent 70%);
+    pointer-events:none;}
+  .ks-bebas:hover{transform:translateY(-2px);border-color:var(--orange);
+    box-shadow:var(--bayang-2);}
+  .ks-bebas .ic{width:38px;height:38px;flex:0 0 auto;display:flex;
+    align-items:center;justify-content:center;position:relative;z-index:1;}
+  .ks-bebas .ic svg{width:100%;height:100%;display:block;}
+  .ks-bebas .isi{flex:1;min-width:0;position:relative;z-index:1;}
+  .ks-bebas .tag{display:inline-block;font-size:8.5px;font-weight:800;
+    letter-spacing:.7px;text-transform:uppercase;color:var(--orange-deep);
+    background:var(--aksen-halus);padding:2.5px 8px;border-radius:999px;
+    margin-bottom:6px;}
+  .ks-bebas b{display:block;font-size:14px;font-weight:800;color:var(--slate);
+    margin-bottom:3px;letter-spacing:-.1px;}
+  .ks-bebas p{margin:0;font-size:11.5px;color:var(--gray);line-height:1.6;}
+  .ks-bebas .go{position:relative;z-index:1;flex:0 0 auto;width:30px;height:30px;
+    border-radius:50%;border:1px solid var(--line-2);display:flex;
+    align-items:center;justify-content:center;font-size:14px;font-weight:700;
+    color:var(--orange-deep);transition:.18s;}
+  .ks-bebas:hover .go{background:var(--orange);color:#fff;border-color:var(--orange);
+    transform:translateX(2px);}
+
+  /* Tombol pilih admin di dalam pop-up */
+  .ks-adm-pilih{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .ks-adm{display:block;width:100%;text-align:left;font-family:inherit;
+    border:1px solid var(--line-2);background:var(--kartu);border-radius:12px;
+    padding:11px 14px;cursor:pointer;transition:.16s;}
+  .ks-adm:hover{border-color:var(--orange);background:var(--aksen-halus);
+    transform:translateX(2px);}
+  .ks-adm b{display:block;font-size:13px;font-weight:800;color:var(--slate);
+    margin-bottom:1px;}
+  .ks-adm span{font-size:11px;color:var(--gray);line-height:1.5;}
   .ks-hari{display:flex;align-items:center;gap:9px;margin:18px 0 9px;}
   .ks-hari b{font-size:13px;color:var(--slate);font-weight:700;}
   .ks-hari .kini{font-size:9.5px;font-weight:800;background:var(--orange);color:#fff;
@@ -3910,13 +3943,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       '<a onclick="window.__ksInfo()" style="color:var(--orange-deep);cursor:pointer;'+
       'font-weight:700;">Baca tata cara</a></p></div>'+
       (tier==='eks'
-        ? '<div class="ks-bebas" onclick="window.__ksBebas()">'+
-          '<div class="ic">&#10024;</div>'+
-          '<div style="flex:1;min-width:0;">'+
-            '<b>Ajukan Konsultasi Bebas</b>'+
-            '<p>Khusus member Eksklusif &mdash; ajukan waktu di luar jadwal '+
-            'yang tersedia.</p>'+
-          '</div><span class="go">Ajukan &rarr;</span></div>'
+        ? '<div class="ks-bebas" onclick="window.__ksBebas()">'+'<div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color:var(--orange);"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M12 12.6v4.4M9.8 14.8h4.4"/></svg></div>'+'<div class="isi">'+'<span class="tag">Eksklusif</span>'+'<b>Ajukan Waktu Sendiri</b>'+'<p>Slot penuh atau jamnya belum cocok? Ajukan waktumu sendiri di luar jadwal, langsung ke admin pilihanmu.</p>'+'</div>'+'<span class="go">&#8594;</span>'+'</div>'
         : '');
     if(!isi.length){ $('ks-list').innerHTML=beta+ksKosong(); return; }
     const hari=kalHariIni();
@@ -3992,14 +4019,85 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   };
   if($('ks-info-ok'))$('ks-info-ok').onclick=()=>{ $('ks-info-overlay').hidden=true; };
 
-  window.__ksBebas=async()=>{
+  /* Pop-up penjelasan untuk member Private yang menekan Ajukan Slot. */
+  function ksPopupEksklusif(){
+    const isi=$('ks-info-isi'), ov=$('ks-info-overlay'), ok=$('ks-info-ok');
+    if(!isi||!ov){ alert('Pengajuan konsultasi khusus member Eksklusif.'); return; }
+    isi.innerHTML=
+      '<p><b>Konsultasi 1-on-1 adalah benefit paket Lifetime &amp; Eksklusif.</b></p>'+
+      '<p>Sesi ini bukan kelas grup &mdash; kamu ngobrol empat mata dengan mentor '+
+      'untuk membahas analisa, strategi, dan evaluasi jurnal trading kamu sendiri.</p>'+
+      '<ul style="margin:8px 0 0;padding-left:18px;line-height:1.8;">'+
+        '<li><b>Lifetime</b> &mdash; ajukan slot dari jadwal yang tersedia</li>'+
+        '<li><b>Eksklusif</b> &mdash; prioritas, plus bisa ajukan waktu di luar jadwal</li>'+
+      '</ul>'+
+      '<p style="margin-top:12px;">Kamu belum punya akses ke fitur ini. '+
+      'Lihat pilihan paketnya dulu, yuk.</p>';
+    ok.textContent='Lihat Pilihan Kelas';
+    ok.onclick=()=>{ ov.hidden=true; ok.textContent='Saya Paham, Lihat Jadwal'; ok.onclick=null; go('kelas'); };
+    ov.hidden=false;
+  }
+
+  /* Pop-up kalau member menekan Ajukan kurang dari 1 jam sebelum sesi. */
+  function ksPopupTerlambat(sisa){
+    const isi=$('ks-info-isi'), ov=$('ks-info-overlay'), ok=$('ks-info-ok');
+    const kabar = (sisa!==null && sisa>0)
+      ? ('Sesi ini mulai <b>'+sisa+' menit lagi</b>.')
+      : 'Sesi ini sudah lewat waktunya.';
+    if(!isi||!ov){ alert('Ajuan ditutup 1 jam sebelum sesi dimulai.'); return; }
+    isi.innerHTML=
+      '<p>'+kabar+'</p>'+
+      '<p><b>Pengajuan ditutup 1 jam sebelum sesi dimulai.</b></p>'+
+      '<p>Ini supaya mentor punya waktu menyiapkan bahan dan meninjau jurnal kamu, '+
+      'jadi sesinya benar-benar terpakai &mdash; bukan habis untuk persiapan.</p>'+
+      '<p style="margin-top:12px;">Silakan pilih jadwal lain, atau ajukan waktu bebas '+
+      'kalau semua slot sudah penuh.</p>';
+    ok.textContent='Pilih Jadwal Lain';
+    ok.onclick=()=>{ ov.hidden=true; ok.textContent='Saya Paham, Lihat Jadwal'; ok.onclick=null; };
+    ov.hidden=false;
+  }
+
+  /* Ajuan waktu bebas: member memilih sendiri mau menghubungi admin yang mana. */
+  window.__ksBebas=()=>{
+    const isi=$('ks-info-isi'), ov=$('ks-info-overlay'), ok=$('ks-info-ok');
+    if(!isi||!ov){ window.__ksBebasKirim('a1'); return; }
+    isi.innerHTML=
+      '<p>Semua slot penuh atau jamnya belum cocok? Sebagai member <b>Eksklusif</b>, '+
+      'kamu bisa mengajukan waktu sendiri di luar jadwal.</p>'+
+      '<p style="margin-top:10px;"><b>Mau diajukan ke admin yang mana?</b></p>'+
+      '<div class="ks-adm-pilih">'+
+        '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a1\')">'+
+          '<b>Yudhis</b><span>Mentor utama &middot; analisa &amp; strategi</span></button>'+
+        '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a2\')">'+
+          '<b>Radit</b><span>Founder &middot; arah belajar &amp; evaluasi</span></button>'+
+        '<button type="button" class="ks-adm" onclick="window.__ksBebasKirim(\'a3\')">'+
+          '<b>Alief</b><span>Operasional &middot; jadwal &amp; keanggotaan</span></button>'+
+      '</div>'+
+      '<p style="margin-top:12px;font-size:11.5px;color:var(--gray);line-height:1.6;">'+
+        'Sebutkan dua atau tiga pilihan waktu biar admin gampang mencocokkan. '+
+        'Ajuan tetap ditutup 1 jam sebelum sesi dimulai.</p>';
+    ok.textContent='Nanti Saja';
+    ok.onclick=()=>{ ov.hidden=true; ok.textContent='Saya Paham, Lihat Jadwal'; ok.onclick=null; };
+    ov.hidden=false;
+  };
+  window.__ksBebasKirim=async(tujuan)=>{
+    const ov=$('ks-info-overlay'), ok=$('ks-info-ok');
+    if(ov){ ov.hidden=true; }
+    if(ok){ ok.textContent='Saya Paham, Lihat Jadwal'; ok.onclick=null; }
     const siap=pengaturanSiap();
-    const no=await nomorAdmin('a1');
+    const kode={a1:1,a2:1,a3:1}[tujuan] ? tujuan : 'a1';
+    const no=await nomorAdmin(kode==='a2' ? 'a2priv' : kode);
     if(!no){ alert('Nomor admin belum diatur. Coba lagi nanti ya.'); return; }
+    const sapa={a1:'Yudhis',a2:'Radit',a3:'Alief'}[kode]||'Admin';
     const nama=(profil&&profil.nama)?(' Saya '+profil.nama+'.'):'';
-    const pesan='Halo Kak Yudhis.'+nama+' Saya member Eksklusif dan mau mengajukan '+
-      'sesi konsultasi di luar jadwal yang tersedia di website. '+
-      'Kira-kira kapan waktu yang memungkinkan?';
+    const pesan='Halo Kak '+sapa+'.'+nama+'\n\n'+
+      'Saya mau mengajukan sesi konsultasi 1-on-1 di luar jadwal yang ada di website.\n\n'+
+      'Paket saya: (Lifetime / Eksklusif)\n'+
+      'Topik yang ingin dibahas: \n'+
+      'Pilihan waktu saya:\n'+
+      '1. \n'+
+      '2. \n\n'+
+      'Mohon dicek ketersediaannya ya. Terima kasih.';
     bukaWA('https://wa.me/'+no+'?text='+encodeURIComponent(pesan),siap);
   };
   window.__ksBuka=(id)=>{
@@ -4039,8 +4137,37 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     $('ks-list').closest('.panel').hidden=true;
     window.scrollTo(0,0);
   };
+  /* Sisa waktu menuju slot, dalam menit. Minus berarti slot sudah lewat. */
+  function ksSisaMenit(x){
+    try{
+      const m=String(x.jam||'').match(/^(\d{1,2}):(\d{2})$/);
+      if(!m) return null;
+      const t=String(x.tgl||'').split('-');
+      if(t.length!==3) return null;
+      const mulai=new Date(+t[0],(+t[1])-1,+t[2],+m[1],+m[2],0,0);
+      return Math.round((mulai.getTime()-Date.now())/60000);
+    }catch(e){ return null; }
+  }
+  /* Batas ajuan: paling lambat 1 jam sebelum sesi dimulai. */
+  const KS_BATAS_MENIT=60;
+
   window.__ksAjukan=async()=>{
     if(!ksPilih)return;
+
+    /* Konsultasi 1-on-1 adalah benefit paket Lifetime & Eksklusif. Sistem belum
+       bisa membedakan Lifetime dari Private biasa (kodenya sama), jadi semua
+       member berbayar boleh mengajukan dan admin yang memverifikasi saat
+       konfirmasi. Sengaja dibuat longgar: memblokir member Lifetime yang sudah
+       membayar jauh lebih merugikan daripada menolak satu ajuan yang keliru. */
+    if(tier==='umum'){ ksPopupEksklusif(); return; }
+
+    /* Admin butuh waktu menyiapkan sesi, jadi ajuan ditutup 1 jam sebelum mulai. */
+    const sisa=ksSisaMenit(ksPilih);
+    if(sisa!==null && sisa<KS_BATAS_MENIT){
+      ksPopupTerlambat(sisa);
+      return;
+    }
+
     const siap=pengaturanSiap();
     /* Tiap slot bisa diarahkan ke admin berbeda. Kalau admin belum memilih,
        ajuannya masuk ke Yudhis. */
@@ -4056,6 +4183,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
       'Tanggal: '+kalTglID(ksPilih.tgl)+'\n'+
       'Jam: '+ksPilih.jam+'-'+ksAkhir(ksPilih)+' WIB\n'+
       'Mentor: '+(ksPilih.mentor||'Mentor FNC')+'\n\n'+
+      'Paket saya: (Lifetime / Eksklusif)\n\n'+
       'Mohon dikonfirmasi ya. Terima kasih.';
     if(!ksSudahAjukan(ksPilih.id)){
       ksAjuan.push(ksPilih.id);
