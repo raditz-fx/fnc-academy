@@ -1691,6 +1691,26 @@
     line-height:1.7;}
   .hp-kosong b{color:var(--slate);}
   mark{background:var(--aksen-halus);color:var(--orange-deep);padding:0 2px;border-radius:3px;}
+
+  /* ===== BARIS TAB: lebih mudah dijelajahi di HP =====
+     Tab paling kanan (Kalkulator, Profil, Bantuan, Informasi) dulu nyaris
+     tak terlihat karena harus digeser buta. Sekarang ada tombol geser,
+     bayangan di tepi sebagai penanda masih ada lanjutannya, dan tab yang
+     sedang aktif otomatis digeser ke tengah. */
+  .tabs-bungkus{position:relative;display:flex;align-items:stretch;}
+  .tabs-bungkus .tabs{flex:1;min-width:0;scroll-behavior:smooth;}
+  .tabs-bungkus::before,.tabs-bungkus::after{content:'';position:absolute;top:0;bottom:0;
+    width:26px;pointer-events:none;z-index:31;opacity:0;transition:opacity .2s;}
+  .tabs-bungkus::before{left:0;background:linear-gradient(90deg,var(--hal),transparent);}
+  .tabs-bungkus::after{right:0;background:linear-gradient(270deg,var(--hal),transparent);}
+  .tabs-bungkus.ada-kiri::before{opacity:.95;}
+  .tabs-bungkus.ada-kanan::after{opacity:.95;}
+  .tabs-nav{flex:0 0 30px;border:0;background:transparent;color:var(--orange-deep);
+    font-size:13px;font-weight:800;cursor:pointer;padding:0;font-family:inherit;
+    z-index:32;position:relative;transition:opacity .18s,background .15s;}
+  .tabs-nav:hover:not(:disabled){background:var(--aksen-halus);}
+  .tabs-nav:disabled{opacity:0;pointer-events:none;}
+  @media(max-width:520px){ .tabs-nav{flex:0 0 24px;font-size:12px;} }
 </style>
 </head>
 <body>
@@ -1893,7 +1913,7 @@
     </div>
   </div>
 
-  <div class="tabs">
+  <div class="tabs-bungkus"><button class="tabs-nav kiri" id="tabs-kiri" type="button" aria-label="Tab sebelumnya">&#10094;</button><div class="tabs" id="tabs">
     <button class="tab active" data-view="beranda">Beranda</button>
     <button class="tab" data-view="news">Berita</button>
     <button class="tab" data-view="kelas">Kelas</button>
@@ -1909,7 +1929,7 @@
     <button class="tab" data-view="accounts">Profil</button>
     <button class="tab" data-view="help">Bantuan</button>
     <button class="tab" data-view="info">Informasi</button>
-  </div>
+  </div><button class="tabs-nav kanan" id="tabs-kanan" type="button" aria-label="Tab berikutnya">&#10095;</button></div>
 
   <div class="body">
     <!-- BERANDA -->
@@ -5862,6 +5882,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(view==='konsul')showKonsul();
     if(view==='info')showInfo();
     if(view==='help')showHelp();
+    try{ tabsKeAktif(); }catch(e){}
     if(view==='materi')showMateri();
     if(view==='dashboard')renderDashboard();
     replayAnim(view);
@@ -6664,6 +6685,38 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     b.onclick=()=>{ k.style.display='none'; };
   }
 
+
+  /* Tombol geser baris tab + penanda tepi + tab aktif digeser ke tengah. */
+  function tabsPasang(){
+    const bar=$('tabs'), bungkus=bar&&bar.parentNode,
+          kiri=$('tabs-kiri'), kanan=$('tabs-kanan');
+    if(!bar||!kiri||!kanan) return;
+    const langkah=()=>Math.max(120, Math.round(bar.clientWidth*0.6));
+    function segar(){
+      const maks=bar.scrollWidth-bar.clientWidth-2;
+      const bisaKiri=bar.scrollLeft>2, bisaKanan=bar.scrollLeft<maks;
+      kiri.disabled=!bisaKiri; kanan.disabled=!bisaKanan;
+      bungkus.classList.toggle('ada-kiri',bisaKiri);
+      bungkus.classList.toggle('ada-kanan',bisaKanan);
+    }
+    kiri.onclick=()=>{ bar.scrollBy({left:-langkah(),behavior:'smooth'}); setTimeout(segar,330); };
+    kanan.onclick=()=>{ bar.scrollBy({left:langkah(),behavior:'smooth'}); setTimeout(segar,330); };
+    bar.addEventListener('scroll',segar);
+    window.addEventListener('resize',segar);
+    setTimeout(segar,120);
+    window.__tabsSegar=segar;
+  }
+  /* Setelah pindah tab, tab yang aktif digeser supaya kelihatan penuh. */
+  function tabsKeAktif(){
+    const bar=$('tabs'); if(!bar) return;
+    const akt=bar.querySelector('.tab.active'); if(!akt) return;
+    const kiriAkt=akt.offsetLeft, lebarAkt=akt.offsetWidth;
+    const tujuan=kiriAkt-(bar.clientWidth-lebarAkt)/2;
+    try{ bar.scrollTo({left:Math.max(0,tujuan),behavior:'smooth'}); }
+    catch(e){ bar.scrollLeft=Math.max(0,tujuan); }
+    setTimeout(()=>{ if(window.__tabsSegar)window.__tabsSegar(); },340);
+  }
+
   function pakaiTema(t){
     document.documentElement.setAttribute('data-tema', t==='gelap'?'gelap':'terang');
     const b=$('tema-btn');
@@ -7154,6 +7207,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     try{ mkMulai(); }catch(e){ console.warn('market gagal dimuat',e); }
     try{ pasangTutupHero(); }catch(e){}
     try{ hpPasang(); }catch(e){}
+    try{ tabsPasang(); }catch(e){}
     pasangSorotKursor();
     accounts=(await store.get(K_ACC))||[];
     trades=(await store.get(K_TR))||[];
