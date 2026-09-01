@@ -820,7 +820,7 @@
     border:1.5px solid var(--line);background:var(--kartu);color:var(--teks-isi);
     font-family:inherit;cursor:pointer;}
   .kal-tgl select:focus{border-color:var(--orange);outline:none;}
-  .kal-lalu{display:flex;align-items:center;gap:9px;margin:0 0 12px;
+  .kal-lalu{display:flex;align-items:center;gap:9px;margin:14px 0 0;
     border:1px dashed var(--line);border-radius:11px;padding:9px 12px;
     font-size:11.5px;color:var(--gray);line-height:1.55;}
   .kal-lalu button{margin-left:auto;flex:0 0 auto;}
@@ -5086,22 +5086,23 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(!kalLihatLalu && !kalTh && !kalBl && !kalTg){
       const lalu=semua.filter(x=>x&&x.tgl&&x.tgl<hari).length;
       if(lalu){
-        bilah='<div class="kal-lalu"><span>'+lalu+' jadwal yang sudah lewat '+
-          'disembunyikan.</span>'+
+        bilah='<div class="kal-lalu"><span>'+lalu+' jadwal lampau</span>'+
           '<button class="btn ghost sm" type="button" onclick="window.__kalLalu(true)">'+
           'Tampilkan</button></div>';
       }
     }else if(kalLihatLalu && !kalTh && !kalBl && !kalTg){
-      bilah='<div class="kal-lalu"><span>Jadwal lama ikut ditampilkan.</span>'+
+      bilah='<div class="kal-lalu"><span>Jadwal lampau ikut tampil</span>'+
         '<button class="btn ghost sm" type="button" onclick="window.__kalLalu(false)">'+
         'Sembunyikan</button></div>';
     }
-    if(!isi.length){ $('kal-list').innerHTML=bilah+kalKosong(); return; }
+    /* Bilah jadwal lama ditaruh di BAWAH daftar, bukan di atas — di atas
+       dia menutupi jadwal terdekat yang justru paling ingin dilihat. */
+    if(!isi.length){ $('kal-list').innerHTML=kalKosong()+bilah; return; }
     /* Satu tabel utuh; tanggal disisipkan sebagai baris pemisah di antaranya. */
-    $('kal-list').innerHTML=bilah+'<div class="kal-tbl">'+
+    $('kal-list').innerHTML='<div class="kal-tbl">'+
       kalKelompok(isi).map(g=>
         kalBand(g.tgl,hari)+g.isi.map(kalBaris).join('')).join('')+
-      '</div>';
+      '</div>'+bilah;
   }
   /* Menggambar ulang dari data yang sudah ada — saringan tidak perlu
      mengunduh berkasnya lagi. */
@@ -5887,6 +5888,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     document.querySelectorAll('.view').forEach(v=>{v.classList.remove('active');v.classList.remove('anim-in');});
     $('v-'+view).classList.add('active');
     if(view==='beranda')renderBeranda();
+    if(view==='beranda')setTimeout(mkSegarkanSaatTampil,60);
     if(view==='calc')syncCalcWithAccount();
     if(view==='news')showNews();
     if(view==='analisa')checkAnalisaGate();
@@ -6458,8 +6460,14 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   function mkWarnaHal(){
     return mkWarnaVar('--hal', mkGelap() ? '#141414' : '#F3EFE9');
   }
+  let mkWidgetSiap=false;
   function mkIsiWidget(){
     const gelap=mkGelap(), bg=mkWarnaKartu();
+    /* Kalau lebarnya masih nol berarti Beranda sedang tersembunyi.
+       Widget tetap dipasang, tapi ditandai belum sah supaya dipasang
+       ulang saat Beranda benar-benar terlihat. */
+    const w0=$('mk-wrap');
+    mkWidgetSiap = !!(w0 && w0.clientWidth > 0);
     const pita=$('mk-pita');
     if(pita){
       pita.innerHTML='';
@@ -6766,6 +6774,17 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
           }catch(e){}
         }
       });
+    }catch(e){}
+  }
+
+  /* Dipanggil tiap kali Beranda ditampilkan. Kalau widget sebelumnya
+     tergambar saat tab tersembunyi (lebar nol), dia dipasang ulang di sini. */
+  function mkSegarkanSaatTampil(){
+    try{
+      const w=$('mk-wrap');
+      if(!w || !w.clientWidth) return;
+      if(mkWidgetSiap) return;
+      mkIsiWidget();
     }catch(e){}
   }
 
