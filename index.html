@@ -25,6 +25,7 @@
        Dipakai untuk panel yang mengambang di atas latar. Nilai blur sengaja
        sedang (14px) — cukup terasa, tapi tidak membebani HP kelas menengah. */
     --kaca:rgba(255,255,255,.72);
+  --pop-kepala:#1F2937;
     --kaca-tepi:rgba(255,255,255,.85);
     --kaca-blur:14px;
     --bayang-1:0 1px 2px rgba(31,41,55,.05), 0 4px 14px rgba(31,41,55,.06);
@@ -44,6 +45,7 @@
     --kartu:#1F1F1F; --hal:#141414;
     --teks-isi:#D1D1D1;        /* jauh lebih terang supaya paragraf enak dibaca */
     --kaca:rgba(31,31,31,.75);
+  --pop-kepala:#262626;
     --kaca-tepi:rgba(255,255,255,.09);
     --bayang-1:0 1px 2px rgba(0,0,0,.30), 0 4px 14px rgba(0,0,0,.28);
     --bayang-2:0 2px 8px rgba(0,0,0,.36), 0 14px 36px rgba(0,0,0,.42);
@@ -210,10 +212,10 @@
   .overlay[hidden]{display:none;}
   .welcome{background:var(--cream-bg);border-radius:14px;max-width:520px;width:100%;overflow:hidden;
     box-shadow:0 20px 60px rgba(0,0,0,.3);}
-  .welcome-top{background:var(--slate);padding:26px 26px 22px;text-align:center;}
+  .welcome-top{background:var(--pop-kepala);padding:26px 26px 22px;text-align:center;}
   .welcome-top img{height:62px;margin-bottom:12px;}
   .welcome-top h2{color:#fff;margin:0 0 5px;font-size:19px;}
-  .welcome-top p{color:#9aa4b1;margin:0;font-size:12.5px;}
+  .welcome-top p{color:#9A9A9A;margin:0;font-size:12.5px;}
   .welcome-body{padding:22px 26px 26px;}
   .welcome-body ul{margin:0 0 18px;padding-left:19px;font-size:13.5px;line-height:1.75;color:var(--slate-2);}
   .welcome-body ul b{color:var(--slate);}
@@ -1877,21 +1879,30 @@
       <p>Learn the market, track your progress</p>
     </div>
     <div class="welcome-body">
+      <p style="margin:0 0 13px;font-size:13px;line-height:1.75;color:var(--teks-isi);">
+        Ini <b>ruang belajar trading</b> milik komunitas FNC Academy &mdash;
+        tempat kamu memantau market, membaca update, dan mencatat perkembangan
+        trading kamu sendiri.
+      </p>
       <ul>
-        <li><b>Berita</b> — update market &amp; jadwal news penting</li>
-        <li><b>Analisa</b> — pembahasan chart dari tim FNC <i>(butuh kode eksklusif)</i></li>
-        <li><b>Jurnal Trading</b> — catat trade, Risk $, R:R &amp; P/L dihitung otomatis</li>
-        <li><b>Kalkulator</b> — ukuran lot dari risiko, nilai pip, simulasi P/L, cek R:R</li>
-        <li><b>Statistik</b> — win rate, profit factor, drawdown, equity curve</li>
+        <li><b>Beranda</b> &mdash; harga real-time &amp; chart semua pair</li>
+        <li><b>Berita</b> &mdash; update market &amp; jadwal news penting</li>
+        <li><b>Jurnal &amp; Statistik</b> &mdash; catat trade, win rate dan P/L dihitung otomatis</li>
+        <li><b>Kalkulator</b> &mdash; ukuran lot dari risiko, nilai pip, cek R:R</li>
+        <li><b>Kelas</b> &mdash; pilihan kelas &amp; keanggotaan FNC</li>
       </ul>
       <div class="note">
-        <b>Langkah berikutnya:</b> buat <b>Profil</b> dulu supaya bisa mulai mencatat jurnal.
-        Profil &amp; jurnal tersimpan di perangkat ini — rutin klik <b>Backup</b> di tab Jurnal ya.
+        <b>Semua di atas gratis dibuka</b>, tanpa kode apa pun. Isi khusus member
+        (Analisa, Rekap Live, Materi) terbuka setelah kamu memasukkan kode akses
+        di tab <b>Profil</b>.
+      </div>
+      <div class="note" style="margin-top:9px;">
+        <b>Gabung grup WhatsApp publik FNC</b> &mdash; info sesi live, bahasan market,
+        dan tanya-jawab bareng member lain. Gratis.
       </div>
       <div class="welcome-actions">
-        <button class="btn" id="w-start">Buat Profil Sekarang</button>
-        <button class="btn ghost" id="w-skip">Lihat-lihat Dulu</button>
-        <button class="btn ghost" id="w-demo">Contoh Data</button>
+        <button class="btn" id="w-grup">Gabung Grup WhatsApp</button>
+        <button class="btn ghost" id="w-skip">Mulai Jelajahi</button>
       </div>
     </div>
   </div>
@@ -2603,6 +2614,7 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
 
   const K_ACC='fncjt_accounts', K_TR='fncjt_trades', K_SET='fncjt_settings',
         K_SEEN='fncjt_seen', K_GATE='fncjt_unlocked',
+        K_DEMO='fncjt_demo_ditawarkan',
         K_PROFIL='fncjt_profil', K_TIER='fncjt_tier';
   let tier='private';          /* 'private' | 'eks' */
   let profil=null;             /* {id,nama,dibuat} — tersimpan LOKAL, bukan server */
@@ -5885,6 +5897,8 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(view==='konsul')showKonsul();
     if(view==='info')showInfo();
     if(view==='help')showHelp();
+    if(view==='journal')  setTimeout(()=>tawarkanContohData('Jurnal'),450);
+    if(view==='dashboard')setTimeout(()=>tawarkanContohData('Statistik'),450);
     try{ tabsKeAktif(); }catch(e){}
     if(view==='materi')showMateri();
     if(view==='dashboard')renderDashboard();
@@ -6007,18 +6021,17 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
   $('upg-code').addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();$('upg-save').click();} });
 
   /* welcome */
-  $('w-start').onclick=async()=>{
+  /* Pop-up sambutan sekarang cuma memperkenalkan website + ajakan gabung grup.
+     Tawaran contoh data dipindah ke tab Jurnal/Statistik, supaya orang baru
+     tidak diberondong beberapa pop-up sekaligus saat pertama masuk. */
+  if($('w-grup'))$('w-grup').onclick=async()=>{
     $('welcome-overlay').hidden=true; await store.set(K_SEEN,true);
-    profilTujuan='journal'; bukaProfil('Buat profil dulu supaya bisa mulai mencatat jurnal.');
+    await lanjutMasuk();
+    if(window.__bukaGrup) window.__bukaGrup();
   };
   $('w-skip').onclick=async()=>{
     $('welcome-overlay').hidden=true; await store.set(K_SEEN,true);
     await lanjutMasuk();
-  };
-  $('w-demo').onclick=async()=>{
-    const d=demoData(); accounts=[d.acc]; trades=d.tr;
-    await persist(); await store.set(K_SEEN,true);
-    $('welcome-overlay').hidden=true; renderAll(); await lanjutMasuk();
   };
 
   function renderAll(){fillAccountSelects();renderDashboard();renderJournal();renderAccounts();terapkanProfil();}
@@ -6720,6 +6733,42 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     setTimeout(()=>{ if(window.__tabsSegar)window.__tabsSegar(); },340);
   }
 
+
+  /* Tawaran contoh data muncul saat member pertama kali membuka Jurnal atau
+     Statistik dan belum punya data apa pun — bukan lagi ditumpuk di pop-up
+     sambutan. Hanya ditawarkan sekali seumur perangkat. */
+  async function tawarkanContohData(namaTab){
+    try{
+      if(accounts.length || trades.length) return;
+      /* Pembacaan penanda dipisah: kalau gagal dibaca, tawaran tetap jalan.
+         Sebelumnya kegagalan kecil di sini membatalkan seluruh tawaran diam-diam. */
+      let sudah=false;
+      try{ sudah=!!(await store.get(K_DEMO)); }catch(e){ sudah=false; }
+      if(sudah) return;
+      try{ await store.set(K_DEMO,true); }catch(e){}
+      popupInfo({
+        ikon:'&#129513;',
+        judul:'Coba Pakai Contoh Data?',
+        sub:'Biar kelihatan dulu bentuk jadinya',
+        isi:'<p>Tab <b>'+esc(namaTab)+'</b> kamu masih kosong karena belum ada '+
+            'trade yang dicatat.</p>'+
+            '<p style="margin-top:10px;">Mau kami isikan <b>contoh data</b> dulu? '+
+            'Kamu bisa lihat bentuk jurnal dan statistik yang sudah terisi, '+
+            'jadi lebih gampang paham sebelum mencatat trade sendiri.</p>'+
+            '<p style="margin-top:10px;font-size:11.5px;color:var(--gray);line-height:1.6;">'+
+            'Contoh ini bisa kamu hapus kapan saja lewat tab Profil.</p>',
+        tombol:'Ya, Isikan Contoh',
+        batal:'Nanti Saja',
+        aksi:async()=>{
+          try{
+            const d=demoData(); accounts=[d.acc]; trades=d.tr;
+            await persist(); renderAll();
+          }catch(e){}
+        }
+      });
+    }catch(e){}
+  }
+
   function pakaiTema(t){
     document.documentElement.setAttribute('data-tema', t==='gelap'?'gelap':'terang');
     const b=$('tema-btn');
@@ -7162,7 +7211,9 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     await store.set(K_GATE,true);
     /* Ajakan gabung grup publik lebih dulu — komitmennya paling ringan.
        Kalau sudah pernah tampil, langsung lanjut ke alur biasa. */
-    if(await tampilGrupPublik())return;
+    /* Ajakan grup sekarang menyatu di pop-up sambutan, jadi pop-up terpisah
+       ini dimatikan supaya orang baru tidak diberondong berkali-kali. */
+    /* if(await tampilGrupPublik())return; */
     const seen=await store.get(K_SEEN);
     if(!seen){ $('welcome-overlay').hidden=false; }
     else { await lanjutMasuk(); }
@@ -7272,14 +7323,23 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     if(kodeKadaluarsa){
       /* Sesinya diakhiri, tapi jangan sampai member merasa dikeluarkan
          tanpa sebab — alasannya dijelaskan langsung di gerbang. */
-      $('shell').classList.add('locked');
-      if($('ai-fab'))$('ai-fab').hidden=true;
-      $('gate-err').innerHTML='<b>Kode akses sudah diperbarui.</b><br>'+
-        'Kode lamamu tidak berlaku lagi. Masukkan kode baru yang dikirim admin, '+
-        'atau pilih <b>Lihat-lihat dulu</b> untuk masuk sebagai pengunjung umum.';
-      $('gate-err').hidden=false;
-      $('gate-overlay').hidden=false;
-      setTimeout(()=>$('gate-code').focus(),120);
+      /* Kode kedaluwarsa tidak lagi mengunci seluruh website. Member turun
+         ke UMUM dan tetap bisa memakai Beranda, Jurnal, dan lainnya, lalu
+         memasukkan kode baru lewat tab Profil kapan saja. */
+      setTier('umum');
+      try{ await store.set(K_TIER,'umum'); }catch(e){}
+      kodeAkses=null; kodeEks=null;
+      await unlock();
+      setTimeout(()=>{ try{ popupInfo({
+        ikon:'&#128273;', judul:'Kode Akses Sudah Diperbarui',
+        sub:'Kamu masuk sebagai pengunjung umum',
+        isi:'<p>Kode lamamu sudah tidak berlaku. Kamu tetap bisa memakai '+
+            'Beranda, Berita, Jurnal, Statistik, dan Kalkulator seperti biasa.</p>'+
+            '<p style="margin-top:10px;">Punya kode baru dari admin? Masukkan lewat '+
+            'tab <b>Profil</b> untuk membuka kembali isi khusus member.</p>',
+        tombol:'Ke Tab Profil', batal:'Nanti Saja',
+        aksi:()=>{ go('info'); }
+      }); }catch(e){} },700);
     }else if(unlocked===true){
       $('shell').classList.remove('locked');
       if($('ai-fab'))$('ai-fab').hidden=false;
@@ -7289,8 +7349,14 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
         if(!(await tampilPengumuman())){ renderBeranda(); replayAnim('beranda'); }
       }
     }else{
-      $('gate-overlay').hidden=false;
-      setTimeout(()=>$('gate-code').focus(),120);
+      /* Pengunjung baru TIDAK lagi dihadang gerbang kode. Dia langsung masuk
+         sebagai UMUM dan bisa menjelajah. Kode akses dimasukkan lewat tab
+         Profil kalau memang punya. Ini menghapus pop-up pertama yang paling
+         sering dikeluhkan. Member yang sudah membuka kode sebelumnya tetap
+         terbuka aksesnya — tidak perlu memasukkan kode lagi tiap kunjungan. */
+      setTier('umum');
+      try{ await store.set(K_TIER,'umum'); }catch(e){}
+      await unlock();
     }
   })();
 })();
