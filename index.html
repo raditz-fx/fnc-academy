@@ -759,8 +759,9 @@
     border-left:3px solid var(--orange-light);color:var(--gray);}
   .kls-desk code{background:var(--cream);padding:1px 5px;border-radius:4px;font-size:12px;}
   .kls-desk a{color:var(--orange-deep);}
-  .fi-bagi{display:flex;justify-content:flex-end;margin-top:11px;padding-top:10px;
-    border-top:1px solid var(--line-2);}
+  .fi-bagi{display:flex;justify-content:flex-end;align-items:center;
+    margin-top:11px;padding-top:10px;padding-left:96px;
+    border-top:1px solid var(--line-2);min-height:30px;}
   .fi-bagi button{display:inline-flex;align-items:center;gap:6px;background:none;
     border:1px solid var(--line);border-radius:20px;padding:5px 13px;cursor:pointer;
     font-family:inherit;font-size:11.5px;font-weight:600;color:var(--gray);
@@ -1017,7 +1018,9 @@
   .upsell p{margin:0 0 11px;font-size:12.5px;color:var(--slate-2);line-height:1.6;}
   .tab .lockdot{font-size:9px;opacity:.75;margin-left:3px;}
   /* watermark halus */
-  .wm-tag{position:absolute;right:11px;bottom:8px;font-size:9.5px;letter-spacing:.13em;
+  /* Penanda kode ditaruh di kiri bawah supaya tidak bertabrakan dengan
+     tombol Bagikan yang rata kanan. Berlaku di HP maupun laptop. */
+  .wm-tag{position:absolute;left:14px;bottom:9px;font-size:9.5px;letter-spacing:.13em;
     color:var(--gray);opacity:.34;pointer-events:none;user-select:none;font-family:var(--mono,monospace);}
   .wm-field{position:absolute;inset:0;pointer-events:none;user-select:none;overflow:hidden;
     display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:26px 34px;
@@ -3313,14 +3316,21 @@ function fncNormKode(s){ return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g
     return panelTerkunci(jenis||'eks',t,namaIsi||'Isi ini');
   }
   /* ---------- media ---------- */
+  /* Sampul hanya diberi ikon putar kalau isinya memang VIDEO.
+     Riset PDF dan materi tidak diberi ikon putar supaya member tidak
+     mengira ada rekaman yang bisa ditonton. */
+  function itVideo(it){
+    return String(labelTautan(it)).indexOf('Tonton')>=0;
+  }
   function blokVideo(it){
     if(!it.url)return '';
     const thumb=it.thumb||it.image||((it.images||[])[0])||'';
+    const vid=itVideo(it);
     return '<div class="vid-wrap" onclick="window.__buka(\''+esc(it.url).replace(/'/g,"\\'")+'\')">'+
       (thumb?'<img src="'+esc(thumb)+'" alt="" loading="lazy">'
-            :'<div class="vid-ph">REKAMAN VIDEO</div>')+
-      '<div class="vid-play"></div>'+
-      (it.dur?'<div class="vid-dur">'+esc(it.dur)+'</div>':'')+
+            :'<div class="vid-ph">'+(vid?'REKAMAN VIDEO':'DOKUMEN')+'</div>')+
+      (vid?'<div class="vid-play"></div>':'')+
+      ((vid&&it.dur)?'<div class="vid-dur">'+esc(it.dur)+'</div>':'')+
     '</div>';
   }
   window.__buka=u=>{ try{ window.open(u,'_blank','noopener'); }catch(e){} };
