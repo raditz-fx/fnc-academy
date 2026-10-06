@@ -1,47 +1,19 @@
 {
- "updated": "2026-08-31T04:17:31.922Z",
+ "updated": "2026-10-06T07:13:33.349Z",
  "items": [
   {
-   "id": "smtgpty3g8yqf",
-   "tgl": "2026-08-31",
-   "jam": "15:15",
-   "durasi": 40,
-   "mentor": "Radit",
-   "topik": "(Bisa req materi konsultasi)",
-   "media": "Discord",
-   "tingkat": "",
-   "catatan": "Ajukan jadwal maksimal H-1 jam sebelum dimulai",
-   "penuh": false,
-   "tujuan": "a2",
-   "pemesan": ""
-  },
-  {
-   "id": "smtgq897iedcj",
-   "tgl": "2026-08-31",
-   "jam": "16:15",
+   "id": "smuwcd34us2gk",
+   "tgl": "2026-10-06",
+   "jam": "16:00",
    "durasi": 60,
-   "mentor": "Radit",
-   "topik": "(Bisa req materi konsultasi)",
-   "media": "Discord",
+   "mentor": "Yudhis",
+   "topik": "Bedah Altcoin",
    "tingkat": "",
-   "catatan": "Ajukan jadwal maksimal h-1 jam sebelum di mulai",
-   "penuh": false,
-   "tujuan": "a2",
-   "pemesan": ""
-  },
-  {
-   "id": "smtgq8yr6cld3",
-   "tgl": "2026-08-31",
-   "jam": "19:30",
-   "durasi": 60,
-   "mentor": "Radit",
-   "topik": "(Bisa req materi konsultasi)",
+   "tujuan": "a1",
    "media": "Discord",
-   "tingkat": "",
-   "catatan": "Ajukan maksimal h-1 jam sebelum jadwal dimulai",
-   "penuh": false,
-   "tujuan": "a2",
-   "pemesan": ""
+   "catatan": "",
+   "penuh": true,
+   "pemesan": "Yudhis"
   }
  ]
 }
